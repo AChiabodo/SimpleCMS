@@ -4,7 +4,9 @@
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
+- Route `/`: Pagina principale che mostra la lista completa delle pagine, comprese le non pubblicate se si è autenticati
+- Route `/login` : Pagina per effettuare il login
+
 - Route `/something/:param`: page content and purpose, param specification
 - ...
 
