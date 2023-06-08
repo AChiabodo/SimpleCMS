@@ -8,6 +8,7 @@ import modalContext from "./Context/modalContext.jsx";
 import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx'
+import PageContainer from "./Components/PageContainer.jsx";
 
 function App() {
   let [pages, setPages] = useState([]);
@@ -95,7 +96,7 @@ function App() {
             <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
             <Route
               path="/pages/:pageID"
-              element={<MainPage pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty} name={user?user.name:null} doLogOut={doLogOut}/>}
+              element={<PageContainer/>}
             ></Route>
           </Routes>
           </authContext.Provider>

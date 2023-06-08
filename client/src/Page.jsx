@@ -17,6 +17,19 @@ function mapFromPage(e){
     return {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null}
 }
 
+function Component(id,pageID,componentType,componentData,order){
+    this.id=id;
+    this.pageID=pageID;
+    this.componentType=componentType;
+    this.componentData=componentData;
+    this.order=order;
+}
     
+function mapToComponent(e){
+    return new Component(e.id,e.pageID,e.type,e.content,e.position);
+}
+function mapFromComponent(e){
+    return {'id' : e.id , 'pageID' : e.pageID , 'componentType' : e.componentType, 'componentData' : e.componentData , 'order' : e.order}
+}
 export default Page
-export {mapToPage , mapFromPage}
+export {mapToPage , mapFromPage , mapToComponent , mapFromComponent , Component}

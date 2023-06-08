@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  Table , Spinner, Button 
+  Table , Spinner, Button
 } from "react-bootstrap";
 import { useContext ,useEffect} from "react";
 import MyNav from "./MyNav.jsx";

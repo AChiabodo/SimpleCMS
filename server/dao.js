@@ -72,7 +72,7 @@ exports.getPage = (id , onlyPublished = false) => {
 exports.getContent = (idPage) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM contentBlock WHERE page=? order by position';
-    db.get(sql, [idPage], (err, row) => {
+    db.all(sql, [idPage], (err, row) => {
       if (err) {
         reject(err);
         return;
@@ -81,7 +81,7 @@ exports.getContent = (idPage) => {
         resolve({ error: 'Block not found.' });
       } else {
         console.log(row)
-        const content = { id: row.id, content: row.Content, type: row.Type, position: row.Position };
+        const content = row.map(row => ({ id: row.id, content: row.Content, type: row.Type, position: row.Position }))
         resolve(content);
       }
     });

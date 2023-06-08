@@ -25,7 +25,7 @@
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
+- Table `users` - (id, name , email , salt , hash , role)
 - Table `something` - contains ww qq ss
 - ...
 

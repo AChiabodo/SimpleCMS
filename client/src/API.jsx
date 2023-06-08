@@ -2,7 +2,7 @@
  * All the API calls
  */
 
-import { mapFromPage, mapToPage } from "./Page";
+import { mapFromPage, mapToComponent, mapToPage } from "./Page";
 
 const URL = 'http://localhost:3001/api';
 
@@ -154,5 +154,18 @@ async function getUserInfo() {
   }
 }
 
-const API = {getPages , addPage , updatePage , deletePage , getUserInfo , logIn , logOut};
+const getPageContent = async (pageId,isAuthenticated) => {
+  const reqObj = {method: 'GET',credentials: 'include'};
+  // page.watchDate could be null or a string in the format YYYY-MM-DD
+  return getJson(
+    isAuthenticated
+      ? fetch(URL+`/content/${pageId}` ,reqObj)
+      : fetch(URL+`/front/content/${pageId}`,reqObj)
+  ).then((json) => {
+    console.log(json);
+    return json.map((page) => mapToComponent(page));
+  });
+};
+
+const API = {getPages , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getPageContent};
 export default API;
