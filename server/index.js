@@ -158,6 +158,19 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   }
 });
 
+// GET /api/pages/<id>
+app.get('/api/content/:idPage',isLoggedIn, async (req, res) => {
+  try {
+    const result = await dao.getContent(req.params.idPage,req.user.id);
+    if (result.error)
+      res.status(404).json(result);
+    else
+      res.json(result);
+  } catch (err) {
+    res.status(500).end();
+  }
+});
+
 // Create a new page
 // POST /api/pages
 app.post('/api/pages', isLoggedIn, [

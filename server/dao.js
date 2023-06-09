@@ -69,9 +69,15 @@ exports.getPage = (id , onlyPublished = false) => {
 };
 
 // get all the contentBlocks for the page identified by {id}
-exports.getContent = (idPage) => {
+exports.getContent = (idPage,user) => {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM contentBlock WHERE page=? order by position';
+    let sql;
+    if(!user){
+      sql = 'SELECT c.id, p.title , c.Content , c.Type , c.Position FROM contentBlock c , pages p WHERE c.page=? and c.page=p.id and p.publishDate <= date(\'now\') order by position';
+    }
+    else{
+      sql = 'SELECT c.id, p.title , c.Content , c.Type , c.Position FROM contentBlock c , pages p WHERE c.page=? and c.page=p.id order by position';
+    }
     db.all(sql, [idPage], (err, row) => {
       if (err) {
         reject(err);
