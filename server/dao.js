@@ -118,10 +118,24 @@ exports.listUsers = () => {
 
 // add a new page
 exports.createPage = (page) => {
-  console.log(page)
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO pages(title, creationDate,  author , publishDate) VALUES(?, DATE(?), ?, DATE(?))';
     db.run(sql, [page.title, page.creationDate, page.author, page.publishDate], function (err) {
+      if (err) {
+         
+        reject(err);
+        return;
+      }
+      resolve(this.lastID);
+    });
+  });
+};
+
+exports.createComponent = (component) => {
+  console.log(component)
+  return new Promise((resolve, reject) => {
+    const sql = 'INSERT INTO contentBlock(page, Type,  Content, Position) VALUES(?, ?, ?, ?)';
+    db.run(sql, [component.page, component.type, component.content, component.position], function (err) {
       if (err) {
         reject(err);
         return;
@@ -136,7 +150,7 @@ exports.updatePage = (page, user) => {
   return new Promise((resolve, reject) => {
     console.log(page);
     const sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ? and author = ?';
-    db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.user, page.id, user], function (err) {
+    db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user], function (err) {
       if (err) {
         console.log(err)
         reject(err);
@@ -152,6 +166,19 @@ exports.deletePage = (id, user) => {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM pages WHERE id = ? and author = ?';
     db.run(sql, [id, user], function (err) {
+      if (err) {
+        reject(err);
+        return;
+      } else
+        resolve(this.changes);  // return the number of affected rows
+    });
+  });
+}
+
+exports.deleteComponents = (page) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'DELETE FROM contentBlock WHERE page = ?';
+    db.run(sql, [page], function (err) {
       if (err) {
         reject(err);
         return;

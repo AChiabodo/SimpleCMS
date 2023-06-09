@@ -1,4 +1,5 @@
-@session = connect.sid=s%3AZj55QxC0bqcLoNCCo7s3NgxTWU9xEBBc.jL2ZD3VWBtb3UmUPg%2BQQE%2BL6%2Fyq%2B685kHPwg0SDsDls;
+@session = s%3AjfRQytjDeyvRAUfY5OpLwHRrO7vOu7fW.RWhrxRKRZ%2F8Duozk%2BenoZQgUdUWhx1DkjcsrtrM8Yg0;
+@component1 = {page : 1,'type' : 'header','content' : 'Header pagina 1','position' : 0}
 ###
 GET http://localhost:3001/api/front/pages HTTP/1.1
 ###
@@ -15,5 +16,36 @@ Content-Type: application/json
     "password" : "password"
 }
 ###
-GET http://localhost:3001/api/front/content/1 HTTP/1.1
+GET http://localhost:3001/api/front/pages/1 HTTP/1.1
 ###
+PUT http://localhost:3001/api/pages HTTP/1.1
+Cookie: connect.sid = {{session}}
+Content-Type: application/json
+
+{
+    "title" : "Star wars : the dawn of the force",
+    "author" : 2,
+    "creationDate" : "2023-05-04",
+    "publishDate" : "2023-05-24",
+    "components" : [
+        {
+            "page" : 1,
+            "type" : "header",
+            "content" : "Star wars : the dawn of the force",
+            "position" : 0
+        },
+        {
+            "page" : 1,
+            "type" : "body",
+            "content" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc.",
+            "position" : 1    
+        },
+        {
+            "page" : 1,
+            "type" : "image",
+            "content" : "starwars.jpeg",
+            "position" : 1 
+        }]
+}
+###
+DELETE http://localhost:3001/api/pages/0 HTTP/1.1

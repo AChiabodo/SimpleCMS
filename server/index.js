@@ -9,7 +9,7 @@ const LocalStrategy = require('passport-local').Strategy; // username and passwo
 const session = require('express-session'); // enable sessions
 const userDao = require('./user-dao'); // module for accessing the user info in the DB
 const cors = require('cors');
-
+const dayjs = require('dayjs');
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -81,28 +81,15 @@ app.use(passport.session());
 
 /*** Front-Office APIs ***/
 
-//GET /api/pages
+
 app.get('/api/front/pages', (req, res) => {
   dao.listPagesPublished()
     .then(pages => res.json(pages))
     .catch(() => res.status(500).end());
 });
 
-// GET /api/pages/<id>
-app.get('/api/front/pages/:id', async (req, res) => {
-  try {
-    const result = await dao.getPage(req.params.id,true);
-    if (result.error)
-      res.status(404).json(result);
-    else
-      res.json(result);
-  } catch (err) {
-    res.status(500).end();
-  }
-});
 
-// GET /api/pages/<id>
-app.get('/api/front/content/:idPage', async (req, res) => {
+app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
     const result = await dao.getContent(req.params.idPage);
     if (result.error)
@@ -123,9 +110,9 @@ app.get('/api/pages', isLoggedIn, (req, res) => {
 });
 
 // GET /api/pages/<id>
-app.get('/api/pages/:id', isLoggedIn, async (req, res) => {
+app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
-    const result = await dao.getFilm(req.params.id);
+    const result = await dao.getContent(req.params.idPage,req.user.id);
     if (result.error)
       res.status(404).json(result);
     else
@@ -158,82 +145,97 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   }
 });
 
-// GET /api/pages/<id>
-app.get('/api/content/:idPage',isLoggedIn, async (req, res) => {
-  try {
-    const result = await dao.getContent(req.params.idPage,req.user.id);
-    if (result.error)
-      res.status(404).json(result);
-    else
-      res.json(result);
-  } catch (err) {
-    res.status(500).end();
-  }
-});
-
 // Create a new page
 // POST /api/pages
-app.post('/api/pages', isLoggedIn, [
+app.post('/api/pages', /*isLoggedIn,*/ [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
-  check('user').isInt(),
+  check('author').isInt(),
+  check('publishDate').optional().isDate({ format: 'YYYY-MM-DD' }),
+  check('components').isLength({ min: 2 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors });
   }
-
-  const user = req.body.user;
+  
+  const user = req.body.author; // needed to ensure db consistency of the author
+  
   const e = req.body;
-  const resultUser = await userDao.getUser(user);  // needed to ensure db consistency
+  const resultUser = await userDao.getUserById(user);  // needed to ensure db consistency
+  
   if (resultUser.error)
-    res.status(404).json(resultUser);   // questionId does not exist, please insert the question before the answer
+    res.status(404).json(resultUser);   //the author is not a valid user
   else {
-    const page = { id: e.id, title: e.title, author: e.author, creationDate: e.creationDate, publishDate: (publishDate ? e.publishDate : null), user: e.user };
+    const page = {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
+    let pageId;
     try {
-      const pageId = await dao.createFilm(page);
+      pageId = await dao.createPage(page);
+      console.log(page);  
+      for (let component of page.components) {
+        console.log(component);
+        component.page = pageId;
+        await dao.createComponent(component);
+      }
+      
       // Return the newly created id of the question to the caller. 
       // A more complex object can also be returned (e.g., the original one with the newly created id)
       res.status(201).json(pageId);
     } catch (err) {
+      if(pageId){await dao.deletePage(pageId, true)}
       res.status(503).json({ error: `Database error during the creation of answer ${page.title} by user : ${page.user}.` });
     }
   }
 });
 
-//Update the page
-//PUT /api/pages/<id>
-app.put('/api/pages/:id', isLoggedIn, [
+// Update an existing page
+// PUT /api/pages
+app.put('/api/pages', /*isLoggedIn,*/ [
   check('title').isLength({ min: 1 }),
-  check('id').isInt(),
-  check('user').isInt(),
+  check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
+  check('author').isInt(),
+  check('publishDate').optional().isDate({ format: 'YYYY-MM-DD' }),
+  check('components').isLength({ min: 2 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({ errors: errors });
   }
-
-  const page = req.body;
-  // you can also check here if the id passed in the URL matches with the id in req.body,
-  // and decide which one must prevail, or return an error
-  if (parseInt(page.id) != parseInt(req.params.id)) {
-    res.status(422).json({ error: `Database error during the update of film ${req.params.id} : invalid ID.` });
-    return;
-  };
-
-  try {
-    const numRowChanges = await dao.updateFilm(page, req.user.id);
-    res.json(numRowChanges);
-    //res.status(200).end();
-  } catch (err) {
-    res.status(503).json({ error: `Database error during the update of film ${req.params.id}.` });
+  //const oldPage = await dao.getPage(req.body.id);
+  const user = req.body.author; // needed to ensure db consistency of the author
+  
+  const e = req.body;
+  const resultUser = await userDao.getUserById(user);  // needed to ensure db consistency
+  
+  if (resultUser.error)
+    res.status(404).json(resultUser);   //the author is not a valid user
+  else {
+    const page = {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
+    let pageId;
+    try {
+      await dao.updatePage(page , user); //TODO: check if user is the author of the page
+      await dao.deleteComponents(page.id); //Clean the components of the page  
+      for (let component of page.components) {
+        console.log(component);
+        component.page = page.id;
+        await dao.createComponent(component);
+      }
+      
+      // Return the newly created id of the question to the caller. 
+      // A more complex object can also be returned (e.g., the original one with the newly created id)
+      res.status(201).json(pageId);
+    } catch (err) {
+      if(pageId){await dao.deletePage(pageId, true)}
+      res.status(503).json({ error: `Database error during the creation of answer ${page.title} by user : ${page.user}.` });
+    }
   }
 });
 
 // DELETE /api/pages/<id>
 app.delete('/api/pages/:id', async (req, res) => {
   try {
-    const numRowChanges = await dao.deleteFilm(req.params.id, req.user.id);
+    await dao.deletePage(req.params.id, 2);
+    const numRowChanges = await dao.deleteComponents(req.params.id);
     // number of changed rows is sent to client as an indicator of success
     res.json(numRowChanges);
   } catch (err) {
