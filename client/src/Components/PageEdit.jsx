@@ -1,25 +1,37 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
 import {
-    Container , Row , Figure , Spinner
+    Container , Row , Figure , Col
 } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
 import { useContext , useState } from "react";
 import API from "../API";
 import MyNav from "./MyNav";
+import { EditModal } from "./editModal";
+import PropTypes from 'prop-types';
+EditRow.propTypes = {
+    contentData : PropTypes.object.isRequired
+}
 
-function MyRow(props) {
+function EditRow(props) {
     const {contentData} = props;
-    const {loggedIn} = useContext(authContext);
     if(contentData.componentType === undefined) return (<></>);
-    if(contentData.componentType === "Header") return (
+    if (contentData.componentType === "Header")
+      return (
         <>
-        <h1 style={{ textAlign: 'center' }}>{contentData.componentData}</h1>
+          <Row>
+            <Col>
+            <h1 style={{ textAlign: "center" }}>{contentData.componentData}</h1></Col>
+            <Col xs lg="1"><EditModal newMode={false} content={contentData}/></Col>
+          </Row>
         </>
-        );
+      );
     if(contentData.componentType === "Image"){
         return (
+            <>
+            <Row>
+                <Col>
             <Figure style={{ display: 'flex', justifyContent: 'center' }}>
             <Figure.Image
                 style={{ alignSelf: 'center' }}
@@ -28,16 +40,25 @@ function MyRow(props) {
               alt={contentData.componentData}
               src={`http://localhost:3001/public/${contentData.componentData}`}
             />
-        </Figure>);
+        </Figure>
+        </Col>
+        <Col xs lg="1">
+        <EditModal newMode={false} content={contentData}/>
+        </Col>
+        </Row>
+        </>
+        );
     }
     return (
         <Row style={{ display: 'flex', justifyContent: 'center' }}>
-            {contentData.componentData}
+            <Col>{contentData.componentData}</Col>
+            <Col xs lg="1"><EditModal newMode={false} content={contentData}/></Col>
         </Row>
+
     );
 }
 
-function PageContainer() {
+function PageEdit() {
     const {pageID} = useParams();
     const {loggedIn} = useContext(authContext);
     const [content, setContent] = useState([]);
@@ -46,17 +67,14 @@ function PageContainer() {
             (Components) => {setContent(Components);}
         ).catch(err => {console.log("GET err : " + err)});
       }, [pageID,loggedIn]);
-
+    
     return (
         <>
-        <MyNav/>
-        {content.length != 0?
+    <MyNav/>
       <Container>
-          {content.map( e =><MyRow contentData={e} key={e.id}/>)}
+          {content.map( e =><EditRow contentData={e} key={e.id}/>)}
       </Container>
-            : <> <h1>Loading...</h1> <Spinner animation="grow" variant="warning" /> </>}
       </>
     );
   }
-
-  export default PageContainer;
+ export default PageEdit;

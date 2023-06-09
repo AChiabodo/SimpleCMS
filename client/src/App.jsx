@@ -9,6 +9,7 @@ import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx'
 import PageContainer from "./Components/PageContainer.jsx";
+import PageEdit from "./Components/PageEdit.jsx";
 
 function App() {
   let [pages, setPages] = useState([]);
@@ -97,6 +98,10 @@ function App() {
             <Route
               path="/pages/:pageID"
               element={<PageContainer/>}
+            ></Route>
+            <Route
+              path="/pages/:pageID/edit"
+              element={<PageEdit/>}
             ></Route>
           </Routes>
           </authContext.Provider>

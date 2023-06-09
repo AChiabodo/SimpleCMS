@@ -23,7 +23,7 @@ function MyNav() {
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
-        <Navbar.Brand href="#home">CMSmall</Navbar.Brand>
+        <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer'}}>CMSmall</Navbar.Brand>
       <Nav className="me-auto">
       {loggedIn? <EditModal newMode={true} /> : false }
         </Nav> 

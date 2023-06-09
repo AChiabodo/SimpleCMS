@@ -17,19 +17,22 @@ function mapFromPage(e){
     return {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null}
 }
 
-function Component(id,pageID,componentType,componentData,order){
+function Component(id,pageID,componentType,content,creationDate,publishDate,position){
     this.id=id;
     this.pageID=pageID;
     this.componentType=componentType;
-    this.componentData=componentData;
-    this.order=order;
+    this.componentData=content;
+    this.creationDate=creationDate;
+    this.publishDate=publishDate;
+    this.position=position;
 }
     
 function mapToComponent(e){
-    return new Component(e.id,e.pageID,e.type,e.content,e.position);
+    //    return new Component(e.id,e.pageID,e.type,e.content,e.position);
+    return new Component(e.id,e.pageID,e.type,e.content ,e.creationDate ? dayjs(e.creationDate) : null,e.publishDate ? dayjs(e.publishDate) : null,e.position);
 }
 function mapFromComponent(e){
-    return {'id' : e.id , 'pageID' : e.pageID , 'componentType' : e.componentType, 'componentData' : e.componentData , 'order' : e.order}
+    return {'id' : e.id , 'pageID' : e.pageID , 'type' : e.componentType, 'content' : e.componentData , 'position' : e.order , 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null}
 }
 export default Page
 export {mapToPage , mapFromPage , mapToComponent , mapFromComponent , Component}

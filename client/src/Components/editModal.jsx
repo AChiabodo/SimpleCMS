@@ -7,13 +7,13 @@ import {
   Alert,
 } from "react-bootstrap";
 import dayjs from "dayjs";
-import Page from "../Page";
+import {Component} from "../Page";
 import modalContext from "../Context/modalContext";
 import PropTypes from 'prop-types';
 
 EditModal.propTypes = {
   newMode: PropTypes.func.isRequired,
-  Page : PropTypes.object.isRequired
+  content : PropTypes.object.isRequired
 };
 
 export function EditModal(props) {
@@ -23,70 +23,64 @@ export function EditModal(props) {
   const [errorMessage, setErrorMessage] = useState("");
   
   const [showEdit, setShowEdit] = useState(false);
-  const [tempPage, setTempPage] = useState(new Page("", ""));
+  const [tempContent, setTempContent] = useState(new Component("", ""));
 
   const handleClose = () => setShowEdit(false);
   const handleShow = () => setShowEdit(true);
-  function handleWatchDate(event) {
-    setTempPage(
-      (tempPage) =>
-        (tempPage = Object.assign({}, tempPage, {
-          date: dayjs(event.target.value),
+  function handlePublishDate(event) {
+    setTempContent(
+      (tempContent) =>
+        (tempContent = Object.assign({}, tempContent, {
+          publishDate: dayjs(event.target.value),
         }))
     );
   }
-  function handleTitle(event) {
-    setTempPage(
-      (tempPage) =>
-        (tempPage = Object.assign({}, tempPage, { title: event.target.value }))
-    );
-  }
-  function handleFavorite() {
-    setTempPage(
-      (tempPage) =>
-        (tempPage = Object.assign({}, tempPage, {
-          favorites: !tempPage.favorites,
+  function handleType(event) {
+    setTempContent(
+      (tempContent) =>
+        (tempContent = Object.assign({}, tempContent, {
+          componentType: event.target.value,
         }))
     );
   }
-  function handleRating(event) {
+  function handleData(event) {
     console.log(event)
-    setTempPage(
-      (tempPage) =>
-        (tempPage = Object.assign({}, tempPage, {
-          rating: (event.target.value <6 && event.target.value >=0)?event.target.value:"" ,
+    setTempContent(
+      (tempContent) =>
+        (tempContent = Object.assign({}, tempContent, {
+          componentData: event.target.value ,
         }))
     );
   }
   function handleEdit() {
     setEditmode(true);
-    const { Page } = props;
-    setTempPage((tempPage) => Object.assign(tempPage, Page));
+    const { content } = props;
+    setTempContent((tempContent) => Object.assign(tempContent, content));
     handleShow();
   }
   function handleCreation() {
     setEditmode(false);
-    setTempPage(Object.assign({}, { id: nextId }));
+    setTempContent(Object.assign({}, { id: nextId }));
     handleShow();
   }
   function handleRemove() {
-    deletePage(tempPage);
+    deletePage(tempContent);
     handleClose();
   }
   function handleSubmit() {
-    if (!tempPage.title || tempPage.title == "" || !tempPage.title.trim()) {
+    if (!tempContent.title || tempContent.title == "" || !tempContent.title.trim()) {
       setErrorMessage("Titolo non valido !");
       return;
     } else {
       setErrorMessage("");
     }
     if (editmode) {
-      modifyPage(tempPage);
+      modifyPage(tempContent);
       handleClose();
     } else {
-      addPage(tempPage);
+      addPage(tempContent);
       setNextId((id) => id + 1);
-      setTempPage(Object.assign({}, { id: nextId }));
+      setTempContent(Object.assign({}, { id: nextId }));
       handleClose();
     }
   }
@@ -95,7 +89,7 @@ export function EditModal(props) {
     <>
       {newMode ? (
         <Button variant="outline-success" onClick={handleCreation}>
-          Add Page
+          Add new Component
         </Button>
       ) : (
         <Button variant="white" onClick={handleEdit}>
@@ -112,48 +106,54 @@ export function EditModal(props) {
       )}
       <Modal show={showEdit} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Component Management</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group>
-              <Form.Label>Title : </Form.Label>
-              <Form.Control
-                type="text"
-                name="date"
-                value={tempPage.title}
-                onChange={handleTitle}
-              />
+              {/*Form type is a dropdown list that contains Image , Body and Header  */}
+              <Form.Label>Type: </Form.Label>
+              <Form.Select
+                value={tempContent.componentType}
+                onChange={handleType}
+                >
+                <option value="Body">Body</option>
+                <option value="Header">Header</option>
+                <option value="Image">Image</option>
+                
+                </Form.Select>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Favourite : </Form.Label>
-              <Form.Check
-                value={tempPage.favorites?true:false}
-                checked={tempPage.favorites}
-                onChange={handleFavorite}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Watch Date : </Form.Label>
+              <Form.Label>Publish Date : </Form.Label>
               <Form.Control
                 type="date"
-                name="watchDate"
+                name="publishDate"
                 value={
-                  tempPage.date != null
-                    ? dayjs(tempPage.date).format("YYYY-MM-DD")
+                  tempContent.date != null
+                    ? dayjs(tempContent.date).format("YYYY-MM-DD")
                     : ""
                 }
-                onChange={handleWatchDate}
+                onChange={handlePublishDate}
               />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Rating : </Form.Label>
+              <Form.Label>Content: </Form.Label>
+              {(tempContent.componentType !== "Image")?
               <Form.Control
-                type="number"
-                name="rating"
-                value={tempPage.rating}
-                onChange={handleRating}
-              />
+                type="textArea"
+                name="componentData"
+                value={tempContent.componentData}
+                onChange={handleData}/>
+              :
+                <Form.Select
+                value={tempContent.componentData}
+                onChange={handleData}
+                >
+                <option value="faro.jpeg">Faro</option>
+                  <option value="cane.jpeg">Cane</option>
+                </Form.Select>
+              }
+              
             </Form.Group>
           </Form>
           {errorMessage != "" ? (
