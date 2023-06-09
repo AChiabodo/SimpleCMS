@@ -5,26 +5,24 @@ import {
 import { useContext ,useEffect} from "react";
 import MyNav from "./MyNav.jsx";
 import API from '../API.jsx'
-import { EditModal } from "./editModal.jsx";
 import authContext from "../Context/authContext.jsx";
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs'
 import { useNavigate } from "react-router-dom";
 
-MyRow.propTypes = {
-  pageData: PropTypes.object.isRequired,
-};
+MyRow.propTypes = {pageData: PropTypes.object.isRequired};
 
 export function MyRow(props) {
     const { pageData } = props;
     const {loggedIn} = useContext(authContext);
     const navigate = useNavigate();
     let spinner , status;
+    console.log(pageData);
     if(pageData.dirty){spinner = <Spinner animation="grow" variant="warning" />}
     if(pageData.deleted){spinner = <Spinner animation="grow" variant="danger" />}
     if(pageData.created){spinner = <Spinner animation="grow" variant="success" />}
-    if(loggedIn && dayjs(pageData.publishDate) < dayjs() ) {status = "editing"}
-    if(loggedIn && dayjs(pageData.publishDate) >= dayjs() ) {status = "published"}
+    if(loggedIn && dayjs(pageData.publishDate) > dayjs() ) {status = "editing"}
+    if(loggedIn && dayjs(pageData.publishDate) <= dayjs() ) {status = "published"}
     if(loggedIn && !pageData.publishDate) {status = "drafted"}
     return (
       <tr>
@@ -62,8 +60,7 @@ export function MyRow(props) {
 function MainPage(props){
     let {pages , setPages , dirty , setDirty , name , doLogOut} = props;
     const {user , loggedIn} = useContext(authContext);
-    //const route = filters.filter( e => e.label === FilterLabel).map(e => e.route)[0] 
-
+    
     useEffect(() => {
       if(!loggedIn){
         API.getPages().then( (e) => {

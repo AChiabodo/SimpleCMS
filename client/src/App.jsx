@@ -3,14 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState} from "react";
 import API from './API.jsx'
 import MainPage from "./Components/MainPage.jsx";
-import { BrowserRouter, Routes, Route,Navigate} from "react-router-dom";
-import modalContext from "./Context/modalContext.jsx";
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import pageManagementContext from "./Context/pageManagementContext.jsx";
 import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx'
 import PageContainer from "./Components/PageContainer.jsx";
 import PageEdit from "./Components/PageEdit.jsx";
-
 function App() {
   let [pages, setPages] = useState([]);
   let [nextID, setNextId] = useState(0);
@@ -28,7 +27,7 @@ function App() {
   }
 
   function modifyPage(page) {
-    page = Object.assign({},page , {user : user?user.id:1});
+    page = Object.assign({},page,{id:nextID++})
     setPages((pages) => {
       const list = pages.map((item) => {
         if (item.id === page.id) {
@@ -81,9 +80,7 @@ function App() {
   return (
     <BrowserRouter>
     <Container fluid>
-        <modalContext.Provider
-          value={{ addPage, modifyPage, deletePage ,nextID :  nextID , setNextId}}
-        >
+        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage}}>
           <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn}}>
           <Routes>
             <Route
@@ -97,15 +94,12 @@ function App() {
             <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
             <Route
               path="/pages/:pageID"
-              element={<PageContainer/>}
+              element={<PageEdit editMode={false}/>}
             ></Route>
-            <Route
-              path="/pages/:pageID/edit"
-              element={<PageEdit/>}
-            ></Route>
+            <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}/>}></Route>
           </Routes>
           </authContext.Provider>
-        </modalContext.Provider>
+        </pageManagementContext.Provider>
       </Container>
     </BrowserRouter>
   );

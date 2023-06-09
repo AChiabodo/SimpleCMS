@@ -12,13 +12,13 @@ import modalContext from "../Context/modalContext";
 import PropTypes from 'prop-types';
 
 EditModal.propTypes = {
-  newMode: PropTypes.func.isRequired,
-  content : PropTypes.object.isRequired
+  newMode: PropTypes.bool.isRequired,
+  content : PropTypes.object
 };
 
 export function EditModal(props) {
   let { newMode } = props;
-  let { addPage, modifyPage , nextId , setNextId , deletePage} = useContext(modalContext);
+  let {addComponent, modifyComponent, deleteComponent} = useContext(modalContext);
   const [editmode, setEditmode] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   
@@ -60,27 +60,26 @@ export function EditModal(props) {
   }
   function handleCreation() {
     setEditmode(false);
-    setTempContent(Object.assign({}, { id: nextId }));
+    setTempContent(Object.assign({},{componentType : "Body"}));
     handleShow();
   }
   function handleRemove() {
-    deletePage(tempContent);
+    deleteComponent(tempContent);
     handleClose();
   }
   function handleSubmit() {
-    if (!tempContent.title || tempContent.title == "" || !tempContent.title.trim()) {
+    if (!tempContent.componentData || tempContent.componentData == "" || !tempContent.componentData.trim()) {
       setErrorMessage("Titolo non valido !");
       return;
     } else {
       setErrorMessage("");
     }
     if (editmode) {
-      modifyPage(tempContent);
+      modifyComponent(tempContent);
       handleClose();
     } else {
-      addPage(tempContent);
-      setNextId((id) => id + 1);
-      setTempContent(Object.assign({}, { id: nextId }));
+      addComponent(tempContent);
+      setTempContent(Object.assign({}));
       handleClose();
     }
   }
@@ -104,7 +103,7 @@ export function EditModal(props) {
           </svg>
         </Button>
       )}
-      <Modal show={showEdit} onHide={handleClose}>
+      <Modal show={showEdit} onHide={handleClose} size={"xl"}>
         <Modal.Header closeButton>
           <Modal.Title>Component Management</Modal.Title>
         </Modal.Header>
@@ -124,23 +123,10 @@ export function EditModal(props) {
                 </Form.Select>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Publish Date : </Form.Label>
-              <Form.Control
-                type="date"
-                name="publishDate"
-                value={
-                  tempContent.date != null
-                    ? dayjs(tempContent.date).format("YYYY-MM-DD")
-                    : ""
-                }
-                onChange={handlePublishDate}
-              />
-            </Form.Group>
-            <Form.Group>
               <Form.Label>Content: </Form.Label>
               {(tempContent.componentType !== "Image")?
               <Form.Control
-                type="textArea"
+                as="textarea"
                 name="componentData"
                 value={tempContent.componentData}
                 onChange={handleData}/>
@@ -150,6 +136,7 @@ export function EditModal(props) {
                 onChange={handleData}
                 >
                 <option value="faro.jpeg">Faro</option>
+                <option value="starwars.jpeg">Star Wars</option>
                   <option value="cane.jpeg">Cane</option>
                 </Form.Select>
               }

@@ -2,7 +2,7 @@
  * All the API calls
  */
 
-import { mapFromPage, mapToComponent, mapToPage } from "./Page";
+import { mapFromComponent, mapFromPage, mapToComponent, mapToPage } from "./Page";
 
 const URL = 'http://localhost:3001/api';
 
@@ -44,7 +44,11 @@ const getPages = async (isAuthenticated) => {
     return json.map((page) => mapToPage(page));
   });
 };
-
+/**
+ * 
+ * @param {Object} page 
+ * @returns Promise<Object> the id of the page created
+ */
 function addPage(page) {
   // call  POST /api/answers
   return new Promise((resolve, reject) => {
@@ -71,7 +75,7 @@ function addPage(page) {
 }
 
 function updatePage(page) {
-  // call  PUT /api/answers/<id>
+  // call  PUT /api/pages/:id
   return new Promise((resolve, reject) => {
     fetch(URL+`/pages/${page.id}`, {
       method: 'PUT',
@@ -159,8 +163,8 @@ const getPageContent = async (pageId,isAuthenticated) => {
   // page.watchDate could be null or a string in the format YYYY-MM-DD
   return getJson(
     isAuthenticated
-      ? fetch(URL+`/content/${pageId}` ,reqObj)
-      : fetch(URL+`/front/content/${pageId}`,reqObj)
+      ? fetch(URL+`/pages/${pageId}` ,reqObj)
+      : fetch(URL+`/front/pages/${pageId}`,reqObj)
   ).then((json) => {
     console.log(json);
     return json.map((page) => mapToComponent(page));
