@@ -190,7 +190,7 @@ app.post('/api/pages', /*isLoggedIn,*/ [
 
 // Update an existing page
 // PUT /api/pages
-app.put('/api/pages', /*isLoggedIn,*/ [
+app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
   check('author').isInt(),
@@ -203,14 +203,16 @@ app.put('/api/pages', /*isLoggedIn,*/ [
   }
   //const oldPage = await dao.getPage(req.body.id);
   const user = req.body.author; // needed to ensure db consistency of the author
-  
+  const pageID = req.params.pageID;
   const e = req.body;
   const resultUser = await userDao.getUserById(user);  // needed to ensure db consistency
-  
+  if(pageID != e.id){
+    return res.status(422).json({ errors: "The id of the page cannot be changed" });
+  }
   if (resultUser.error)
-    res.status(404).json(resultUser);   //the author is not a valid user
+    return res.status(404).json(resultUser);   //the author is not a valid user
   else {
-    const page = {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
+    const page = {'id' : pageID , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
     let pageId;
     try {
       await dao.updatePage(page , user); //TODO: check if user is the author of the page

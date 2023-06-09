@@ -12,7 +12,7 @@ const db = new sqlite.Database('CMSmall.db', (err) => {
 // get all published pages
 exports.listPagesPublished = () => {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM pages , users WHERE pages.publishDate <= date(\'now\') and users.id = pages.author ORDER BY publishDate DESC';
+    const sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE pages.publishDate <= date(\'now\') and users.id = pages.author ORDER BY publishDate DESC';
     db.all(sql, [], (err, rows) => {
       if (err) {
         console.log(err);

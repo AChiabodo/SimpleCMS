@@ -18,11 +18,12 @@ Content-Type: application/json
 ###
 GET http://localhost:3001/api/front/pages/1 HTTP/1.1
 ###
-PUT http://localhost:3001/api/pages HTTP/1.1
+PUT http://localhost:3001/api/pages/4 HTTP/1.1
 Cookie: connect.sid = {{session}}
 Content-Type: application/json
 
 {
+    "id" : 4,
     "title" : "Star wars : the dawn of the force",
     "author" : 2,
     "creationDate" : "2023-05-04",
@@ -30,7 +31,7 @@ Content-Type: application/json
     "components" : [
         {
             "page" : 1,
-            "type" : "header",
+            "type" : "Header",
             "content" : "Star wars : the dawn of the force",
             "position" : 0
         },
@@ -42,9 +43,9 @@ Content-Type: application/json
         },
         {
             "page" : 1,
-            "type" : "image",
+            "type" : "Image",
             "content" : "starwars.jpeg",
-            "position" : 1 
+            "position" : 2 
         }]
 }
 ###
