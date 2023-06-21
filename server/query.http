@@ -25,24 +25,24 @@ Content-Type: application/json
 {
     "id" : 4,
     "title" : "Star wars : the dawn of the force",
-    "author" : 2,
+    "author" : "Mario",
     "creationDate" : "2023-05-04",
     "publishDate" : "2023-05-24",
-    "components" : [
+    "contentBlocks" : [
         {
-            "page" : 1,
+            "page" : 4,
             "type" : "Header",
             "content" : "Star wars : the dawn of the force",
             "position" : 0
         },
         {
-            "page" : 1,
+            "page" : 4,
             "type" : "body",
             "content" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc.",
             "position" : 1    
         },
         {
-            "page" : 1,
+            "page" : 4,
             "type" : "Image",
             "content" : "starwars.jpeg",
             "position" : 2 

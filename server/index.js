@@ -93,7 +93,7 @@ app.get('/api/front/pages', (req, res) => {
 
 app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
-    const result = await dao.getContent(req.params.idPage);
+    const result = await dao.getPage(req.params.idPage,true);
     if (result.error)
       res.status(404).json(result);
     else
@@ -114,7 +114,7 @@ app.get('/api/pages', isLoggedIn, (req, res) => {
 // GET /api/pages/<id>
 app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
-    const result = await dao.getContent(req.params.idPage,req.user.id);
+    const result = await dao.getPage(req.params.idPage,req.user.id);
     if (result.error)
       res.status(404).json(result);
     else
@@ -195,31 +195,35 @@ app.post('/api/pages', /*isLoggedIn,*/ [
 app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
-  check('author').isInt(),
+  check('author').isLength({ min: 1 }),
   check('publishDate').optional().isDate({ format: 'YYYY-MM-DD' }),
-  check('components').isLength({ min: 2 })
+  check('contentBlocks').isLength({ min: 2 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(errors);
     return res.status(422).json({ errors: errors });
   }
   //const oldPage = await dao.getPage(req.body.id);
+
   const user = req.body.author; // needed to ensure db consistency of the author
   const pageID = req.params.pageID;
   const e = req.body;
-  const resultUser = await userDao.getUserById(user);  // needed to ensure db consistency
+  const resultUser = await userDao.getUser(user);  // needed to ensure db consistency
   if(pageID != e.id){
     return res.status(422).json({ errors: "The id of the page cannot be changed" });
   }
+
   if (resultUser.error)
     return res.status(404).json(resultUser);   //the author is not a valid user
   else {
-    const page = {'id' : pageID , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
+
+    const page = {'id' : pageID , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
     let pageId;
     try {
       await dao.updatePage(page , user); //TODO: check if user is the author of the page
       await dao.deleteComponents(page.id); //Clean the components of the page  
-      for (let component of page.components) {
+      for (let component of page.contentBlocks) {
         console.log(component);
         component.page = page.id;
         await dao.createComponent(component);
@@ -230,7 +234,7 @@ app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
       res.status(201).json(pageId);
     } catch (err) {
       if(pageId){await dao.deletePage(pageId, true)}
-      res.status(503).json({ error: `Database error during the creation of answer ${page.title} by user : ${page.user}.` });
+      res.status(503).json({ error: `Database error during the update of page ${page.title} by user : ${page.user}.` });
     }
   }
 });
@@ -279,7 +283,6 @@ app.post('/api/sessions', function (req, res, next) {
     req.login(user, (err) => {
       if (err)
         return next(err);
-
       // req.user contains the authenticated user, we send all the user info back
       // this is coming from userDao.getUser()
       return res.json(req.user);
