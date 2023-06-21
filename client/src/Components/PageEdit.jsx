@@ -194,7 +194,6 @@ function PageEdit(props) {
 
     return (
       <>
-        <MyNav />
         <modalContext.Provider
           value={{
             addComponent,
@@ -203,7 +202,7 @@ function PageEdit(props) {
           }}
         >
             {(loggedIn && editMode) ? 
-            <Container flex>
+            <Container flex='true'>
             <ButtonToolbar style={{ display: 'flex', justifyContent: 'center' }}>
             <Button onClick={() => handleSubmit}>Confirm Changes</Button> 
             <EditModal newMode={true}/>

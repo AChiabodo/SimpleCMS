@@ -8,7 +8,7 @@ import API from '../API.jsx'
 import authContext from "../Context/authContext.jsx";
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs'
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 MyRow.propTypes = {pageData: PropTypes.object.isRequired};
 
@@ -79,28 +79,33 @@ function MainPage(props){
     return (
       <>
       <MyNav name={name} doLogOut={doLogOut}/>
-      <Table striped bordered hover>
-      
-        <thead>
-          <tr>
-          <th scope="col">#</th>
-            <th >Title</th>
-            <th >Author</th>
-            <th >PublishDate</th>
-            {loggedIn ? <th >CreationDate</th> : false }
-            {loggedIn ? <th >Status</th> : false }
-            {loggedIn ? <th >Edit</th> : false }
-          </tr>
-        </thead>
-        <tbody>
-        {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false}
-          {
-          pages.map((e) =><MyRow pageData={e} key={e.id}/>)
-            }
-        </tbody>
-      </Table>
+      <Outlet></Outlet>
       </>
     )
   }
 
+  function MainTable(props) {
+    let {loggedIn, pages} = props;
+    return <Table striped bordered hover>
+  
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>PublishDate</th>
+          {loggedIn ? <th>CreationDate</th> : false}
+          {loggedIn ? <th>Status</th> : false}
+          {loggedIn ? <th>Edit</th> : false}
+        </tr>
+      </thead>
+      <tbody>
+        {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false}
+        {pages.map((e) => <MyRow pageData={e} key={e.id} />)}
+      </tbody>
+    </Table>;
+  }
+  
+
   export default MainPage
+  export {MainTable}

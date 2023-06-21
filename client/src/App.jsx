@@ -2,13 +2,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import { useState} from "react";
 import API from './API.jsx'
-import MainPage from "./Components/MainPage.jsx";
+import MainPage, { MainTable } from "./Components/MainPage.jsx";
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import pageManagementContext from "./Context/pageManagementContext.jsx";
 import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
-import authContext from './Context/authContext.jsx'
-import PageContainer from "./Components/PageContainer.jsx";
+import authContext from './Context/authContext.jsx';
 import PageEdit from "./Components/PageEdit.jsx";
 function App() {
   let [pages, setPages] = useState([]);
@@ -90,13 +89,13 @@ function App() {
                   <MainPage pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut}/>
                 </>
               }
-            ></Route>
+            >
+              <Route path="/" element={<MainTable pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
+              <Route path="/pages/:pageID"      element={<PageEdit editMode={false}/>}></Route>
+              <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}/>}></Route>
+            </Route>
             <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
-            <Route
-              path="/pages/:pageID"
-              element={<PageEdit editMode={false}/>}
-            ></Route>
-            <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}/>}></Route>
+            
           </Routes>
           </authContext.Provider>
         </pageManagementContext.Provider>

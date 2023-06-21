@@ -49,7 +49,6 @@ function PageContainer() {
 
     return (
         <>
-        <MyNav/>
         {content.length != 0?
       <Container>
           {content.map( e =><MyRow contentData={e} key={e.id}/>)}
