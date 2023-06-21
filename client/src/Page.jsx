@@ -31,7 +31,7 @@ function mapToComponent(e){
     return new Component(e.id,e.pageID,e.type,e.content ,e.position);
 }
 function mapFromComponent(e){
-    return {'id' : e.id , 'pageID' : e.pageID , 'type' : e.componentType, 'content' : e.componentData , 'position' : e.order}
+    return {'id' : e.id , 'pageID' : e.pageID , 'type' : e.componentType, 'content' : e.componentData , 'position' : e.position}
 }
 export default Page
 export {mapToPage , mapFromPage , mapToComponent , mapFromComponent , Component}

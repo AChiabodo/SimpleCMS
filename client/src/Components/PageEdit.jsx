@@ -125,25 +125,15 @@ function PageEdit(props) {
     const [nextPosition , setNextPosition] = useState(0);
     const [dirty, setDirty] = useState(false); // true if the page has been modified
     const {addPage, modifyPage, deletePage} = useContext(pageManagementContext);
-    
-    /*
-    useEffect(() => { 
-        API.getPageContent(pageID,loggedIn).then(
-            (Components) => {
-                setContent(() => Components);
-                setNextId(Math.max(...Components.map(component => component.id))+1);
-                setNextPosition(Math.max(...Components.map(component => component.position))+1);
-            }
-        ).catch(err => {console.log("GET err : " + err)});
-      }, [pageID,loggedIn,dirty]);
-    */
 
       useEffect(() => {
         if(!newPage){
         if(!loggedIn){
           API.getPage(pageID,false).then( (page) => {
             setTempPage(page);
-            setContent(page.components);
+            setContent(() => page.components);
+            setNextId(()=>Math.max(...content.map(component => component.id))+1);
+            setNextPosition(()=>Math.max(...content.map(component => component.position))+1);
             setDirty(false);
           } );
         }
@@ -151,23 +141,32 @@ function PageEdit(props) {
           API.getPage(pageID,true).then( (page) => {
             setTempPage(page);
             setContent(page.components);
+            setNextId(()=>Math.max(...content.map(component => component.id))+1);
+            setNextPosition(()=>Math.max(...content.map(component => component.position))+1);
             setDirty(false);
           } );
         }
+      }
+      else{
+        setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name});
+        setContent([]);
+        setDirty(false);
+        setNextId(0);
+        setNextPosition(0);
       } 
-      }, [dirty,loggedIn]);
-
-      
+      }, [dirty,loggedIn,newPage]);
 
       function addComponent(component) {
-        component = Object.assign({},component,{id : nextId , order : nextPosition});
-        setContent((component) => component.concat(Object.assign({}, component , {created : true})));
-        
+        component = Object.assign({},component,{id : nextId , position : nextPosition});
+        console.log(component);
+        setContent((content) => content.concat(Object.assign({}, component , {created : true})));
+        console.log(content);
         setNextId( (id) => id+1 );
         setNextPosition ( (position) => position + 1);
       }
     
       function modifyComponent(component) {
+        console.log(component);
         setContent((pages) => {
           const list = pages.map((item) => {
             if (item.id === component.id) {
@@ -179,6 +178,12 @@ function PageEdit(props) {
           return list;
         });
       }
+
+      function deleteComponent(component) {
+        setContent((pages) => pages.filter((item) => item.id !== component.id));
+      }
+
+      {/** 
       function deleteComponent(component) {
         setContent((pages) => {
           const list = pages.map((item) => {
@@ -190,7 +195,7 @@ function PageEdit(props) {
           });
           return list;
         });
-      }
+      }*/}
 
       function handleSubmit(){
         setTempPage((page) => Object.assign({},page,{components : content}));
@@ -219,8 +224,9 @@ function PageEdit(props) {
       }
 
       function handleOrder(component,order){
+        console.log(content);
         if(order < 0 || order >= content.length){
-          console.log(component);
+          
             return;
         }
         setContent((pages) => {
@@ -262,7 +268,7 @@ function PageEdit(props) {
             }))
         );
       }
-
+      console.log(loggedIn);
     return (
       <>
         <modalContext.Provider
@@ -285,7 +291,7 @@ function PageEdit(props) {
                 </Row>
                 </Card.Header>
                 <Card.Body>
-                <Row>{/** */}
+                <Row>
                 <Form>
                 <Col>
                 

@@ -16,12 +16,16 @@ function MyNav() {
     <Navbar bg="dark" variant="dark">
       <Container>
       <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>CMSmall</Navbar.Brand>
-      { loggedIn ? <><Button variant="outline-success" onClick={()=>navigate("/")}>
+      { loggedIn ? <><Button variant="outline-danger" onClick={()=>navigate("/")}>
           Front Page
         </Button>
         <Button variant="outline-warning" onClick={()=>navigate("/back")}>
           Back Office
-        </Button> </>: <></>}
+        </Button>
+        <Button variant="outline-success" onClick={()=>navigate("/pages/new")}>
+          New Page
+        </Button>
+         </>: <></>}
       <Nav className="me-auto">
         </Nav> 
         { loggedIn? <>
