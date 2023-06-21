@@ -27,14 +27,7 @@ export function EditModal(props) {
 
   const handleClose = () => setShowEdit(false);
   const handleShow = () => setShowEdit(true);
-  function handlePublishDate(event) {
-    setTempContent(
-      (tempContent) =>
-        (tempContent = Object.assign({}, tempContent, {
-          publishDate: dayjs(event.target.value),
-        }))
-    );
-  }
+
   function handleType(event) {
     setTempContent(
       (tempContent) =>
@@ -110,7 +103,6 @@ export function EditModal(props) {
         <Modal.Body>
           <Form>
             <Form.Group>
-              {/*Form type is a dropdown list that contains Image , Body and Header  */}
               <Form.Label>Type: </Form.Label>
               <Form.Select
                 value={tempContent.componentType}
@@ -119,18 +111,18 @@ export function EditModal(props) {
                 <option value="Body">Body</option>
                 <option value="Header">Header</option>
                 <option value="Image">Image</option>
-                
                 </Form.Select>
             </Form.Group>
             <Form.Group>
               <Form.Label>Content: </Form.Label>
-              {(tempContent.componentType !== "Image")?
+              {(tempContent.componentType === "Body") &&
               <Form.Control
                 as="textarea"
                 name="componentData"
                 value={tempContent.componentData}
                 onChange={handleData}/>
-              :
+              
+                || (tempContent.componentType === "Image") &&
                 <Form.Select
                 value={tempContent.componentData}
                 onChange={handleData}
@@ -139,6 +131,11 @@ export function EditModal(props) {
                 <option value="starwars.jpeg">Star Wars</option>
                   <option value="cane.jpeg">Cane</option>
                 </Form.Select>
+                || (tempContent.componentType === "Header") &&
+                <Form.Control
+                name="componentData"
+                value={tempContent.componentData}
+                onChange={handleData}/>
               }
               
             </Form.Group>

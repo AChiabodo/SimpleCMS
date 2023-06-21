@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect , useContext , useState } from "react";
 import {
-    Container , Row , Figure , Col, Button, ButtonToolbar
+    Container , Row , Figure , Col, Button, ButtonToolbar, Form
 } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
@@ -10,6 +10,8 @@ import { EditModal } from "./editModal";
 import PropTypes from 'prop-types';
 import modalContext from "../Context/modalContext";
 import pageManagementContext from "../Context/pageManagementContext";
+import Card from 'react-bootstrap/Card';
+import dayjs from "dayjs";
 
 MyRow.propTypes = {contentData : PropTypes.object.isRequired}
 function MyRow(props) {
@@ -112,17 +114,19 @@ function EditRow(props) {
     );
 }
 
-PageEdit.propTypes = {editMode : PropTypes.bool.isRequired}
+PageEdit.propTypes = {editMode : PropTypes.bool.isRequired , pages : PropTypes.array.isRequired}
 function PageEdit(props) {
-    const {editMode} = props;
+    const {editMode,newPage} = props;
     const {pageID} = useParams();
-    const {loggedIn} = useContext(authContext);
+    const {loggedIn,user} = useContext(authContext);
     const [content, setContent] = useState([]);
+    const [tempPage, setTempPage] = useState([]);
     const [nextId, setNextId] = useState(0);
     const [nextPosition , setNextPosition] = useState(0);
     const [dirty, setDirty] = useState(false); // true if the page has been modified
     const {addPage, modifyPage, deletePage} = useContext(pageManagementContext);
     
+    /*
     useEffect(() => { 
         API.getPageContent(pageID,loggedIn).then(
             (Components) => {
@@ -132,7 +136,29 @@ function PageEdit(props) {
             }
         ).catch(err => {console.log("GET err : " + err)});
       }, [pageID,loggedIn,dirty]);
-    
+    */
+
+      useEffect(() => {
+        if(!newPage){
+        if(!loggedIn){
+          API.getPage(pageID,false).then( (page) => {
+            setTempPage(page);
+            setContent(page.components);
+            setDirty(false);
+          } );
+        }
+        else{
+          API.getPage(pageID,true).then( (page) => {
+            setTempPage(page);
+            setContent(page.components);
+            setDirty(false);
+          } );
+        }
+      } 
+      }, [dirty,loggedIn]);
+
+      
+
       function addComponent(component) {
         component = Object.assign({},component,{id : nextId , order : nextPosition});
         setContent((component) => component.concat(Object.assign({}, component , {created : true})));
@@ -167,13 +193,34 @@ function PageEdit(props) {
       }
 
       function handleSubmit(){
-        API.updatePageContent(pageID,content).then(
-            setDirty(true)
-        ).catch(err => {console.log("PUT err : " + err)});
+        setTempPage((page) => Object.assign({},page,{components : content}));
+        if(tempPage.components.length < 2){
+          alert("You need at least 2 components to create a page");
+          return;
+        }
+        if(tempPage.title === ""){
+          alert("You need to set a title for the page");
+          return;
+        }
+        if(tempPage.author === ""){
+          alert("You need to set an author for the page");
+          return;
+        }
+        if(tempPage.components[0].type !== "Header"){
+          alert("The first component of a page must be a header");
+          return;
+        }
+        if(newPage){
+          addPage(tempPage);
+        }
+        else{
+          modifyPage(tempPage);
+        }
       }
 
       function handleOrder(component,order){
         if(order < 0 || order >= content.length){
+          console.log(component);
             return;
         }
         setContent((pages) => {
@@ -192,6 +239,30 @@ function PageEdit(props) {
       
       }
 
+      function handleAuthor(event){
+        setTempPage(
+          (tempPage) =>
+            (tempPage = Object.assign({}, tempPage, {
+              author: event.target.value,
+            })))
+      }
+      function handleTitle(event){
+        setTempPage(
+          (tempPage) =>
+            (tempPage = Object.assign({}, tempPage, {
+              title: event.target.value,
+            })));
+      }
+
+      function handlePublishDate(event) {
+        setTempPage(
+          (tempContent) =>
+            (tempContent = Object.assign({}, tempContent, {
+              publishDate: dayjs(event.target.value),
+            }))
+        );
+      }
+
     return (
       <>
         <modalContext.Provider
@@ -203,11 +274,63 @@ function PageEdit(props) {
         >
             {(loggedIn && editMode) ? 
             <Container flex='true'>
-            <ButtonToolbar style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button onClick={() => handleSubmit}>Confirm Changes</Button> 
-            <EditModal newMode={true}/>
-            <Button variant={'secondary'} onClick={() => handleSubmit}>Drop changes</Button>
-            </ButtonToolbar>
+              <Card>
+                <Card.Header>
+                <Row>
+                <ButtonToolbar style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button onClick={() => handleSubmit()}>Confirm Changes</Button>
+                  <EditModal newMode={true} />
+                  <Button variant={'secondary'} onClick={() => setDirty(true)}>Drop changes</Button>
+                </ButtonToolbar>
+                </Row>
+                </Card.Header>
+                <Card.Body>
+                <Row>{/** */}
+                <Form>
+                <Col>
+                
+                  <Form.Group>
+                    <Form.Label>Title: </Form.Label>
+                    <Form.Control
+                    type="text"
+                    name="title"
+                      value={tempPage.title}
+                      onChange={handleTitle}
+                    >
+                    </Form.Control>
+                  </Form.Group>
+                  </Col>
+                  <Col>
+                  
+                  <Form.Group>
+                    <Form.Label>Author: </Form.Label>
+                    <Form.Select
+                      value={tempPage.author}
+                      onChange={handleAuthor}
+                      disabled={true}
+                    >
+                      <option value={tempPage.author}>{tempPage.author}</option>
+                    </Form.Select>
+                  </Form.Group>
+                  </Col>
+                  <Col>
+                  
+                  <Form.Group>
+                    <Form.Label>Publish Date: </Form.Label>
+                    <Form.Control
+                    type="date"
+                      value={dayjs(tempPage.publishDate).format('YYYY-MM-DD')}
+                      onChange={handlePublishDate}
+                    >
+                    </Form.Control>
+                  </Form.Group>
+                  
+                  </Col>
+                  </Form>
+                </Row>
+                </Card.Body>
+              </Card>
+            
             
              {content
                   .sort((a,b) => a.position > b.position)

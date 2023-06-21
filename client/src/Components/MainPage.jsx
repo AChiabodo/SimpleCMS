@@ -2,21 +2,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Table , Spinner, Button
 } from "react-bootstrap";
-import { useContext} from "react";
+import { useContext, useEffect} from "react";
 import MyNav from "./MyNav.jsx";
 import authContext from "../Context/authContext.jsx";
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs'
 import { Outlet, useNavigate } from "react-router-dom";
+import API from "../API.jsx";
 
 MyRow.propTypes = {pageData: PropTypes.object.isRequired};
 
 export function MyRow(props) {
-    const { pageData } = props;
+    const { pageData , front } = props;
     const {loggedIn} = useContext(authContext);
     const navigate = useNavigate();
     let spinner , status;
-    console.log(pageData);
+
     if(pageData.dirty){spinner = <Spinner animation="grow" variant="warning" />}
     if(pageData.deleted){spinner = <Spinner animation="grow" variant="danger" />}
     if(pageData.created){spinner = <Spinner animation="grow" variant="success" />}
@@ -29,9 +30,9 @@ export function MyRow(props) {
               <td>{pageData.title}</td>
               <td>{pageData.author}</td>
               <td>{pageData.publishDate ? pageData.publishDate.format("YYYY-MM-DD") : ""}</td>
-              {loggedIn ? <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td> : false}
-              {loggedIn ? <td>{status}</td> : false}
-              {loggedIn ? <td>        <Button variant="white" onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
+              {loggedIn && !front ? <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td> : false}
+              {loggedIn && !front ? <td>{status}</td> : false}
+              {loggedIn && !front ? <td><Button variant="white" onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -57,24 +58,42 @@ function MainPage(){
   }
 
   function MainTable(props) {
-    let {loggedIn, pages} = props;
+    let {pages , front , setPages , setDirty , dirty} = props;
+    const {loggedIn , user} = useContext(authContext);
+
+    useEffect(() => {
+      if(!loggedIn || front){
+        API.getPages().then( (e) => {
+          setPages(e);
+          setDirty(false);
+        } );
+      }
+      else{
+        API.getPages(user).then( (e) => {
+          setPages(e);
+          setDirty(false);
+        } );
+      }
+    }, [dirty,loggedIn,front]);
+
     return <Table striped bordered hover>
-  
       <thead>
         <tr>
           <th scope="col">#</th>
           <th>Title</th>
           <th>Author</th>
           <th>PublishDate</th>
-          {loggedIn ? <th>CreationDate</th> : false}
-          {loggedIn ? <th>Status</th> : false}
-          {loggedIn ? <th>Edit</th> : false}
+          {loggedIn && !front ? <th>CreationDate</th> : false}
+          {loggedIn && !front ? <th>Status</th> : false}
+          {loggedIn && !front ? <th>Edit</th> : false}
         </tr>
       </thead>
       <tbody>
-        {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false}
-        {pages.map((e) => <MyRow pageData={e} key={e.id} />)}
+        {
+        pages.map((e) => <MyRow pageData={e} key={e.id} front={front}/>)
+        }
       </tbody>
+      {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false}
     </Table>;
   }
   

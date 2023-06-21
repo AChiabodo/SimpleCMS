@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "\\\\wsl.localhost\\Ubuntu-20.04\\home\\alessandro\\esame1-cmsmall-AChiabodo\\server\\CMSmall.db",
+            "name": "CMSmall"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

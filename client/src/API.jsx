@@ -44,6 +44,19 @@ const getPages = async (isAuthenticated) => {
     return json.map((page) => mapToPage(page));
   });
 };
+
+const getPage = async (idPage,isAuthenticated) => {
+  const reqObj = {method: 'GET',credentials: 'include'};
+  // page.watchDate could be null or a string in the format YYYY-MM-DD
+  return getJson(
+    isAuthenticated
+      ? fetch(URL + "/pages/" + idPage ,reqObj)
+      : fetch(URL + "/front/pages/" + idPage,reqObj)
+  ).then((json) => {
+    return mapToPage(json);
+  });
+};
+
 /**
  * 
  * @param {Object} page 
@@ -158,18 +171,5 @@ async function getUserInfo() {
   }
 }
 
-const getPageContent = async (pageId,isAuthenticated) => {
-  const reqObj = {method: 'GET',credentials: 'include'};
-  // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(
-    isAuthenticated
-      ? fetch(URL+`/pages/${pageId}` ,reqObj)
-      : fetch(URL+`/front/pages/${pageId}`,reqObj)
-  ).then((json) => {
-    console.log(json);
-    return json.map((page) => mapToComponent(page));
-  });
-};
-
-const API = {getPages , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getPageContent};
+const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut};
 export default API;

@@ -11,11 +11,11 @@ function Page(id,title,author,publishDate=null,creationDate,components=[]){
 }
     
 function mapToPage(e){
-    return new Page(e.id,e.title,e.author,e.publishDate ? dayjs(e.publishDate) : null,e.creationDate ? dayjs(e.creationDate) : null,e.compoments);
+    return new Page(e.id,e.title,e.author,e.publishDate ? dayjs(e.publishDate) : null,e.creationDate ? dayjs(e.creationDate) : null,e.contentBlocks?e.contentBlocks.map((component) => mapToComponent(component)):[]);
 }
 
 function mapFromPage(e){
-    return {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'compoments' : e.components}
+    return {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.components.map((component) => mapFromComponent(component))}
 }
 
 function Component(id,pageID,componentType,content,position){

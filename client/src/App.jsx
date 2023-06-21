@@ -16,23 +16,8 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    if(!loggedIn){
-      API.getPages().then( (e) => {
-        setPages(e);
-        setDirty(false);
-      } );
-    }
-    else{
-      API.getPages(user).then( (e) => {
-        setPages(e);
-        setDirty(false);
-      } );
-    }
-  }, [dirty,loggedIn]);
-
   function addPage(page) {
-    page = Object.assign({},page , {user : user?user.id:1});
+    page = Object.assign({},page , {user : user?user.id:1 , id : nextID , created : true});
     setPages((films) => films.concat(Object.assign({}, page , {created : true})));
     API.addPage(page).then(id =>{
       setNextId(id+1);
@@ -41,12 +26,11 @@ function App() {
   }
 
   function modifyPage(page) {
-    page = Object.assign({},page,{id:nextID++})
     setPages((pages) => {
       const list = pages.map((item) => {
         if (item.id === page.id) {
           //return new Answer(item.id, item.text,item.respondent,item.score+1,item.date);
-          return Object.assign({}, item, page , {dirty : true});
+          return Object.assign({}, item, page , {updated : true});
         } else {
           return item;
         }
@@ -80,15 +64,12 @@ function App() {
     setPages([]);
     setLoggedIn(false);
     setUser(undefined);
-    /* set state to empty if appropriate */
   }
   
-
   const loginSuccessful = (user) => {
     setUser(user);
-    console.log(user)
     setLoggedIn(true);
-    setDirty(true);  // load latest version of data, if appropriate
+    setDirty(true);
   }
   
   return (
@@ -104,11 +85,12 @@ function App() {
                 </>
               }
             >
-              <Route path="/" element={<MainTable       pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
-              <Route path="/back/" element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
-              <Route path="/pages/:pageID"      element={<PageEdit editMode={false}/>}></Route>
-              <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}/>}></Route>
-              <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
+              <Route path="/"                   element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={true}/>} />
+              <Route path="/back/"              element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false}/>} />
+              <Route path="/pages/:pageID"      element={<PageEdit editMode={false} pages={pages}/>}></Route>
+              <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}  pages={pages}/>}></Route>
+              <Route path="/pages/new" element={<PageEdit editMode={true} pages={pages} newPage={true}/>}></Route>
+              <Route path='/login'              element={loggedIn? <Navigate replace to='/back/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
             </Route>
             
             
