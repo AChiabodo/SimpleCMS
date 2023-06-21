@@ -83,8 +83,10 @@ app.use(passport.session());
 
 
 app.get('/api/front/pages', (req, res) => {
-  dao.listPagesPublished()
-    .then(pages => res.json(pages))
+  dao.listPages(true)
+    .then(pages => {
+      console.log(pages);
+      return res.json(pages)})
     .catch(() => res.status(500).end());
 });
 

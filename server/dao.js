@@ -3,45 +3,48 @@
 
 const sqlite = require('sqlite3');
 const dayjs = require('dayjs');
+const e = require('cors');
 
 // open the database
 const db = new sqlite.Database('CMSmall.db', (err) => {
   if (err) throw err;
 });
-
-// get all published pages
-exports.listPagesPublished = () => {
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE pages.publishDate <= date(\'now\') and users.id = pages.author ORDER BY publishDate DESC';
-    db.all(sql, [], (err, rows) => {
-      if (err) {
-        console.log(err);
-        reject(err);
-        return;
-      }
-      console.log(rows);
-      const page = rows.map((e) => ({ id: e.id, title: e.title, creationDate: dayjs(e.creationDate), publishDate: dayjs(e.publishDate), author: e.name }));
-      resolve(page);
-    });
-  });
-};
-
 //List all pages
-exports.listPages = () => {
+exports.listPages = (published) => {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE users.id = pages.author ORDER BY publishDate DESC';
+    let sql;
+    if (published) {
+      sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name , contentBlock.id as cid , contentBlock.Type as ctype , contentBlock.Position as cposition, contentBlock.Content as content FROM pages , users , contentBlock WHERE pages.publishDate <= date(\'now\') and users.id = pages.author and pages.id = contentBlock.page ORDER BY publishDate DESC';
+
+    } else {
+      sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name , contentBlock.id as cid , contentBlock.Type as ctype , contentBlock.Position as cposition, contentBlock.Content as content FROM pages , users , contentBlock WHERE users.id = pages.author and pages.id = contentBlock.page ORDER BY publishDate DESC';
+    }
     db.all(sql, [], (err, rows) => {
       if (err) {
         console.log(err);
         reject(err);
         return;
       }
-      console.log(rows);
-      const page = rows.map((e) => ({ id: e.id, title: e.title, creationDate: dayjs(e.creationDate), publishDate: dayjs(e.publishDate), author: e.name }));
+      const contents = rows.map((e) => ({ id: e.id, title: e.title, creationDate: dayjs(e.creationDate), publishDate: dayjs(e.publishDate), author: e.name, content_id: e.cid, type: e.ctype, position: e.cposition , content: e.content }))
+      const page = contents.reduce((acc, curr) => {
+        if (acc.some((x) => x.id === curr.id)) {
+          const index = acc.findIndex((x) => x.id === curr.id);
+          acc[index].content.push({ id: curr.content_id, type: curr.type, position: curr.position , content: curr.content });
+        } else {
+          acc.push({
+            id: curr.id,
+            title: curr.title,
+            creationDate: curr.creationDate,
+            publishDate: curr.publishDate,
+            content: []
+          });
+        }
+        return acc; // add this line to return the accumulator
+      }, []);
       resolve(page);
     });
-  });
-};
+  })
+}
 
 // get the page identified by {id}
 exports.getPage = (id , onlyPublished = false) => {
