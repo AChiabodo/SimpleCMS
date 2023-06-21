@@ -2,9 +2,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Table , Spinner, Button
 } from "react-bootstrap";
-import { useContext ,useEffect} from "react";
+import { useContext} from "react";
 import MyNav from "./MyNav.jsx";
-import API from '../API.jsx'
 import authContext from "../Context/authContext.jsx";
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs'
@@ -48,37 +47,10 @@ export function MyRow(props) {
     );
   }
 
-  MainPage.propTypes = {
-    pages: PropTypes.array.isRequired,
-    setPages : PropTypes.func.isRequired,
-    dirty : PropTypes.bool.isRequired,
-    setDirty : PropTypes.func.isRequired,
-    name : PropTypes.string,
-    doLogOut : PropTypes.func.isRequired
-  };
-
-function MainPage(props){
-    let {pages , setPages , dirty , setDirty , name , doLogOut} = props;
-    const {user , loggedIn} = useContext(authContext);
-    
-    useEffect(() => {
-      if(!loggedIn){
-        API.getPages().then( (e) => {
-          setPages(e);
-          setDirty(false);
-        } );
-      }
-      else{
-        API.getPages(user).then( (e) => {
-          setPages(e);
-          setDirty(false);
-        } );
-      }
-    }, [dirty,loggedIn]);    
-    
+function MainPage(){
     return (
       <>
-      <MyNav name={name} doLogOut={doLogOut}/>
+      <MyNav/>
       <Outlet></Outlet>
       </>
     )

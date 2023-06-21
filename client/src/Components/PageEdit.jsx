@@ -6,7 +6,6 @@ import {
 import { useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
 import API from "../API";
-import MyNav from "./MyNav";
 import { EditModal } from "./editModal";
 import PropTypes from 'prop-types';
 import modalContext from "../Context/modalContext";
@@ -128,17 +127,16 @@ function PageEdit(props) {
         API.getPageContent(pageID,loggedIn).then(
             (Components) => {
                 setContent(() => Components);
-                setNextId(Math.max(...Components.map(component => component.id))+1)
-                setNextPosition(Math.max(...Components.map(component => component.position))+1)
+                setNextId(Math.max(...Components.map(component => component.id))+1);
+                setNextPosition(Math.max(...Components.map(component => component.position))+1);
             }
         ).catch(err => {console.log("GET err : " + err)});
       }, [pageID,loggedIn,dirty]);
     
       function addComponent(component) {
         component = Object.assign({},component,{id : nextId , order : nextPosition});
-        setContent((films) => films.concat(Object.assign({}, component , {created : true})));
+        setContent((component) => component.concat(Object.assign({}, component , {created : true})));
         
-        console.log(content)
         setNextId( (id) => id+1 );
         setNextPosition ( (position) => position + 1);
       }
@@ -167,11 +165,13 @@ function PageEdit(props) {
           return list;
         });
       }
+
       function handleSubmit(){
         API.updatePageContent(pageID,content).then(
             setDirty(true)
         ).catch(err => {console.log("PUT err : " + err)});
       }
+
       function handleOrder(component,order){
         if(order < 0 || order >= content.length){
             return;

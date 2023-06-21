@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { useState} from "react";
+import { useEffect, useState} from "react";
 import API from './API.jsx'
 import MainPage, { MainTable } from "./Components/MainPage.jsx";
 import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
@@ -15,6 +15,21 @@ function App() {
   let [dirty, setDirty] = useState(false);
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if(!loggedIn){
+      API.getPages().then( (e) => {
+        setPages(e);
+        setDirty(false);
+      } );
+    }
+    else{
+      API.getPages(user).then( (e) => {
+        setPages(e);
+        setDirty(false);
+      } );
+    }
+  }, [dirty,loggedIn]);
 
   function addPage(page) {
     page = Object.assign({},page , {user : user?user.id:1});
@@ -83,18 +98,19 @@ function App() {
           <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn}}>
           <Routes>
             <Route
-              path="/"
-              element={
+              path="/" element={
                 <>
-                  <MainPage pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut}/>
+                  <MainPage/>
                 </>
               }
             >
-              <Route path="/" element={<MainTable pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
+              <Route path="/" element={<MainTable       pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
+              <Route path="/back/" element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} />} />
               <Route path="/pages/:pageID"      element={<PageEdit editMode={false}/>}></Route>
               <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}/>}></Route>
+              <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
             </Route>
-            <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
+            
             
           </Routes>
           </authContext.Provider>
