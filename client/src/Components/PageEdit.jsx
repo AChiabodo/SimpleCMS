@@ -128,18 +128,27 @@ function PageEdit(props) {
     const [images, setImages] = useState([]);
     const navigate = useNavigate();
       useEffect(() => {
-
         if(!newPage){
         if(!loggedIn){
           API.getPage(pageID,false).then( (page) => {
             setTempPage(() => page);
-            console.log(page);
+            
             setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(false);
           } ).catch( (error) => {
-            console.log(error);
-            
+            if(error.response.status === 401){
+              setErrorMessage("Unauthorized. Try to log in again");
+            }
+            else if(error.response.status === 403){
+              navigate("An error occured while loading the page");
+            }
+            else if(error.response.status === 404){
+              setErrorMessage("Page not found");
+            }
+            else{
+              setErrorMessage("An error occured while loading the page");
+            }
           } );
         }
         else{
@@ -150,7 +159,7 @@ function PageEdit(props) {
             setDirty(false);
           } );
         }
-        console.log(tempPage );
+        
       }
       else{
         setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name,publishDate : null});
@@ -188,7 +197,7 @@ function PageEdit(props) {
       }
     
       function modifyComponent(component) {
-        console.log(component);
+        
         let components = tempPage.components.map((item) => {
           if (item.id === component.id) {
             return Object.assign({}, item, component);
@@ -218,7 +227,7 @@ function PageEdit(props) {
           setErrorMessage("You need to set an author for the page");
           return;
         }
-        console.log(tempPage.components.filter(e => e.position == 0));
+        
         if(tempPage.components.filter(e => e.position == 0)[0].componentType !== "Header"){
           setErrorMessage("The first component of a page must be a header");
           return;
@@ -239,7 +248,7 @@ function PageEdit(props) {
         }
         let components = tempPage.components.map((item) => {
           if (item.id === component.id) {
-            console.log(item);  
+            
             return Object.assign({}, item, {position : order});
           } else {
             if(item.position === order && item.id !== component.id){
@@ -274,7 +283,7 @@ function PageEdit(props) {
             }))
         );
       }
-      console.log(loggedIn);
+      
     return (
       <>
         <modalContext.Provider

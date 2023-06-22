@@ -19,15 +19,15 @@ export function MyRow(props) {
     const {deletePage} = useContext(pageManagementContext);
     const navigate = useNavigate();
     let spinner , status;
-    console.log(user)
+    
     const editable = loggedIn && (user.role === "Admin" || user.name === pageData.author);
     const color = editable ? "danger" : "secondary";
     if(pageData.dirty){spinner = <Spinner animation="grow" variant="warning" />}
     if(pageData.deleted){spinner = <Spinner animation="grow" variant="danger" />}
     if(pageData.created){spinner = <Spinner animation="grow" variant="success" />}
-    if(loggedIn && dayjs(pageData.publishDate) > dayjs() ) {status = "editing"}
-    if(loggedIn && dayjs(pageData.publishDate) <= dayjs() ) {status = "published"}
-    if(loggedIn && !pageData.publishDate) {status = "drafted"}
+    if(dayjs(pageData.publishDate) > dayjs() ) {status = "editing"}
+    if(dayjs(pageData.publishDate) <= dayjs() ) {status = "published"}
+    if(!pageData.publishDate) {status = "drafted"}
     return (
       <tr>
               <td><Button onClick={() => navigate(`/pages/${pageData.id}`)}>{pageData.id}</Button></td>
@@ -35,7 +35,7 @@ export function MyRow(props) {
               <td>{pageData.author}</td>
               <td>{pageData.publishDate ? pageData.publishDate.format("YYYY-MM-DD") : ""}</td>
               <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td>
-              {loggedIn && !front ? <td>{status}</td> : false}
+              <td>{status}</td>
               {loggedIn && !front ? <td><Button variant="white" disabled={!editable} onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +102,7 @@ function MainPage(props){
           <th>Author</th>
           <th>PublishDate</th>
           <th>CreationDate</th>
-          {loggedIn && !front ? <th>Status</th> : false}
+          <th>Status</th>
           {loggedIn && !front ? <th>Actions</th> : false}
         </tr>
       </thead>

@@ -47,7 +47,7 @@ export function EditModal(props) {
     }
   }
   function handleData(event) {
-    console.log(event)
+    
     setTempContent(
       (tempContent) =>
         (tempContent = Object.assign({}, tempContent, {
@@ -60,7 +60,7 @@ export function EditModal(props) {
     const { content } = props;
     setTempContent((tempContent) => Object.assign(tempContent, content));
     handleShow();
-    console.log(content)
+    
   }
   function handleCreation() {
     setEditmode(false);
@@ -72,7 +72,7 @@ export function EditModal(props) {
     handleClose();
   }
   function handleSubmit() {
-    console.log(tempContent);
+    
     if (!tempContent.componentData || tempContent.componentData == "" || !tempContent.componentData.trim()) {
       setErrorMessage("Titolo non valido !");
       return;
