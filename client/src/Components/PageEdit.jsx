@@ -148,14 +148,6 @@ function PageEdit(props) {
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(false);
           } );
-          if(user.role === "Admin"){
-            API.getUsers().then( (users) => {
-              setUsers(users);
-            });
-          }
-          else{
-            setUsers([user]);
-          }
         }
         console.log(tempPage );
       }
@@ -166,7 +158,16 @@ function PageEdit(props) {
         setNextPosition(0);
       } 
       }, [dirty,loggedIn,newPage]);
-
+      useState(() => {
+        if(user.role === "Admin"){
+          API.getUsers().then( (users) => {
+            setUsers(users);
+          });
+        }
+        else{
+          setUsers([user]);
+        }
+      },[user]);
       function addComponent(component) {
         let components = tempPage.components;
         components.push(Object.assign({},component,{id : nextId , position : nextPosition , created : true}));
@@ -177,8 +178,7 @@ function PageEdit(props) {
     
       function modifyComponent(component) {
         console.log(component);
-        let components = tempPage.components;
-        components.map((item) => {
+        let components = tempPage.components.map((item) => {
           if (item.id === component.id) {
             return Object.assign({}, item, component);
           } else {
@@ -195,7 +195,6 @@ function PageEdit(props) {
       }
 
       function handleSubmit(){
-        console.log(tempPage);
         if(tempPage.components.length < 2){
           setErrorMessage("You need at least 2 components to create a page");
           return;
@@ -213,8 +212,10 @@ function PageEdit(props) {
           setErrorMessage("The first component of a page must be a header");
           return;
         }
+        setDirty(true);
         if(newPage){
           addPage(tempPage);
+          navigate("/back/");
         }
         else{
           modifyPage(tempPage);
@@ -272,7 +273,8 @@ function PageEdit(props) {
             deleteComponent
           }}
         >
-            {(Object.keys(tempPage).length !== 0 && loggedIn && editMode) && 
+          {(Object.keys(tempPage).length === 0 || dirty) && <Spinner animation="border" variant="primary" />}
+          {(Object.keys(tempPage).length !== 0 && loggedIn && editMode) && 
             <Container flex='true'>
               <Card>
                 <Card.Header>
@@ -345,7 +347,7 @@ function PageEdit(props) {
                   .sort((a,b) => a.position > b.position)
                   .map((e) => <MyRow contentData={e} key={e.id} />)} </Container>
             } 
-              {Object.keys(tempPage).length === 0 && <Spinner animation="border" variant="primary" />}
+              
         </modalContext.Provider>
       </>
     );

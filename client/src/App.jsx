@@ -10,9 +10,9 @@ import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx';
 import PageEdit from "./Components/PageEdit.jsx";
 function App() {
-  let [pages, setPages] = useState([]);
-  let [nextID, setNextId] = useState(0);
-  let [dirty, setDirty] = useState(false);
+  const [pages, setPages] = useState([]);
+  const [nextID, setNextId] = useState(0);
+  const [dirty, setDirty] = useState(false);
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,7 +56,7 @@ function App() {
     });
     API.deletePage(page).then(
       setDirty(true)
-    ).catch(err => {console.log("PUT err : " + err)})
+    ).catch(err => {setErrorMessage("Error deleting Page : " + err)})
   }
 
   const doLogOut = async () => {

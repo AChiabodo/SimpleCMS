@@ -113,7 +113,7 @@ function updatePage(page) {
 function deletePage(page) {
   // call  DELETE /api/pages/:id
   return new Promise((resolve, reject) => {
-    fetch(URL+`/pages/${page.id}`, {
+    fetch(URL+`/pages/${page}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
