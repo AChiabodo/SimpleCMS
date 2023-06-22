@@ -14,10 +14,10 @@ MyRow.propTypes = {pageData: PropTypes.object.isRequired};
 
 export function MyRow(props) {
     const { pageData , front } = props;
-    const {loggedIn} = useContext(authContext);
+    const {loggedIn,user} = useContext(authContext);
     const navigate = useNavigate();
     let spinner , status;
-
+    const editable = loggedIn && (user.role === "Admin" || user.name === pageData.author);
     if(pageData.dirty){spinner = <Spinner animation="grow" variant="warning" />}
     if(pageData.deleted){spinner = <Spinner animation="grow" variant="danger" />}
     if(pageData.created){spinner = <Spinner animation="grow" variant="success" />}
@@ -32,7 +32,7 @@ export function MyRow(props) {
               <td>{pageData.publishDate ? pageData.publishDate.format("YYYY-MM-DD") : ""}</td>
               {loggedIn && !front ? <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td> : false}
               {loggedIn && !front ? <td>{status}</td> : false}
-              {loggedIn && !front ? <td><Button variant="white" onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
+              {loggedIn && !front ? <td><Button variant="white" disabled={editable} onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

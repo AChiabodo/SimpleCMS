@@ -10,10 +10,10 @@ const db = new sqlite.Database('CMSmall.db', (err) => {
   if (err) throw err;
 });
 //List all pages
-exports.listPages = (published) => {
+exports.listPages = (onlyPublished = true) => {
   return new Promise((resolve, reject) => {
     let sql;
-    if (published) {
+    if (onlyPublished) {
       sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE pages.publishDate <= date(\'now\') and users.id = pages.author ORDER BY publishDate DESC';
     } else {
       sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE users.id = pages.author ORDER BY publishDate DESC';
@@ -141,8 +141,8 @@ exports.updatePage = (page, user) => {
 // delete an existing page
 exports.deletePage = (id, user) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM pages WHERE id = ? and author = ?';
-    db.run(sql, [id, user], function (err) {
+    const sql = 'DELETE FROM pages WHERE id = ?';
+    db.run(sql, [id], function (err) {
       if (err) {
         reject(err);
         return;

@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect , useContext , useState } from "react";
 import {
-    Container , Row , Figure , Col, Button, ButtonToolbar, Form
+    Container , Row , Figure , Col, Button, ButtonToolbar, Form, Alert
 } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
@@ -125,6 +125,7 @@ function PageEdit(props) {
     const [nextPosition , setNextPosition] = useState(0);
     const [dirty, setDirty] = useState(false); // true if the page has been modified
     const {addPage, modifyPage, deletePage} = useContext(pageManagementContext);
+    const [errorMessage, setErrorMessage] = useState("");
 
       useEffect(() => {
         if(!newPage){
@@ -148,7 +149,7 @@ function PageEdit(props) {
         }
       }
       else{
-        setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name});
+        setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name,publishDate : null});
         setContent([]);
         setDirty(false);
         setNextId(0);
@@ -157,10 +158,9 @@ function PageEdit(props) {
       }, [dirty,loggedIn,newPage]);
 
       function addComponent(component) {
-        component = Object.assign({},component,{id : nextId , position : nextPosition});
-        console.log(component);
-        setContent((content) => content.concat(Object.assign({}, component , {created : true})));
-        console.log(content);
+        component = Object.assign({},component,{id : nextId , position : nextPosition , created : true});
+        setContent((content) => content.concat(Object.assign({}, component)));
+        setTempPage((page) => Object.assign({},page,{components : page.components.concat(component)}));
         setNextId( (id) => id+1 );
         setNextPosition ( (position) => position + 1);
       }
@@ -199,20 +199,22 @@ function PageEdit(props) {
 
       function handleSubmit(){
         setTempPage((page) => Object.assign({},page,{components : content}));
+        console.log(tempPage.components);
         if(tempPage.components.length < 2){
-          alert("You need at least 2 components to create a page");
+          
+          setErrorMessage("You need at least 2 components to create a page");
           return;
         }
         if(tempPage.title === ""){
-          alert("You need to set a title for the page");
+          setErrorMessage("You need to set a title for the page");
           return;
         }
         if(tempPage.author === ""){
-          alert("You need to set an author for the page");
+          setErrorMessage("You need to set an author for the page");
           return;
         }
-        if(tempPage.components[0].type !== "Header"){
-          alert("The first component of a page must be a header");
+        if(tempPage.components.filter(e => e.position == 0)[0].componentType !== "Header"){
+          setErrorMessage("The first component of a page must be a header");
           return;
         }
         if(newPage){
@@ -335,6 +337,16 @@ function PageEdit(props) {
                   </Form>
                 </Row>
                 </Card.Body>
+                <Card.Footer>
+                {errorMessage != "" ? (
+            <Alert key={"danger"} variant={"danger"}>
+              {" "}
+              {errorMessage}{" "}
+            </Alert>
+          ) : (
+            false
+          )}
+                </Card.Footer>
               </Card>
             
             

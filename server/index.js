@@ -105,8 +105,7 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
 
 /*** Back-Office APIs ***/
 app.get('/api/pages', isLoggedIn, (req, res) => {
-  //console.log("User : " + req.user.id);
-  dao.listPages(req.params.id)
+  dao.listPages(false)
     .then(pages => res.json(pages))
     .catch(() => res.status(500).end());
 });
@@ -114,7 +113,8 @@ app.get('/api/pages', isLoggedIn, (req, res) => {
 // GET /api/pages/<id>
 app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
-    const result = await dao.getPage(req.params.idPage,req.user.id);
+    console.log("User : " + req.user.id);
+    const result = await dao.getPage(req.params.idPage,false);
     if (result.error)
       res.status(404).json(result);
     else
@@ -149,32 +149,31 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
 
 // Create a new page
 // POST /api/pages
-app.post('/api/pages', /*isLoggedIn,*/ [
+app.post('/api/pages', isLoggedIn, [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
-  check('author').isInt(),
-  check('publishDate').optional().isDate({ format: 'YYYY-MM-DD' }),
-  check('components').isLength({ min: 2 })
+  check('author').isAlpha(),
+  check('publishDate').optional(),
+  check('contentBlocks').isLength({ min: 2 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(errors);
     return res.status(422).json({ errors: errors });
   }
   
   const user = req.body.author; // needed to ensure db consistency of the author
-  
   const e = req.body;
-  const resultUser = await userDao.getUserById(user);  // needed to ensure db consistency
-  
+  const resultUser = await userDao.getUserByUsername(user);  // needed to ensure db consistency of the author
   if (resultUser.error)
     res.status(404).json(resultUser);   //the author is not a valid user
   else {
-    const page = {'id' : e.id , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'components' : e.components};
+    const page = {'id' : e.id , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
     let pageId;
     try {
       pageId = await dao.createPage(page);
       console.log(page);  
-      for (let component of page.components) {
+      for (let component of page.contentBlocks) {
         console.log(component);
         component.page = pageId;
         await dao.createComponent(component);
@@ -185,7 +184,7 @@ app.post('/api/pages', /*isLoggedIn,*/ [
       res.status(201).json(pageId);
     } catch (err) {
       if(pageId){await dao.deletePage(pageId, true)}
-      res.status(503).json({ error: `Database error during the creation of answer ${page.title} by user : ${page.user}.` });
+      res.status(503).json({ error: `Database error during the creation of page ${page.title} by user : ${page.user}.` });
     }
   }
 });
@@ -195,8 +194,8 @@ app.post('/api/pages', /*isLoggedIn,*/ [
 app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
-  check('author').isLength({ min: 1 }),
-  check('publishDate').optional().isDate({ format: 'YYYY-MM-DD' }),
+  check('author').isAlpha(),
+  check('publishDate').optional(),
   check('contentBlocks').isLength({ min: 2 })
 ], async (req, res) => {
   const errors = validationResult(req);

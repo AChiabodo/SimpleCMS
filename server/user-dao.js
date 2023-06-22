@@ -50,3 +50,20 @@ exports.getUser = (email, password) => {
     });
   };
   
+  exports.getUserByUsername = (name) => {
+    return new Promise((resolve, reject) => {
+      const sql = 'SELECT * FROM users WHERE name = ?';
+        db.get(sql, [name], (err, row) => {
+          if (err) 
+            reject(err);
+          else if (row === undefined)
+            resolve({error: 'User not found.'});
+          else {
+            // by default, the local strategy looks for "username": not to create confusion in server.js, we can create an object with that property
+            const user = {id: row.id, username: row.email, name: row.name}
+            resolve(user);
+          }
+      });
+    });
+  };
+  
