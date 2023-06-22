@@ -10,6 +10,7 @@ const session = require('express-session'); // enable sessions
 const userDao = require('./user-dao'); // module for accessing the user info in the DB
 const cors = require('cors');
 const dayjs = require('dayjs');
+const time_sleep = 200;
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -82,12 +83,15 @@ app.use(passport.session());
 /*** Front-Office APIs ***/
 
 
-app.get('/api/front/pages', (req, res) => {
-  dao.listPages(true)
-    .then(pages => {
-      console.log(pages);
-      return res.json(pages)})
-    .catch(() => res.status(500).end());
+app.get('/api/front/pages', async (req, res) => {
+  try {
+    await delay(time_sleep);
+    const pages = await dao.listPages(true);
+    res.json(pages);
+  } catch (err) {
+    console.log(err);
+    res.status(500).end();
+  }
 });
 
 
@@ -104,22 +108,32 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
 });
 
 /*** Back-Office APIs ***/
-app.get('/api/pages', isLoggedIn, (req, res) => {
-  dao.listPages(false)
-    .then(pages => res.json(pages))
-    .catch(() => res.status(500).end());
+app.get('/api/pages', isLoggedIn, async (req, res) => {
+  try {
+    await delay(time_sleep);
+    const pages = await dao.listPages(false);
+    res.json(pages);
+  } catch (err) {
+    console.log(err);
+    res.status(500).end();
+  }
 });
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+} 
 
 // GET /api/pages/<id>
 app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
-    console.log("User : " + req.user.id);
+    await delay(time_sleep);
     const result = await dao.getPage(req.params.idPage,false);
     if (result.error)
       res.status(404).json(result);
     else
       res.json(result);
   } catch (err) {
+    console.log(err);
     res.status(500).end();
   }
 });
@@ -127,6 +141,10 @@ app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
 // GET /api/users
 app.get('/api/users', isLoggedIn, async (req, res) => {
   try {
+    if (req.user.role != 'Admin'){
+      console.log(req.user); 
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
     const users = await dao.listUsers();
     res.json(users);
   } catch (err) {
@@ -137,6 +155,8 @@ app.get('/api/users', isLoggedIn, async (req, res) => {
 // GET /api/users/<id>
 app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   try {
+    if (req.user.id != req.params.id && req.user.role != 'Admin')
+      return res.status(401).json({ error: 'Not authenticated' });
     const result = await userDao.getUser(req.params.id);
     if (result.error)
       res.status(404).json(result);
@@ -165,6 +185,9 @@ app.post('/api/pages', isLoggedIn, [
   const user = req.body.author; // needed to ensure db consistency of the author
   const e = req.body;
   const resultUser = await userDao.getUserByUsername(user);  // needed to ensure db consistency of the author
+  if(req.user.id != resultUser.id && req.user.role != 'Admin'){
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
   if (resultUser.error)
     res.status(404).json(resultUser);   //the author is not a valid user
   else {
@@ -208,11 +231,15 @@ app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
   const user = req.body.author; // needed to ensure db consistency of the author
   const pageID = req.params.pageID;
   const e = req.body;
-  const resultUser = await userDao.getUser(user);  // needed to ensure db consistency
+  const resultUser = await userDao.getUserByUsername(user);  // needed to ensure db consistency
   if(pageID != e.id){
     return res.status(422).json({ errors: "The id of the page cannot be changed" });
   }
-
+  if(req.user.id != resultUser.id && req.user.role != 'Admin'){
+    console.log(req.user);
+    console.log(resultUser.id); 
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
   if (resultUser.error)
     return res.status(404).json(resultUser);   //the author is not a valid user
   else {

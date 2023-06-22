@@ -6,7 +6,6 @@ import {
   Form,
   Alert,
 } from "react-bootstrap";
-import dayjs from "dayjs";
 import {Component} from "../Page";
 import modalContext from "../Context/modalContext";
 import PropTypes from 'prop-types';
@@ -21,7 +20,7 @@ export function EditModal(props) {
   let {addComponent, modifyComponent, deleteComponent} = useContext(modalContext);
   const [editmode, setEditmode] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   const [showEdit, setShowEdit] = useState(false);
   const [tempContent, setTempContent] = useState(new Component("", ""));
 
@@ -29,12 +28,23 @@ export function EditModal(props) {
   const handleShow = () => setShowEdit(true);
 
   function handleType(event) {
-    setTempContent(
-      (tempContent) =>
-        (tempContent = Object.assign({}, tempContent, {
-          componentType: event.target.value,
-        }))
-    );
+    if (event.target.value == "Image") {
+      setTempContent(
+        (tempContent) =>
+          (tempContent = Object.assign({}, tempContent, {
+            componentData: "faro.jpeg",
+            componentType: event.target.value,
+          }))
+      );
+    }
+    else{
+      setTempContent(
+        (tempContent) =>
+          (tempContent = Object.assign({}, tempContent, {
+            componentType: event.target.value,
+          }))
+      );
+    }
   }
   function handleData(event) {
     console.log(event)
@@ -50,6 +60,7 @@ export function EditModal(props) {
     const { content } = props;
     setTempContent((tempContent) => Object.assign(tempContent, content));
     handleShow();
+    console.log(content)
   }
   function handleCreation() {
     setEditmode(false);
@@ -61,6 +72,7 @@ export function EditModal(props) {
     handleClose();
   }
   function handleSubmit() {
+    console.log(tempContent);
     if (!tempContent.componentData || tempContent.componentData == "" || !tempContent.componentData.trim()) {
       setErrorMessage("Titolo non valido !");
       return;

@@ -12,6 +12,10 @@ import authContext from "../Context/authContext";
 function MyNav() {
   let {user , loggedIn , doLogOut} = useContext(authContext);
   const navigate = useNavigate();
+  function handleLogout() {
+    doLogOut();
+    navigate('/');
+  }
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
@@ -29,7 +33,7 @@ function MyNav() {
       <Nav className="me-auto">
         </Nav> 
         { loggedIn? <>
-                    <Button className='mx-2' variant='danger' onClick={doLogOut}>Logout</Button>
+                    <Button className='mx-2' variant='danger' onClick={() => handleLogout()}>Logout</Button>
                     </> : 
                     <Button className='mx-2' variant='warning' onClick={()=> navigate('/login')}>Login</Button> }
                 

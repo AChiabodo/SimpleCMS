@@ -1,9 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { useEffect, useState} from "react";
+import {useState} from "react";
 import API from './API.jsx'
 import MainPage, { MainTable } from "./Components/MainPage.jsx";
-import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate} from "react-router-dom";
 import pageManagementContext from "./Context/pageManagementContext.jsx";
 import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
@@ -15,7 +15,7 @@ function App() {
   let [dirty, setDirty] = useState(false);
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState("");
   function addPage(page) {
     page = Object.assign({},page , {user : user?user.id:1 , id : nextID , created : true});
     setPages((films) => films.concat(Object.assign({}, page , {created : true})));
@@ -75,13 +75,15 @@ function App() {
   return (
     <BrowserRouter>
     <Container fluid>
-        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage}}>
+        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage , setErrorMessage : (message) => {
+          setErrorMessage(message);
+          console.log(errorMessage)}}}>
           <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn}}>
           <Routes>
             <Route
               path="/" element={
                 <>
-                  <MainPage/>
+                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage}/>
                 </>
               }
             >
@@ -89,7 +91,7 @@ function App() {
               <Route path="/back/"              element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false}/>} />
               <Route path="/pages/:pageID"      element={<PageEdit editMode={false} pages={pages}/>}></Route>
               <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}  pages={pages}/>}></Route>
-              <Route path="/pages/new" element={<PageEdit editMode={true} pages={pages} newPage={true}/>}></Route>
+              <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageEdit editMode={true} pages={pages} newPage={true}/>}></Route>
               <Route path='/login'              element={loggedIn? <Navigate replace to='/back/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
             </Route>
             

@@ -1,8 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  Table , Spinner, Button
+  Table , Spinner, Button, Modal
 } from "react-bootstrap";
-import { useContext, useEffect} from "react";
+import { useContext, useEffect, useState} from "react";
 import MyNav from "./MyNav.jsx";
 import authContext from "../Context/authContext.jsx";
 import PropTypes from 'prop-types';
@@ -17,6 +17,7 @@ export function MyRow(props) {
     const {loggedIn,user} = useContext(authContext);
     const navigate = useNavigate();
     let spinner , status;
+    console.log(user)
     const editable = loggedIn && (user.role === "Admin" || user.name === pageData.author);
     if(pageData.dirty){spinner = <Spinner animation="grow" variant="warning" />}
     if(pageData.deleted){spinner = <Spinner animation="grow" variant="danger" />}
@@ -30,9 +31,9 @@ export function MyRow(props) {
               <td>{pageData.title}</td>
               <td>{pageData.author}</td>
               <td>{pageData.publishDate ? pageData.publishDate.format("YYYY-MM-DD") : ""}</td>
-              {loggedIn && !front ? <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td> : false}
+              <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td>
               {loggedIn && !front ? <td>{status}</td> : false}
-              {loggedIn && !front ? <td><Button variant="white" disabled={editable} onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
+              {loggedIn && !front ? <td><Button variant="white" disabled={!editable} onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -48,11 +49,19 @@ export function MyRow(props) {
     );
   }
 
-function MainPage(){
+function MainPage(props){
+  const {errorMessage,setErrorMessage} = props;
+  const handleClose = () => setErrorMessage(null);
     return (
       <>
       <MyNav/>
       <Outlet></Outlet>
+      {errorMessage ?       <Modal show={true} onHide={handleClose} size={"m"} centered={true}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error</Modal.Title>
+        </Modal.Header> 
+        <Modal.Body>{errorMessage}</Modal.Body>
+        </Modal> : false}
       </>
     )
   }
@@ -62,6 +71,7 @@ function MainPage(){
     const {loggedIn , user} = useContext(authContext);
 
     useEffect(() => {
+      setPages([]);
       if(!loggedIn || front){
         API.getPages().then( (e) => {
           setPages(e);
@@ -83,7 +93,7 @@ function MainPage(){
           <th>Title</th>
           <th>Author</th>
           <th>PublishDate</th>
-          {loggedIn && !front ? <th>CreationDate</th> : false}
+          <th>CreationDate</th>
           {loggedIn && !front ? <th>Status</th> : false}
           {loggedIn && !front ? <th>Edit</th> : false}
         </tr>

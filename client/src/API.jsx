@@ -171,5 +171,17 @@ async function getUserInfo() {
   }
 }
 
-const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut};
+async function getUsers(){
+  const response = await fetch(URL+'/users', {
+    credentials: 'include'
+  });
+  const users = await response.json();
+  if (response.ok) {
+    return users;
+  } else {
+    throw users;  // an object with the error coming from the server
+  }
+}
+
+const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers};
 export default API;

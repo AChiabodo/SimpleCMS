@@ -1,9 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect , useContext , useState } from "react";
 import {
-    Container , Row , Figure , Col, Button, ButtonToolbar, Form, Alert
+    Container , Row , Figure , Col, Button, ButtonToolbar, Form, Alert, Spinner
 } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
 import API from "../API";
 import { EditModal } from "./editModal";
@@ -119,38 +119,48 @@ function PageEdit(props) {
     const {editMode,newPage} = props;
     const {pageID} = useParams();
     const {loggedIn,user} = useContext(authContext);
-    const [content, setContent] = useState([]);
-    const [tempPage, setTempPage] = useState([]);
+    const [tempPage, setTempPage] = useState({});
     const [nextId, setNextId] = useState(0);
     const [nextPosition , setNextPosition] = useState(0);
     const [dirty, setDirty] = useState(false); // true if the page has been modified
-    const {addPage, modifyPage, deletePage} = useContext(pageManagementContext);
-    const [errorMessage, setErrorMessage] = useState("");
-
+    const {addPage, modifyPage, deletePage, setErrorMessage} = useContext(pageManagementContext);
+    const [users, setUsers] = useState([]);
+    const navigate = useNavigate();
       useEffect(() => {
+
         if(!newPage){
         if(!loggedIn){
           API.getPage(pageID,false).then( (page) => {
-            setTempPage(page);
-            setContent(() => page.components);
-            setNextId(()=>Math.max(...content.map(component => component.id))+1);
-            setNextPosition(()=>Math.max(...content.map(component => component.position))+1);
+            setTempPage(() => page);
+            console.log(page);
+            setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
+            setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(false);
+          } ).catch( (error) => {
+            console.log(error);
+            
           } );
         }
         else{
           API.getPage(pageID,true).then( (page) => {
             setTempPage(page);
-            setContent(page.components);
-            setNextId(()=>Math.max(...content.map(component => component.id))+1);
-            setNextPosition(()=>Math.max(...content.map(component => component.position))+1);
+            setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
+            setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(false);
           } );
+          if(user.role === "Admin"){
+            API.getUsers().then( (users) => {
+              setUsers(users);
+            });
+          }
+          else{
+            setUsers([user]);
+          }
         }
+        console.log(tempPage );
       }
       else{
         setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name,publishDate : null});
-        setContent([]);
         setDirty(false);
         setNextId(0);
         setNextPosition(0);
@@ -158,50 +168,35 @@ function PageEdit(props) {
       }, [dirty,loggedIn,newPage]);
 
       function addComponent(component) {
-        component = Object.assign({},component,{id : nextId , position : nextPosition , created : true});
-        setContent((content) => content.concat(Object.assign({}, component)));
-        setTempPage((page) => Object.assign({},page,{components : page.components.concat(component)}));
+        let components = tempPage.components;
+        components.push(Object.assign({},component,{id : nextId , position : nextPosition , created : true}));
+        setTempPage((page) => Object.assign({},page,{components : components}));
         setNextId( (id) => id+1 );
         setNextPosition ( (position) => position + 1);
       }
     
       function modifyComponent(component) {
         console.log(component);
-        setContent((pages) => {
-          const list = pages.map((item) => {
-            if (item.id === component.id) {
-              return Object.assign({}, item, component);
-            } else {
-              return item;
-            }
-          });
-          return list;
+        let components = tempPage.components;
+        components.map((item) => {
+          if (item.id === component.id) {
+            return Object.assign({}, item, component);
+          } else {
+            return item;
+          }
         });
+        setTempPage((page) => Object.assign({},page,{components : components}));
       }
 
       function deleteComponent(component) {
-        setContent((pages) => pages.filter((item) => item.id !== component.id));
+        let components = tempPage.components;
+        components = components.filter((item) => item.id !== component.id);
+        setTempPage((page) => Object.assign({},page,{components : page.components.filter((item) => item.id !== component.id)}));
       }
-
-      {/** 
-      function deleteComponent(component) {
-        setContent((pages) => {
-          const list = pages.map((item) => {
-            if (item.id === component.id) {
-              return Object.assign({}, item, {deleted : true});
-            } else {
-              return item;
-            }
-          });
-          return list;
-        });
-      }*/}
 
       function handleSubmit(){
-        setTempPage((page) => Object.assign({},page,{components : content}));
-        console.log(tempPage.components);
+        console.log(tempPage);
         if(tempPage.components.length < 2){
-          
           setErrorMessage("You need at least 2 components to create a page");
           return;
         }
@@ -213,7 +208,9 @@ function PageEdit(props) {
           setErrorMessage("You need to set an author for the page");
           return;
         }
+        console.log(tempPage.components.filter(e => e.position == 0));
         if(tempPage.components.filter(e => e.position == 0)[0].componentType !== "Header"){
+          
           setErrorMessage("The first component of a page must be a header");
           return;
         }
@@ -226,25 +223,21 @@ function PageEdit(props) {
       }
 
       function handleOrder(component,order){
-        console.log(content);
-        if(order < 0 || order >= content.length){
-          
+        if(order < 0 || order >= tempPage.components.length){
             return;
         }
-        setContent((pages) => {
-          const list = pages.map((item) => {
-            if (item.id === component.id) {
-              return Object.assign({}, item, {position : order});
-            } else {
-              if(item.position === order && item.id !== component.id){
-                return Object.assign({}, item, {position : component.position});
-              }
-              return item;
+        let components = tempPage.components.map((item) => {
+          if (item.id === component.id) {
+            console.log(item);  
+            return Object.assign({}, item, {position : order});
+          } else {
+            if(item.position === order && item.id !== component.id){
+              return Object.assign({}, item, {position : component.position});
             }
-          });
-          return list;
+            return item;
+          }
         });
-      
+        setTempPage((page) => Object.assign({},page,{components : components}));
       }
 
       function handleAuthor(event){
@@ -280,7 +273,7 @@ function PageEdit(props) {
             deleteComponent
           }}
         >
-            {(loggedIn && editMode) ? 
+            {(Object.keys(tempPage).length !== 0 && loggedIn && editMode) && 
             <Container flex='true'>
               <Card>
                 <Card.Header>
@@ -315,9 +308,9 @@ function PageEdit(props) {
                     <Form.Select
                       value={tempPage.author}
                       onChange={handleAuthor}
-                      disabled={true}
+                      disabled={user.role !== "Admin"}
                     >
-                      <option value={tempPage.author}>{tempPage.author}</option>
+                      {users.map((e) => <option value={e.name} key={e.id}>{e.name}</option>)}
                     </Form.Select>
                   </Form.Group>
                   </Col>
@@ -337,32 +330,23 @@ function PageEdit(props) {
                   </Form>
                 </Row>
                 </Card.Body>
-                <Card.Footer>
-                {errorMessage != "" ? (
-            <Alert key={"danger"} variant={"danger"}>
-              {" "}
-              {errorMessage}{" "}
-            </Alert>
-          ) : (
-            false
-          )}
-                </Card.Footer>
               </Card>
             
             
-             {content
+             {tempPage.components
                   .sort((a,b) => a.position > b.position)
-                  .filter((e) => !e.deleted)
                   .map((e) => <EditRow contentData={e} key={e.id} handleOrder={handleOrder}/>)}
                   
         </Container>
             
-              : <Container>{content
+             } 
+             {
+              (Object.keys(tempPage).length !== 0 && !(loggedIn && editMode) ) &&
+              <Container>{tempPage.components
                   .sort((a,b) => a.position > b.position)
-                  .filter((e) => !e.deleted)
                   .map((e) => <MyRow contentData={e} key={e.id} />)} </Container>
-              }
-
+            } 
+              {Object.keys(tempPage).length === 0 && <Spinner animation="border" variant="primary" />}
         </modalContext.Provider>
       </>
     );
