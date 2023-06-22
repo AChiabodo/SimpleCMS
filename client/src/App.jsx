@@ -80,18 +80,23 @@ function App() {
     setDirty(true);
   }
   
+  const updateSiteName = (name) => {
+    API.updateNameSite(name).then(
+      setNameSite(name)
+    ).catch(err => {setErrorMessage("Error updating name site : " + err)})
+  }
+
   return (
     <BrowserRouter>
     <Container fluid>
-        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage , setErrorMessage : (message) => {
-          setErrorMessage(message);
-          console.log(errorMessage)}}}>
+        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage, setErrorMessage : (message) => {
+          setErrorMessage(message);}}}>
           <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn , nameSite}}>
           <Routes>
             <Route
               path="/" element={
                 <>
-                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage}/>
+                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage} updateSiteName={updateSiteName}/>
                 </>
               }
             >

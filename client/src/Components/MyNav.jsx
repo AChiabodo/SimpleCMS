@@ -20,6 +20,7 @@ function MyNav() {
     <Navbar bg="dark" variant="dark">
       <Container>
       <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand>
+
       { loggedIn ? <Nav justify={true}><Button variant="outline-danger" onClick={()=>navigate("/")}>
           Front Page
         </Button>
