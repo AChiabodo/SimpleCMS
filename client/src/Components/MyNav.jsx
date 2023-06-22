@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import authContext from "../Context/authContext";
 
 function MyNav() {
-  let {user , loggedIn , doLogOut} = useContext(authContext);
+  let {user , loggedIn , doLogOut , nameSite} = useContext(authContext);
   const navigate = useNavigate();
   function handleLogout() {
     doLogOut();
@@ -19,7 +19,7 @@ function MyNav() {
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
-      <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>CMSmall</Navbar.Brand>
+      <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand>
       { loggedIn ? <><Button variant="outline-danger" onClick={()=>navigate("/")}>
           Front Page
         </Button>

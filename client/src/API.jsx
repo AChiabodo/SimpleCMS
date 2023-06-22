@@ -195,5 +195,17 @@ async function getImages(){
   }
 }
 
-const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers , getImages};
+async function getNameSite(){
+  const response = await fetch(URL+'/front/name', {
+    credentials: 'include'
+  });
+  const nameSite = await response.json();
+  if (response.ok) {
+    return nameSite;
+  } else {
+    throw nameSite;  // an object with the error coming from the server
+  }
+}
+
+const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers , getImages , getNameSite};
 export default API;

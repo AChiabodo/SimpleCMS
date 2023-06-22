@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import API from './API.jsx'
 import MainPage, { MainTable } from "./Components/MainPage.jsx";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate} from "react-router-dom";
@@ -9,6 +9,7 @@ import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx';
 import PageEdit from "./Components/PageEdit.jsx";
+
 function App() {
   const [pages, setPages] = useState([]);
   const [nextID, setNextId] = useState(0);
@@ -16,6 +17,7 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [nameSite , setNameSite] = useState("CMSmall");
   function addPage(page) {
     page = Object.assign({},page , {user : user?user.id:1 , id : nextID , created : true});
     setPages((films) => films.concat(Object.assign({}, page , {created : true})));
@@ -25,6 +27,12 @@ function App() {
     }).catch(err => {console.log("POST err : " + err)})
   }
 
+  useEffect(() => {
+    API.getNameSite().then( (e) => {
+      setNameSite(e);
+    } );
+  }, [nameSite]);
+  
   function modifyPage(page) {
     setPages((pages) => {
       const list = pages.map((item) => {
@@ -78,7 +86,7 @@ function App() {
         <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage , setErrorMessage : (message) => {
           setErrorMessage(message);
           console.log(errorMessage)}}}>
-          <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn}}>
+          <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn , nameSite}}>
           <Routes>
             <Route
               path="/" element={

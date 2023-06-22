@@ -185,3 +185,29 @@ exports.listImages = () => {
     });
   });
 }
+
+exports.updateNameSite = (name) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'UPDATE site SET name = ?';
+    db.run(sql, [name], function (err) {
+      if (err) {
+        reject(err);
+        return;
+      } else
+        resolve(this.changes);  // return the number of affected rows
+    });
+  });
+}
+
+exports.getNameSite = () => {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT name FROM site';
+    db.get(sql, (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(row.name);
+    });
+  });
+}

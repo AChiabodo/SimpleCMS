@@ -108,6 +108,16 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
   }
 });
 
+app.get('/api/front/name', async (req, res) => {
+  try {
+    const name = await dao.getNameSite();
+    res.json(name);
+  }
+  catch (err) {
+    res.status(500).end();
+  }
+});
+
 /*** Back-Office APIs ***/
 // GET /api/pages
 app.get('/api/pages', isLoggedIn, async (req, res) => {
@@ -271,6 +281,19 @@ app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
       if(pageId){await dao.deletePage(pageId, true)}
       res.status(503).json({ error: `Database error during the update of page ${page.title} by user : ${page.user}.` });
     }
+  }
+});
+
+// PUT /api/namesite
+app.put('/api/namesite', isLoggedIn, async (req, res) => {
+  try {
+    if(req.user.role != 'Admin'){
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    await dao.updateNameSite(req.body.name);
+    res.status(201).json();
+  } catch (err) {
+    res.status(503).json({ error: `Database error during the update of name site.` });
   }
 });
 
