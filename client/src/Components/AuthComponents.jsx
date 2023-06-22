@@ -1,8 +1,9 @@
 import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../API';
 import PropTypes from 'prop-types';
+import pageManagementContext from '../Context/pageManagementContext';
 
 LoginForm.propTypes = {
   loginSuccessful: PropTypes.func.isRequired,
@@ -12,7 +13,7 @@ function LoginForm(props) {
   const {loginSuccessful} = props;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('') ;
+  const {setErrorMessage} = useContext(pageManagementContext);
 
   const navigate = useNavigate();
 
@@ -43,7 +44,7 @@ function LoginForm(props) {
         doLogIn(credentials);
       } else {
         // TODO: show a better error message...
-        setErrorMessage('Error(s) in the form, please fix it/them.')
+        setErrorMessage('Missing fields in the form, please fill all the fields.')
       }
   };
 
@@ -54,7 +55,6 @@ function LoginForm(props) {
               <Col xs={6}>
                   <h2>Login</h2>
                   <Form onSubmit={handleSubmit}>
-                      {errorMessage ? <Alert variant='danger' dismissible onClick={()=>setErrorMessage('')}>{errorMessage}</Alert> : ''}
                       <Form.Group controlId='username'>
                           <Form.Label>Email</Form.Label>
                           <Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} />

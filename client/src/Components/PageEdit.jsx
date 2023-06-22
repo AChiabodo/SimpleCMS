@@ -210,7 +210,6 @@ function PageEdit(props) {
         }
         console.log(tempPage.components.filter(e => e.position == 0));
         if(tempPage.components.filter(e => e.position == 0)[0].componentType !== "Header"){
-          
           setErrorMessage("The first component of a page must be a header");
           return;
         }

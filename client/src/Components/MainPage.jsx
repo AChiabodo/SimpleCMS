@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  Table , Spinner, Button, Modal
+  Table , Spinner, Button, Modal, Alert
 } from "react-bootstrap";
 import { useContext, useEffect, useState} from "react";
 import MyNav from "./MyNav.jsx";
@@ -60,7 +60,7 @@ function MainPage(props){
         <Modal.Header closeButton>
           <Modal.Title>Error</Modal.Title>
         </Modal.Header> 
-        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Body><Alert variant='danger' onClick={()=>setErrorMessage('')}>{errorMessage}</Alert></Modal.Body>
         </Modal> : false}
       </>
     )
