@@ -123,8 +123,9 @@ function PageEdit(props) {
     const [nextId, setNextId] = useState(0);
     const [nextPosition , setNextPosition] = useState(0);
     const [dirty, setDirty] = useState(false); // true if the page has been modified
-    const {addPage, modifyPage, deletePage, setErrorMessage} = useContext(pageManagementContext);
+    const {addPage, modifyPage, setErrorMessage} = useContext(pageManagementContext);
     const [users, setUsers] = useState([]);
+    const [images, setImages] = useState([]);
     const navigate = useNavigate();
       useEffect(() => {
 
@@ -158,16 +159,26 @@ function PageEdit(props) {
         setNextPosition(0);
       } 
       }, [dirty,loggedIn,newPage]);
+
       useState(() => {
-        if(user.role === "Admin"){
-          API.getUsers().then( (users) => {
-            setUsers(users);
+        if(loggedIn){
+          API.getImages().then( (images) => {
+            setImages(images);
           });
+          if(user.role === "Admin"){
+            API.getUsers().then( (users) => {
+              setUsers(users);
+            });
+          }
+          else{
+            setUsers([user]);
+          }
         }
         else{
-          setUsers([user]);
+          setImages([]);
         }
-      },[user]);
+      },[user,loggedIn]);
+
       function addComponent(component) {
         let components = tempPage.components;
         components.push(Object.assign({},component,{id : nextId , position : nextPosition , created : true}));
@@ -270,7 +281,8 @@ function PageEdit(props) {
           value={{
             addComponent,
             modifyComponent,
-            deleteComponent
+            deleteComponent,
+            images,
           }}
         >
           {(Object.keys(tempPage).length === 0 || dirty) && <Spinner animation="border" variant="primary" />}

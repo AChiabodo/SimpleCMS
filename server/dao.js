@@ -141,7 +141,7 @@ exports.updatePage = (page, user) => {
 // delete an existing page
 exports.deletePage = (id, user) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM pages WHERE id = ?';
+    const sql = 'DELETE FROM pages WHERE id = ? and user = ?';
     db.run(sql, [id], function (err) {
       if (err) {
         reject(err);
@@ -161,6 +161,27 @@ exports.deleteComponents = (page) => {
         return;
       } else
         resolve(this.changes);  // return the number of affected rows
+    });
+  });
+}
+
+exports.listImages = () => {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM images';
+    db.all(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      const images = rows.map((e) => (
+        {
+          id: e.id,
+          name: e.name,
+          path: e.path,
+        }));
+
+      resolve(images);
     });
   });
 }

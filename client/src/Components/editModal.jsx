@@ -17,7 +17,7 @@ EditModal.propTypes = {
 
 export function EditModal(props) {
   let { newMode } = props;
-  let {addComponent, modifyComponent, deleteComponent} = useContext(modalContext);
+  let {addComponent, modifyComponent, deleteComponent , images} = useContext(modalContext);
   const [editmode, setEditmode] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -139,9 +139,7 @@ export function EditModal(props) {
                 value={tempContent.componentData}
                 onChange={handleData}
                 >
-                <option value="faro.jpeg">Faro</option>
-                <option value="starwars.jpeg">Star Wars</option>
-                  <option value="cane.jpeg">Cane</option>
+                  {images.map((image) => <option value={image.path} key={image.id}>{image.name}</option>)}
                 </Form.Select>
                 || (tempContent.componentType === "Header") &&
                 <Form.Control

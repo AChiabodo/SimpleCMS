@@ -11,6 +11,7 @@ const userDao = require('./user-dao'); // module for accessing the user info in 
 const cors = require('cors');
 const dayjs = require('dayjs');
 const time_sleep = 200;
+
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -54,10 +55,6 @@ const corsOptions = {
   credentials: true,
 };
 
-const debugCorsOptions = {
-  origin: '*'
-};
-
 app.use(cors(corsOptions));
 
 // custom middleware: check if a given request is coming from an authenticated user
@@ -66,6 +63,10 @@ const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated())
     return next();
   return res.status(401).json({ error: 'Not authenticated' });
+}
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
 
 // set up the session
@@ -82,7 +83,7 @@ app.use(passport.session());
 
 /*** Front-Office APIs ***/
 
-
+// GET /api/front/pages
 app.get('/api/front/pages', async (req, res) => {
   try {
     await delay(time_sleep);
@@ -94,7 +95,7 @@ app.get('/api/front/pages', async (req, res) => {
   }
 });
 
-
+// GET /api/front/pages/<id>
 app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
     const result = await dao.getPage(req.params.idPage,true);
@@ -108,6 +109,7 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
 });
 
 /*** Back-Office APIs ***/
+// GET /api/pages
 app.get('/api/pages', isLoggedIn, async (req, res) => {
   try {
     await delay(time_sleep);
@@ -119,9 +121,7 @@ app.get('/api/pages', isLoggedIn, async (req, res) => {
   }
 });
 
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
-} 
+
 
 // GET /api/pages/<id>
 app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
@@ -162,6 +162,15 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
       res.status(404).json(result);
     else
       res.json(result);
+  } catch (err) {
+    res.status(500).end();
+  }
+});
+
+app.get('/api/images', isLoggedIn, async (req, res) => {
+  try {
+    const images = await dao.listImages();
+    res.json(images);
   } catch (err) {
     res.status(500).end();
   }
