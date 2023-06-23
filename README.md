@@ -1,5 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/suhcjUE-)
-# Exam #12345: "Exam Title"
+# Exam #1: "CMSmall"
 ## Student: s309234 CHIABODO ALESSANDRO 
 
 ## React Client Application Routes
@@ -98,12 +98,16 @@
 - `MyNav` (in `MyNav.js`) : Componente per la navbar con logica per gestire login / logout e passaggio tra Front Office e Back Office
 ## Screenshot
 
-![Screenshot](./img/screenshot.jpg)
+![Screenshot](./img/backOffice.png)
+![Screenshot](./img/frontOffice.png)
+![Screenshot](./img/page.png)
+![Screenshot](./img/pageEdit.png)
 
 ## Users Credentials
 
-- mario.rossi@polito.it   -   password - Role : Regular
-- user.admin@polito.it    -   password - Role : Admin
-- luigi.pallini@polito.it -   password - Role : Regular
-- 
+- user-email                    - passwords - Role
+- mario.rossi@polito.it         - password  - Regular
+- user.admin@polito.it          - password  - Admin
+- luigi.pallini@polito.it       - password  - Regular
+- alessandro.chiabodo@polito.it - password  - Regular
 
