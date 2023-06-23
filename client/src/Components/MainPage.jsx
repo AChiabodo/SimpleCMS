@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  Table , Spinner, Button, Modal, Alert
+  Table , Spinner, Button, Modal, Alert, Form
 } from "react-bootstrap";
 import { useContext, useEffect, useState} from "react";
 import MyNav from "./MyNav.jsx";
@@ -75,7 +75,8 @@ function MainPage(props){
   }
 
   function MainTable(props) {
-    let {pages , front , setPages , setDirty , dirty} = props;
+    let {pages , front , setPages , setDirty , dirty , updateSiteName} = props;
+    const [nameSite,setNameSite] = useState("");
     const {loggedIn , user} = useContext(authContext);
     
     useEffect(() => {
@@ -94,7 +95,15 @@ function MainPage(props){
       }
     }, [dirty,loggedIn,front]);
 
-    return <Table striped bordered hover>
+    function handleSubmit(event){
+      event.preventDefault();
+      updateSiteName(nameSite);
+    }
+    function handleNameSite(e){
+      setNameSite(() => e.target.value)
+    }
+    return <>
+    <Table striped bordered hover>
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -111,8 +120,17 @@ function MainPage(props){
         pages.map((e) => <MyRow pageData={e} key={e.id} front={front}/>)
         }
       </tbody>
-      {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false}
-    </Table>;
+    </Table>
+    {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false} 
+    {loggedIn && user.role == "Admin" && !front ? 
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formBasicEmail">
+        <Form.Label>Change Name Site</Form.Label>
+        <Form.Control type="text" placeholder="Enter name site" onChange={handleNameSite} value={nameSite}/>
+      </Form.Group>
+      <Button type="Submit">Change Name</Button>
+    </Form> : false}
+    </>
   }
   
 

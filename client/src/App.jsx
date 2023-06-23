@@ -81,6 +81,7 @@ function App() {
   }
   
   const updateSiteName = (name) => {
+    setNameSite("");
     API.updateNameSite(name).then(
       setNameSite(name)
     ).catch(err => {setErrorMessage("Error updating name site : " + err)})
@@ -96,12 +97,12 @@ function App() {
             <Route
               path="/" element={
                 <>
-                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage} updateSiteName={updateSiteName}/>
+                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage}/>
                 </>
               }
             >
               <Route path="/"                   element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={true}/>} />
-              <Route path="/back/"              element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false}/>} />
+              <Route path="/back/"              element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false} updateSiteName={updateSiteName}/>} />
               <Route path="/pages/:pageID"      element={<PageEdit editMode={false} pages={pages}/>}></Route>
               <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}  pages={pages}/>}></Route>
               <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageEdit editMode={true} pages={pages} newPage={true}/>}></Route>

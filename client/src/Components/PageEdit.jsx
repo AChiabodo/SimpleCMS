@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect , useContext , useState } from "react";
 import {
-    Container , Row , Figure , Col, Button, ButtonToolbar, Form, Alert, Spinner
+    Container , Row , Figure , Col, Button, ButtonToolbar, Form, Spinner
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import authContext from "../Context/authContext";
@@ -114,7 +114,7 @@ function EditRow(props) {
     );
 }
 
-PageEdit.propTypes = {editMode : PropTypes.bool.isRequired , pages : PropTypes.array.isRequired}
+PageEdit.propTypes = {editMode : PropTypes.bool.isRequired , newPage : PropTypes.bool.isRequired}
 function PageEdit(props) {
     const {editMode,newPage} = props;
     const {pageID} = useParams();
@@ -141,7 +141,7 @@ function PageEdit(props) {
               setErrorMessage("Unauthorized. Try to log in again");
             }
             else if(error.response.status === 403){
-              navigate("An error occured while loading the page");
+              setErrorMessage("An error occured while loading the page");
             }
             else if(error.response.status === 404){
               setErrorMessage("Page not found");
@@ -209,8 +209,6 @@ function PageEdit(props) {
       }
 
       function deleteComponent(component) {
-        let components = tempPage.components;
-        components = components.filter((item) => item.id !== component.id);
         setTempPage((page) => Object.assign({},page,{components : page.components.filter((item) => item.id !== component.id)}));
       }
 

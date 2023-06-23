@@ -125,16 +125,29 @@ exports.createComponent = (component) => {
 // update an existing answer
 exports.updatePage = (page, user) => {
   return new Promise((resolve, reject) => {
-    console.log(page);
-    const sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ? and author = ?';
-    db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user], function (err) {
-      if (err) {
-        console.log(err)
-        reject(err);
-        return;
-      } else
-        resolve(this.changes);  // return the number of affected rows
-    });
+    let sql;
+    if (user.role == 'Admin') { // if the user is an admin, he can update any page
+      sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ?';
+      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id], function (err) {
+        if (err) {
+          console.log(err)
+          reject(err);
+          return;
+        } else
+          resolve(this.changes);  // return the number of affected rows
+      });
+    }
+    else{
+      sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ? and author = ?';
+      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user], function (err) {
+        if (err) {
+          console.log(err)
+          reject(err);
+          return;
+        } else
+          resolve(this.changes);  // return the number of affected rows
+      });
+    } 
   });
 }
 

@@ -4,6 +4,7 @@ import {
   Button,
   Nav,
   Navbar,
+  Spinner,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -19,8 +20,9 @@ function MyNav() {
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
-      <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand>
-
+      {nameSite !== "" ? 
+        <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand> : 
+        <Spinner animation="border" variant="light" />}
       { loggedIn ? <Nav justify={true}><Button variant="outline-danger" onClick={()=>navigate("/")}>
           Front Page
         </Button>

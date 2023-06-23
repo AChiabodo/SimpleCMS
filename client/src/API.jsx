@@ -207,5 +207,22 @@ async function getNameSite(){
   }
 }
 
-const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers , getImages , getNameSite};
+async function updateNameSite(name){
+  const response = await fetch(URL+'/namesite', {
+    method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name" : name}),
+  });
+  const nameSite = await response.json();
+  if (response.ok) {
+    return nameSite;
+  } else {
+    throw nameSite;  // an object with the error coming from the server
+  }
+}
+
+const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers , getImages , getNameSite , updateNameSite};
 export default API;

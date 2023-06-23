@@ -138,7 +138,7 @@ app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
     await delay(time_sleep);
     const result = await dao.getPage(req.params.idPage,false);
-    if (result.error)
+    if (!result || result.error)
       res.status(404).json(result);
     else
       res.json(result);
@@ -233,7 +233,7 @@ app.post('/api/pages', isLoggedIn, [
 
 // Update an existing page
 // PUT /api/pages
-app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
+app.put('/api/pages/:pageID', isLoggedIn, [
   check('title').isLength({ min: 1 }),
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
   check('author').isAlpha(),
@@ -247,10 +247,10 @@ app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
   }
   //const oldPage = await dao.getPage(req.body.id);
 
-  const user = req.body.author; // needed to ensure db consistency of the author
+  const author = req.body.author; // needed to ensure db consistency of the author
   const pageID = req.params.pageID;
   const e = req.body;
-  const resultUser = await userDao.getUserByUsername(user);  // needed to ensure db consistency
+  const resultUser = await userDao.getUserByUsername(author);  // needed to ensure db consistency
   if(pageID != e.id){
     return res.status(422).json({ errors: "The id of the page cannot be changed" });
   }
@@ -263,13 +263,13 @@ app.put('/api/pages/:pageID', /*isLoggedIn,*/ [
     return res.status(404).json(resultUser);   //the author is not a valid user
   else {
 
-    const page = {'id' : pageID , 'title' : e.title , 'author' : e.author, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
+    const page = {'id' : pageID , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
     let pageId;
     try {
-      await dao.updatePage(page , user); //TODO: check if user is the author of the page
+      console.log(page);
+      await dao.updatePage(page , req.user);
       await dao.deleteComponents(page.id); //Clean the components of the page  
       for (let component of page.contentBlocks) {
-        console.log(component);
         component.page = page.id;
         await dao.createComponent(component);
       }
@@ -290,8 +290,12 @@ app.put('/api/namesite', isLoggedIn, async (req, res) => {
     if(req.user.role != 'Admin'){
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    await dao.updateNameSite(req.body.name);
-    res.status(201).json();
+    if(!req.body.name){
+      return res.status(422).json({ errors: "The name of the site cannot be empty" });
+    }
+    const name = req.body.name;
+    await dao.updateNameSite(name);
+    res.status(201).json(name);
   } catch (err) {
     res.status(503).json({ error: `Database error during the update of name site.` });
   }
