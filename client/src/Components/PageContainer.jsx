@@ -13,7 +13,6 @@ import pageManagementContext from "../Context/pageManagementContext";
 import Card from 'react-bootstrap/Card';
 import dayjs from "dayjs";
 
-
 function MyRow(props) {
   let component;
   const { contentData } = props;
@@ -198,7 +197,6 @@ function PageContainer(props) {
       }
 
       function handleSubmit(){
-        console.log(tempPage);
         if(tempPage.components.length < 2){
           setErrorMessage("You need at least 2 components to create a page");
           return;

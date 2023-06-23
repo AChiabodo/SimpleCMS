@@ -11,7 +11,6 @@ function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
     httpResponsePromise
       .then((response) => {
-        console.log(response);
         if (response.ok) {
           // the server always returns a JSON, even empty {}. Never null or non json, otherwise the method will fail
           response

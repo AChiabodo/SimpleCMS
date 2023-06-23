@@ -127,7 +127,6 @@ exports.createPage = (page) => {
 };
 
 exports.createComponent = (component) => {
-  console.log(component)
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO contentBlock(page, Type,  Content, Position) VALUES(?, ?, ?, ?)';
     db.run(sql, [component.page, component.type, component.content, component.position], function (err) {
