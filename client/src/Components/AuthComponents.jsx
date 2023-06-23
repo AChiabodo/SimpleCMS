@@ -2,12 +2,7 @@ import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../API';
-import PropTypes from 'prop-types';
 import pageManagementContext from '../Context/pageManagementContext';
-
-LoginForm.propTypes = {
-  loginSuccessful: PropTypes.func.isRequired,
-};
 
 function LoginForm(props) {
   const {loginSuccessful} = props;

@@ -2,7 +2,7 @@
  * All the API calls
  */
 
-import { mapFromComponent, mapFromPage, mapToComponent, mapToPage } from "./Page";
+import { mapFromPage, mapToPage } from "./Page";
 
 const URL = 'http://localhost:3001/api';
 

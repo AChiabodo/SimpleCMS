@@ -6,13 +6,10 @@ import {
 import { useContext, useEffect, useState} from "react";
 import MyNav from "./MyNav.jsx";
 import authContext from "../Context/authContext.jsx";
-import PropTypes from 'prop-types';
 import dayjs from 'dayjs'
 import { Outlet, useNavigate } from "react-router-dom";
 import API from "../API.jsx";
 import pageManagementContext from "../Context/pageManagementContext.jsx";
-
-MyRow.propTypes = {pageData: PropTypes.object.isRequired};
 
 export function MyRow(props) {
     const { pageData , front } = props;
