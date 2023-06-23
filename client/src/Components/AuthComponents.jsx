@@ -11,21 +11,25 @@ LoginForm.propTypes = {
 
 function LoginForm(props) {
   const {loginSuccessful} = props;
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('mario.rossi@polito.it');
+  const [password, setPassword] = useState('password');
+  const [loading, setLoading] = useState(false);
   const {setErrorMessage} = useContext(pageManagementContext);
 
   const navigate = useNavigate();
 
   const doLogIn = (credentials) => {
+    setLoading(() => true );
     API.logIn(credentials)
       .then( user => {
         setErrorMessage('');
         loginSuccessful(user);
+        setLoading(() => false );
       })
       .catch(() => {
         // NB: Generic error message, should not give additional info (e.g., if user exists etc.)
         setErrorMessage('Wrong username or password');
+        setLoading(() => false );
       })
   }
   
@@ -63,9 +67,10 @@ function LoginForm(props) {
                           <Form.Label>Password</Form.Label>
                           <Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} />
                       </Form.Group>
-                      <Button className='my-2' type='submit'>Login</Button>
+                      {!loading ? <Button className='my-2' type='submit'>Login</Button> : <Button className='my-2' disabled={true} type='submit'>Login</Button>}
                       <Button className='my-2 mx-2' variant='danger' onClick={()=>navigate('/')}>Cancel</Button>
                   </Form>
+                  {loading && <Alert variant='secondary'>Loading...</Alert>}
               </Col>
               <Col xs={3}></Col>
           </Row>

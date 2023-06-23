@@ -8,7 +8,7 @@ import pageManagementContext from "./Context/pageManagementContext.jsx";
 import { Container } from "react-bootstrap";
 import { LoginForm } from "./Components/AuthComponents.jsx";
 import authContext from './Context/authContext.jsx';
-import PageEdit from "./Components/PageEdit.jsx";
+import PageContainer from "./Components/PageContainer.jsx";
 
 function App() {
   const [pages, setPages] = useState([]);
@@ -17,14 +17,17 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [nameSite , setNameSite] = useState("CMSmall");
+
   function addPage(page) {
     page = Object.assign({},page , {user : user?user.id:1 , id : nextID , created : true});
     setPages((films) => films.concat(Object.assign({}, page , {created : true})));
     API.addPage(page).then(id =>{
+      setSuccessMessage("Page added successfully")
       setNextId(id+1);
       setDirty(true);
-    }).catch(err => {console.log("POST err : " + err)})
+    }).catch(err => {setErrorMessage(err.error)})
   }
 
   useEffect(() => {
@@ -37,7 +40,6 @@ function App() {
     setPages((pages) => {
       const list = pages.map((item) => {
         if (item.id === page.id) {
-          //return new Answer(item.id, item.text,item.respondent,item.score+1,item.date);
           return Object.assign({}, item, page , {updated : true});
         } else {
           return item;
@@ -45,16 +47,17 @@ function App() {
       });
       return list;
     });
-    API.updatePage(page).then(
+    API.updatePage(page).then( () =>{
+      setSuccessMessage("Page updated successfully")
       setDirty(true)
-    ).catch(err => {console.log("PUT err : " + err)})
+    }
+    ).catch(err => setErrorMessage(err.error))
   }
 
   function deletePage(page) {
     setPages((pages) => {
       const list = pages.map((item) => {
         if (item.id === page.id) {
-          //return new Answer(item.id, item.text,item.respondent,item.score+1,item.date);
           return Object.assign({}, item, page , {deleted : true});
         } else {
           return item;
@@ -62,16 +65,18 @@ function App() {
       });
       return list;
     });
-    API.deletePage(page).then(
+    API.deletePage(page).then(() => {
+      setSuccessMessage("Page deleted successfully")
       setDirty(true)
+    }
     ).catch(err => {setErrorMessage("Error deleting Page : " + err)})
   }
 
   const doLogOut = async () => {
     await API.logOut();
-    setPages([]);
-    setLoggedIn(false);
-    setUser(undefined);
+    setPages(() => []);
+    setLoggedIn(() => false);
+    setUser(() => undefined);
   }
   
   const loginSuccessful = (user) => {
@@ -82,34 +87,34 @@ function App() {
   
   const updateSiteName = (name) => {
     setNameSite("");
-    API.updateNameSite(name).then(
-      setNameSite(name)
-    ).catch(err => {setErrorMessage("Error updating name site : " + err)})
+    API.updateNameSite(name).then( (name) =>{
+      setSuccessMessage("Site name updated successfully")
+      setNameSite(name);
+    }
+    ).catch(err => {setErrorMessage("Error updating name site : " + err.error)})
   }
 
   return (
     <BrowserRouter>
     <Container fluid>
-        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage, setErrorMessage : (message) => {
-          setErrorMessage(message);}}}>
+        <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage, setErrorMessage : (message) =>setErrorMessage(message) , setSuccessMessage : (message) => setSuccessMessage(message)}}>
           <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn , nameSite}}>
           <Routes>
             <Route
               path="/" element={
                 <>
-                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage}/>
+                  <MainPage errorMessage = {errorMessage} setErrorMessage={setErrorMessage} successMessage={successMessage} setSuccessMessage={setSuccessMessage}/>
                 </>
               }
             >
               <Route path="/"                   element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={true}/>} />
-              <Route path="/back/"              element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false} updateSiteName={updateSiteName}/>} />
-              <Route path="/pages/:pageID"      element={<PageEdit editMode={false} pages={pages}/>}></Route>
-              <Route path="/pages/:pageID/edit" element={<PageEdit editMode={true}  pages={pages}/>}></Route>
-              <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageEdit editMode={true} pages={pages} newPage={true}/>}></Route>
+              <Route path="/back/"              element={!loggedIn? <Navigate replace to='/' /> : <MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false} updateSiteName={updateSiteName}/>} />
+              <Route path="/pages/:pageID"      element={<PageContainer editMode={false} pages={pages}/>}></Route>
+              <Route path="/pages/:pageID/edit" element={<PageContainer editMode={true}  pages={pages}/>}></Route>
+              <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageContainer editMode={true} pages={pages} newPage={true}/>}></Route>
               <Route path='/login'              element={loggedIn? <Navigate replace to='/back/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
-            </Route>
-            
-            
+              <Route path="*" element={<h1>Not Found</h1>} />
+            </Route>       
           </Routes>
           </authContext.Provider>
         </pageManagementContext.Provider>

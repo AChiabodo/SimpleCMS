@@ -13,14 +13,14 @@ import pageManagementContext from "../Context/pageManagementContext";
 import Card from 'react-bootstrap/Card';
 import dayjs from "dayjs";
 
-MyRow.propTypes = {contentData : PropTypes.object.isRequired}
+
 function MyRow(props) {
   let component;
   const { contentData } = props;
   switch (contentData.componentType) {
     case "Header":
       component = (
-        <h1 style={{ textAlign: "center" }}>{contentData.componentData}</h1>
+        <h2 style={{ textAlign: "center" }}>{contentData.componentData}</h2>
       );
       break;
     case "Image":
@@ -46,7 +46,7 @@ function MyRow(props) {
   return component;
 }
 
-EditRow.propTypes = {contentData : PropTypes.object.isRequired , handleOrder : PropTypes.func.isRequired}
+
 function EditRow(props) {
     const {contentData , handleOrder} = props;
     let component;
@@ -114,8 +114,7 @@ function EditRow(props) {
     );
 }
 
-PageEdit.propTypes = {editMode : PropTypes.bool.isRequired , newPage : PropTypes.bool.isRequired}
-function PageEdit(props) {
+function PageContainer(props) {
     const {editMode,newPage} = props;
     const {pageID} = useParams();
     const {loggedIn,user} = useContext(authContext);
@@ -127,15 +126,15 @@ function PageEdit(props) {
     const [users, setUsers] = useState([]);
     const [images, setImages] = useState([]);
     const navigate = useNavigate();
-      useEffect(() => {
+
+    useEffect(() => {
         if(!newPage){
         if(!loggedIn){
           API.getPage(pageID,false).then( (page) => {
             setTempPage(() => page);
-            
             setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
-            setDirty(false);
+            setDirty(()=>false);
           } ).catch( (error) => {
             if(error.response.status === 401){
               setErrorMessage("Unauthorized. Try to log in again");
@@ -153,13 +152,12 @@ function PageEdit(props) {
         }
         else{
           API.getPage(pageID,true).then( (page) => {
-            setTempPage(page);
+            setTempPage(() => page);
             setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
-            setDirty(false);
+            setDirty(()=>false);
           } );
         }
-        
       }
       else{
         setTempPage({title : "",creationDate : dayjs(),components : [],author : user.name,publishDate : null});
@@ -209,10 +207,22 @@ function PageEdit(props) {
       }
 
       function deleteComponent(component) {
-        setTempPage((page) => Object.assign({},page,{components : page.components.filter((item) => item.id !== component.id)}));
+        const position = component.position;
+        setTempPage((page) => Object.assign({},page,{components : page.components
+            .filter((item) => item.id !== component.id)
+            .map((item) => {
+              if(item.position > position){
+                return Object.assign({},item,{position : item.position - 1});
+              }
+              else{
+                return item;
+              }
+            }) 
+          }));
       }
 
       function handleSubmit(){
+        console.log(tempPage);
         if(tempPage.components.length < 2){
           setErrorMessage("You need at least 2 components to create a page");
           return;
@@ -226,17 +236,21 @@ function PageEdit(props) {
           return;
         }
         
-        if(tempPage.components.filter(e => e.position == 0)[0].componentType !== "Header"){
-          setErrorMessage("The first component of a page must be a header");
+        if(!tempPage.components.filter(e => e.componentType == "Header").lenght < 1){
+          setErrorMessage("You need at least one header in the page");
           return;
         }
-        setDirty(true);
+        if(!tempPage.components.filter(e => e.componentType != "Header").lenght < 1){
+          setErrorMessage("You need at least one component in the page");
+          return;
+        }
         if(newPage){
           addPage(tempPage);
           navigate("/back/");
         }
         else{
           modifyPage(tempPage);
+          setDirty(() => true);
         }
       }
 
@@ -362,13 +376,26 @@ function PageEdit(props) {
              } 
              {
               (Object.keys(tempPage).length !== 0 && !(loggedIn && editMode) ) &&
-              <Container>{tempPage.components
+              <Container>
+                <Card>
+                <Card.Header>
+                <Row ><h1 style={{ display: "flex", justifyContent: "center" }}>{tempPage.title}</h1></Row>
+                </Card.Header>
+                <Card.Body><Row>
+                <Col><h5>Author     : {tempPage.author}</h5></Col>
+                <Col><h5>Published  : {tempPage.publishDate? tempPage.publishDate.format("YYYY-MM-DD") : "drafted"}</h5></Col>
+                <Col><h5>Created  : {tempPage.creationDate.format("YYYY-MM-DD")}</h5></Col>
+                
+                  </Row></Card.Body>
+                </Card>
+                {tempPage.components
                   .sort((a,b) => a.position > b.position)
-                  .map((e) => <MyRow contentData={e} key={e.id} />)} </Container>
+                  .map((e) => <MyRow contentData={e} key={e.id} />)} 
+              </Container>
             } 
               
         </modalContext.Provider>
       </>
     );
   }
- export default PageEdit;
+ export default PageContainer;

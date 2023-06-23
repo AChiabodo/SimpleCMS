@@ -10,7 +10,7 @@ const session = require('express-session'); // enable sessions
 const userDao = require('./user-dao'); // module for accessing the user info in the DB
 const cors = require('cors');
 const dayjs = require('dayjs');
-const time_sleep = 200;
+const time_sleep = 1000;
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -50,6 +50,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use('/public', express.static('public'));
 
+
+// set-up the CORS middleware
 const corsOptions = {
   origin: 'http://localhost:5173',
   credentials: true,
@@ -99,12 +101,14 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
     await delay(time_sleep);
     const result = await dao.getPage(req.params.idPage,true);
+    console.log(result);
     if (result.error)
       res.status(404).json(result);
     else
       res.json(result);
   } catch (err) {
-    res.status(500).end();
+    console.log(err); 
+    return res.status(500).end();
   }
 });
 
@@ -143,8 +147,11 @@ app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
     else
       res.json(result);
   } catch (err) {
-    console.log(err);
-    res.status(500).end();
+    const find = await dao.findPage(req.params.idPage);
+    if(!find){
+      return res.status(404).json({error: 'Page not found'});
+    }
+    return res.status(500).end();
   }
 });
 
@@ -153,7 +160,6 @@ app.get('/api/users', isLoggedIn, async (req, res) => {
   try {
     await delay(time_sleep);
     if (req.user.role != 'Admin'){
-      console.log(req.user); 
       return res.status(401).json({ error: 'Not authorized' });
     }
     const users = await dao.listUsers();
@@ -217,10 +223,31 @@ app.post('/api/pages', isLoggedIn, [
     const page = {'id' : e.id , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
     let pageId;
     try {
-      pageId = await dao.createPage(page);
-      console.log(page);  
+      let header = false;
+      let body = false;
+      // Checks if all the components are valid
       for (let component of page.contentBlocks) {
-        console.log(component);
+        if(component.position == null || component.position == undefined || component.position < 0 || component.position > page.contentBlocks.length){
+          return res.status(422).json({ error: "The position of the component is not valid" });
+        }
+        if(component.type == null || component.type == undefined || component.type == ""){
+          return res.status(422).json({ error: "The type of the component is not valid" });
+        }
+        if(component.content == null || component.content == undefined || component.content == ""){
+          return res.status(422).json({ error: "The content of the component is not valid" });
+        }
+        if(component.type == "Header"){
+          header = true;
+        }
+        if(component.type != "Header"){
+          body = true;
+        }
+      }
+      if(!header || !body){
+        return res.status(422).json({ error: "The page must have at least one header and one content" });
+      }
+      pageId = await dao.createPage(page);
+      for (let component of page.contentBlocks) {
         component.page = pageId;
         await dao.createComponent(component);
       }
@@ -242,11 +269,13 @@ app.put('/api/pages/:pageID', isLoggedIn, [
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
   check('author').isAlpha(),
   check('publishDate').optional(),
-  check('contentBlocks').isLength({ min: 2 })
+  check('contentBlocks').isLength({ min: 2 }),
+  check('contentBlocks.*.type').isIn(['Body', 'Header', 'Image']),
+  check('contentBlocks.*.content').isLength({ min: 1 }),
+  check('contentBlocks.*.position').isInt({ min: 0 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors);
     return res.status(422).json({ errors: errors });
   }
   //const oldPage = await dao.getPage(req.body.id);
@@ -255,21 +284,40 @@ app.put('/api/pages/:pageID', isLoggedIn, [
   const pageID = req.params.pageID;
   const e = req.body;
   const resultUser = await userDao.getUserByUsername(author);  // needed to ensure db consistency
-  if(pageID != e.id){
-    return res.status(422).json({ errors: "The id of the page cannot be changed" });
-  }
-  if(req.user.id != resultUser.id && req.user.role != 'Admin'){
-    console.log(req.user);
-    console.log(resultUser.id); 
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
   if (resultUser.error)
     return res.status(404).json(resultUser);   //the author is not a valid user
+  if(pageID != e.id){
+    return res.status(422).json({ error: "The id of the page cannot be changed" });
+  }
+  if(req.user.id != resultUser.id && req.user.role != 'Admin'){
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
   else {
-
     const page = {'id' : pageID , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
-    let pageId;
     try {
+      let header = false;
+      let body = false;
+      // Checks if all the components are valid
+      for (let component of page.contentBlocks) {
+        if(component.position == null || component.position == undefined || component.position < 0 || component.position > page.contentBlocks.length){
+          return res.status(422).json({ error: "The position of the component is not valid" });
+        }
+        if(component.type == null || component.type == undefined || component.type == ""){
+          return res.status(422).json({ error: "The type of the component is not valid" });
+        }
+        if(component.content == null || component.content == undefined || component.content == ""){
+          return res.status(422).json({ error: "The content of the component is not valid" });
+        }
+        if(component.type == "Header"){
+          header = true;
+        }
+        if(component.type != "Header"){
+          body = true;
+        }
+      }
+      if(!header || !body){
+        return res.status(422).json({ error: "The page must have at least one header and one content" });
+      }
       await dao.updatePage(page , req.user);
       await dao.deleteComponents(page.id); //Clean the components of the page  
       for (let component of page.contentBlocks) {
@@ -281,7 +329,7 @@ app.put('/api/pages/:pageID', isLoggedIn, [
       // A more complex object can also be returned (e.g., the original one with the newly created id)
       res.status(201).json(page.contentBlocks.lenght);
     } catch (err) {
-      if(pageId){await dao.deletePage(pageId, true)}
+      //if(pageId){await dao.deletePage(pageId, true)}
       res.status(503).json({ error: `Database error during the update of page ${page.title} by user : ${page.user}.` });
     }
   }
@@ -307,7 +355,7 @@ app.put('/api/namesite', isLoggedIn, async (req, res) => {
 // DELETE /api/pages/<id>
 app.delete('/api/pages/:id', async (req, res) => {
   try {
-    await dao.deletePage(req.params.id, 2);
+    await dao.deletePage(req.params.id, req.user);
     const numRowChanges = await dao.deleteComponents(req.params.id);
     // number of changed rows is sent to client as an indicator of success
     res.json(numRowChanges);

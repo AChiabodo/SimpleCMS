@@ -6,14 +6,7 @@ import {
   Form,
   Alert,
 } from "react-bootstrap";
-import {Component} from "../Page";
 import modalContext from "../Context/modalContext";
-import PropTypes from 'prop-types';
-
-EditModal.propTypes = {
-  newMode: PropTypes.bool.isRequired,
-  content : PropTypes.object
-};
 
 export function EditModal(props) {
   let { newMode } = props;
@@ -22,7 +15,7 @@ export function EditModal(props) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [showEdit, setShowEdit] = useState(false);
-  const [tempContent, setTempContent] = useState(new Component("", ""));
+  const [tempContent, setTempContent] = useState( Object.assign({},{componentType : "Body" , componentData : ""}) );
 
   const handleClose = () => setShowEdit(false);
   const handleShow = () => setShowEdit(true);
@@ -64,7 +57,7 @@ export function EditModal(props) {
   }
   function handleCreation() {
     setEditmode(false);
-    setTempContent(Object.assign({},{componentType : "Body"}));
+    setTempContent(Object.assign({},{componentType : "Body" , componentData : ""}));
     handleShow();
   }
   function handleRemove() {
@@ -84,7 +77,7 @@ export function EditModal(props) {
       handleClose();
     } else {
       addComponent(tempContent);
-      setTempContent(Object.assign({}));
+      setTempContent(Object.assign({},{componentType : "Body" , componentData : ""}));
       handleClose();
     }
   }
@@ -113,7 +106,7 @@ export function EditModal(props) {
           <Modal.Title>Component Management</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form onSubmit={(event) => event.preventDefault()}>
             <Form.Group>
               <Form.Label>Type: </Form.Label>
               <Form.Select
@@ -143,11 +136,11 @@ export function EditModal(props) {
                 </Form.Select>
                 || (tempContent.componentType === "Header") &&
                 <Form.Control
+                type="text"
                 name="componentData"
                 value={tempContent.componentData}
                 onChange={handleData}/>
               }
-              
             </Form.Group>
           </Form>
           {errorMessage != "" ? (

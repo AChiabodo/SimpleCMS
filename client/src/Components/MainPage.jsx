@@ -37,13 +37,7 @@ export function MyRow(props) {
               <td>{pageData.creationDate ? pageData.creationDate.format("YYYY-MM-DD") : "error"}</td>
               <td>{status}</td>
               {loggedIn && !front ? <td><Button variant="white" disabled={!editable} onClick={()=>navigate("/pages/" + pageData.id + "/edit")}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            className={"bi bi-pencil-fill"}
-            viewBox="0 0 16 16"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" className={"bi bi-pencil-fill"} viewBox="0 0 16 16">
             <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
           </svg>
         </Button>
@@ -58,8 +52,11 @@ export function MyRow(props) {
   }
 
 function MainPage(props){
-  const {errorMessage,setErrorMessage} = props;
-  const handleClose = () => setErrorMessage(null);
+  const {errorMessage,setErrorMessage,successMessage,setSuccessMessage} = props;
+  const handleClose = () => {
+    setErrorMessage(null)
+    setSuccessMessage(null)
+  };
     return (
       <>
       <MyNav/>
@@ -70,27 +67,38 @@ function MainPage(props){
         </Modal.Header> 
         <Modal.Body><Alert variant='danger' onClick={()=>setErrorMessage('')}>{errorMessage}</Alert></Modal.Body>
         </Modal> : false}
+      {successMessage ?       <Modal show={true} onHide={handleClose} size={"m"} centered={true}>
+      <Modal.Header closeButton>
+          <Modal.Title>Success</Modal.Title>
+        </Modal.Header> 
+        <Modal.Body><Alert variant='success' onClick={()=>setSuccessMessage('')}>{successMessage}</Alert></Modal.Body>
+      </Modal> : false}
       </>
     )
   }
 
   function MainTable(props) {
-    let {pages , front , setPages , setDirty , dirty , updateSiteName} = props;
+    let {pages , front , setPages , setDirty , dirty , updateSiteName } = props;
+    const {setErrorMessage} = useContext(pageManagementContext);
     const [nameSite,setNameSite] = useState("");
     const {loggedIn , user} = useContext(authContext);
     
     useEffect(() => {
-      setPages([]);
+      setPages(() => []);
       if(!loggedIn || front){
         API.getPages().then( (e) => {
-          setPages(e);
-          setDirty(false);
+          setPages(() =>e);
+          setDirty(() => false);
+        } ).catch( (e) => {
+          setErrorMessage(e.error);
         } );
       }
       else{
         API.getPages(user).then( (e) => {
-          setPages(e);
-          setDirty(false);
+          setPages(() => e);
+          setDirty(() => false);
+        } ).catch( (e) => {
+          setErrorMessage(e.error)
         } );
       }
     }, [dirty,loggedIn,front]);
@@ -117,12 +125,13 @@ function MainPage(props){
       </thead>
       <tbody>
         {
-        pages.map((e) => <MyRow pageData={e} key={e.id} front={front}/>)
+        pages .sort((a,b) => a.publishDate > b.publishDate)
+              .map((e) => <MyRow pageData={e} key={e.id} front={front}/>)
         }
       </tbody>
     </Table>
     {pages.length === 0 ? <Spinner animation="border" variant="primary" /> : false} 
-    {loggedIn && user.role == "Admin" && !front ? 
+    {pages.length !== 0 && loggedIn && user.role == "Admin" && !front ? 
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId="formBasicEmail">
         <Form.Label>Change Name Site</Form.Label>

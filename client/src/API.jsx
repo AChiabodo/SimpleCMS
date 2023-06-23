@@ -11,6 +11,7 @@ function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
     httpResponsePromise
       .then((response) => {
+        console.log(response);
         if (response.ok) {
           // the server always returns a JSON, even empty {}. Never null or non json, otherwise the method will fail
           response
@@ -18,11 +19,21 @@ function getJson(httpResponsePromise) {
             .then((json) => resolve(json))
             .catch((err) => reject({ error: "Cannot parse server response : " + err }));
         } else {
-          // analyzing the cause of error
+          if (response.status === 401) {
+            reject({ error: "Unauthorized" });
+          }
+          if (response.status === 403) {
+            reject({ error: "Forbidden" });
+          }
+          if (response.status === 500) {
+            reject({ error: "Server Error" });
+          }
+          if (response.status === 404) {
           response
             .json()
             .then((obj) => reject(obj)) // error msg in the response body
             .catch((err) => reject({ error: "Cannot parse server response : " + err })); // something else
+          }
         }
       })
       .catch((err) => reject({ error: "Cannot communicate : " + err })); // connection error

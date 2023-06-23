@@ -30,6 +30,24 @@ exports.listPages = (onlyPublished = true) => {
   })
 }
 
+exports.findPage = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM pages WHERE id = ?';
+    db.get(sql, [id], (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (row === undefined) {
+        resolve({ error: 'Page not found.' });
+      } else {
+        const page = { id: row.id, title: row.title, creationDate: dayjs(row.creationDate), publishDate: dayjs(row.publishDate), author: row.author }
+        resolve(page);
+      }
+    });
+  });
+}
+
 // get the page identified by {id}
 exports.getPage = (id , onlyPublished = true) => {
   return new Promise((resolve, reject) => {
@@ -139,7 +157,7 @@ exports.updatePage = (page, user) => {
     }
     else{
       sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ? and author = ?';
-      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user], function (err) {
+      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user.id], function (err) {
         if (err) {
           console.log(err)
           reject(err);
@@ -154,14 +172,28 @@ exports.updatePage = (page, user) => {
 // delete an existing page
 exports.deletePage = (id, user) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM pages WHERE id = ? and user = ?';
-    db.run(sql, [id], function (err) {
-      if (err) {
-        reject(err);
-        return;
-      } else
-        resolve(this.changes);  // return the number of affected rows
-    });
+    let sql;
+    if (user.role == 'Admin') { // if the user is an admin, he can delete any page
+
+      sql = 'DELETE FROM pages WHERE id = ?';
+      db.run(sql, [id], function (err) {
+        if (err) {
+          reject(err);
+          return;
+        } else
+          resolve(this.changes);  // return the number of affected rows
+      });
+    }
+    else {
+      sql = 'DELETE FROM pages WHERE id = ? and author = ?';
+      db.run(sql, [id, user.id], function (err) {
+        if (err) {
+          reject(err);
+          return;
+        } else
+          resolve(this.changes);  // return the number of affected rows
+      });
+    }
   });
 }
 

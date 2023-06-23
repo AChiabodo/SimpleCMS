@@ -1,13 +1,15 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/suhcjUE-)
 # Exam #12345: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+## Student: s309234 CHIABODO ALESSANDRO 
 
 ## React Client Application Routes
 
-- Route `/`: Pagina principale che mostra la lista completa delle pagine, comprese le non pubblicate se si è autenticati
+- Route `/`: Pagina principale che mostra la lista completa delle pagine
+- Route `/back/` : Pagina per soli utenti autenticati, mostra tutte le pagine anche non pubblicate
+- Route `/pages/:pageID/` : Mostra il contenuto della singola pagina, per le pagine non pubblicate è neccessario essere autenticati
+- Route `/pages/:pageID/edit` : Permette di editare la pagina se autenticati
+- Route `/pages/new/` : permette di aggiungere una nuova pagina se autenticati
 - Route `/login` : Pagina per effettuare il login
-- Route `/something/:param`: page content and purpose, param specification
-- ...
 
 ## API Server
 ### API Front Office
@@ -83,16 +85,25 @@
 
 - `ListOfSomething` (in `List.js`): component purpose and main functionality
 - `GreatButton` (in `GreatButton.js`): component purpose and main functionality
-- ...
-
+- `App` (in `App.js`): Componente principale dell'applicazione che si occupa principalmente della gestione degli stati e delle route
+- `MainPage` (in `MainPage.js`): Componente utilizzato per il rendering delle sotto-pagine e per la gestione degli errori
+- `MainTable` (in `MainPage.js`): Componente utilizzato per scaricare le pagine e per mostrarne l'elenco su tabella 
+- `MyRow` (in `MainPage.js`): Componente che lista le proprietàdella singola pagina in una riga della tabella
+- `LoginForm` (in `AuthComponent.js`): Componente per il login
+- `PageContainer` (in `PageContainer.js`) : Gestisce visualizzazione e modifica delle singole pagine
+- `EditRow` (in `PageContainer.js`) : Visualizza un contentBlock e ne permette la modifica
+- `MyRow` (in `PageContainer.js`) : Visualizza un singolo contentBlock
+- `EditModal` (in `EditModal.js`) : Fornisce il modale per la modifica o la creazione di un nuovo contentBlock
 (only _main_ components, minor ones may be skipped)
-
+- `MyNav` (in `MyNav.js`) : Componente per la navbar con logica per gestire login / logout e passaggio tra Front Office e Back Office
 ## Screenshot
 
 ![Screenshot](./img/screenshot.jpg)
 
 ## Users Credentials
 
-- username, password (plus any other requested info)
-- username, password (plus any other requested info)
+- mario.rossi@polito.it   -   password - Role : Regular
+- user.admin@polito.it    -   password - Role : Admin
+- luigi.pallini@polito.it -   password - Role : Regular
+- 
 
