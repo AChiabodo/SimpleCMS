@@ -99,6 +99,14 @@ function MainPage(props){
 
     function handleSubmit(event){
       event.preventDefault();
+      if(!nameSite || !nameSite.trim()){
+        setErrorMessage("Invalid Server Name");
+        return;
+      }
+      if(nameSite.length > 16){
+        setErrorMessage("Name too long to fit")
+        return;
+      }
       updateSiteName(nameSite);
     }
     function handleNameSite(e){

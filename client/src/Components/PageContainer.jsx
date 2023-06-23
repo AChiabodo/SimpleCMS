@@ -295,7 +295,7 @@ function PageContainer(props) {
                 </Card.Header>
                 <Card.Body>
                 <Row>
-                <Form>
+                <Form onSubmit={(event) => event.preventDefault()}>
                 <Col>
                 
                   <Form.Group>

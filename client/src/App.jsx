@@ -80,6 +80,7 @@ function App() {
   }
   
   const loginSuccessful = (user) => {
+    setPages( () => [] )
     setUser(user);
     setLoggedIn(true);
     setDirty(true);

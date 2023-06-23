@@ -40,8 +40,8 @@ export function EditModal(props) {
       );
     }
   }
+
   function handleData(event) {
-    
     setTempContent(
       (tempContent) =>
         (tempContent = Object.assign({}, tempContent, {
@@ -49,12 +49,12 @@ export function EditModal(props) {
         }))
     );
   }
+
   function handleEdit() {
     setEditmode(true);
     const { content } = props;
     setTempContent((tempContent) => Object.assign(tempContent, content));
     handleShow();
-    
   }
   function handleCreation() {
     setEditmode(false);
@@ -65,10 +65,10 @@ export function EditModal(props) {
     deleteComponent(tempContent);
     handleClose();
   }
-  function handleSubmit() {
-    
+  function handleSubmit(event) {
+    event.preventDefault();
     if (!tempContent.componentData || tempContent.componentData == "" || !tempContent.componentData.trim()) {
-      setErrorMessage("Titolo non valido !");
+      setErrorMessage("Invalid component data");
       return;
     } else {
       setErrorMessage("");
@@ -99,12 +99,12 @@ export function EditModal(props) {
           <Modal.Title>Component Management</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(event) => event.preventDefault()}>
+          <Form onSubmit={(event) => handleSubmit(event)}>
             <Form.Group>
               <Form.Label>Type: </Form.Label>
               <Form.Select
                 value={tempContent.componentType}
-                onChange={handleType}
+                onChange={()=>handleType()}
                 >
                 <option value="Body">Body</option>
                 <option value="Header">Header</option>
@@ -146,13 +146,13 @@ export function EditModal(props) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={() => handleClose()}>
             Close
           </Button>
-          {!newMode && <Button variant="danger" onClick={handleRemove}>
+          {!newMode && <Button variant="danger" onClick={() => handleRemove()}>
             DELETE
           </Button>}
-          <Button variant="primary" onClick={handleSubmit}>
+          <Button variant="primary" onClick={(event) => handleSubmit(event)}>
             Save Changes
           </Button>
         </Modal.Footer>
