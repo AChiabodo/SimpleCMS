@@ -59,7 +59,6 @@ app.use(cors(corsOptions));
 
 // custom middleware: check if a given request is coming from an authenticated user
 const isLoggedIn = (req, res, next) => {
-  //  console.log(req.isAuthenticated())
   if (req.isAuthenticated())
     return next();
   return res.status(401).json({ error: 'Not authenticated' });
@@ -98,6 +97,7 @@ app.get('/api/front/pages', async (req, res) => {
 // GET /api/front/pages/<id>
 app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
+    await delay(time_sleep);
     const result = await dao.getPage(req.params.idPage,true);
     if (result.error)
       res.status(404).json(result);
@@ -108,8 +108,10 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
   }
 });
 
+// GET /api/front/name
 app.get('/api/front/name', async (req, res) => {
   try {
+    await delay(time_sleep);
     const name = await dao.getNameSite();
     res.json(name);
   }
@@ -131,8 +133,6 @@ app.get('/api/pages', isLoggedIn, async (req, res) => {
   }
 });
 
-
-
 // GET /api/pages/<id>
 app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
   try {
@@ -151,9 +151,10 @@ app.get('/api/pages/:idPage', isLoggedIn, async (req, res) => {
 // GET /api/users
 app.get('/api/users', isLoggedIn, async (req, res) => {
   try {
+    await delay(time_sleep);
     if (req.user.role != 'Admin'){
       console.log(req.user); 
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: 'Not authorized' });
     }
     const users = await dao.listUsers();
     res.json(users);
@@ -165,6 +166,7 @@ app.get('/api/users', isLoggedIn, async (req, res) => {
 // GET /api/users/<id>
 app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   try {
+    await delay(time_sleep);
     if (req.user.id != req.params.id && req.user.role != 'Admin')
       return res.status(401).json({ error: 'Not authenticated' });
     const result = await userDao.getUser(req.params.id);
@@ -177,8 +179,10 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   }
 });
 
+// GET /api/images
 app.get('/api/images', isLoggedIn, async (req, res) => {
   try {
+    await delay(time_sleep);
     const images = await dao.listImages();
     res.json(images);
   } catch (err) {
@@ -266,7 +270,6 @@ app.put('/api/pages/:pageID', isLoggedIn, [
     const page = {'id' : pageID , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
     let pageId;
     try {
-      console.log(page);
       await dao.updatePage(page , req.user);
       await dao.deleteComponents(page.id); //Clean the components of the page  
       for (let component of page.contentBlocks) {
@@ -276,7 +279,7 @@ app.put('/api/pages/:pageID', isLoggedIn, [
       
       // Return the newly created id of the question to the caller. 
       // A more complex object can also be returned (e.g., the original one with the newly created id)
-      res.status(201).json(pageId);
+      res.status(201).json(page.contentBlocks.lenght);
     } catch (err) {
       if(pageId){await dao.deletePage(pageId, true)}
       res.status(503).json({ error: `Database error during the update of page ${page.title} by user : ${page.user}.` });
