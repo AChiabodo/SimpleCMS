@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import {useEffect, useState} from "react";
 import API from './API.jsx'
-import MainPage, { MainTable } from "./Components/MainPage.jsx";
+import MainPage, { BackTable , FrontTable } from "./Components/MainPage.jsx";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate} from "react-router-dom";
 import pageManagementContext from "./Context/pageManagementContext.jsx";
 import { Container } from "react-bootstrap";
@@ -12,7 +12,6 @@ import PageContainer from "./Components/PageContainer.jsx";
 
 function App() {
   const [pages, setPages] = useState([]);
-  const [nextID, setNextId] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -20,22 +19,25 @@ function App() {
   const [successMessage, setSuccessMessage] = useState("");
   const [nameSite , setNameSite] = useState("CMSmall");
 
-  function addPage(page) {
-    page = Object.assign({},page , {user : user?user.id:1 , id : nextID , created : true});
-    setPages((films) => films.concat(Object.assign({}, page , {created : true})));
-    API.addPage(page).then(id =>{
-      setSuccessMessage("Page added successfully")
-      setNextId(id+1);
-      setDirty(true);
-    }).catch(err => {setErrorMessage(err.error)})
-  }
-
   useEffect(() => {
     API.getNameSite().then( (e) => {
       setNameSite(e);
     } );
   }, [nameSite]);
   
+  function clearPages(dirty = true) {
+    setPages(() => []);
+    if(dirty){setDirty(true);}
+  }
+
+  function addPage(page) {
+    page = Object.assign({},page , {user : user?user.id:1});
+    API.addPage(page).then(id =>{
+      setPages((films) => films.concat(Object.assign({}, page , {id : id , created : true })));
+      setDirty(true);
+    }).catch(err => {setErrorMessage(err.error)})
+  }
+
   function modifyPage(page) {
     setPages((pages) => {
       const list = pages.map((item) => {
@@ -48,42 +50,46 @@ function App() {
       return list;
     });
     API.updatePage(page).then( () =>{
-      setSuccessMessage("Page updated successfully")
       setDirty(true)
     }
-    ).catch(err => setErrorMessage(err.error))
+    ).catch(err => {
+      setErrorMessage("Error updating Page : " + err.error)
+      setDirty(true);
+    })
   }
 
-  function deletePage(page) {
+  function deletePage(id) {
     setPages((pages) => {
       const list = pages.map((item) => {
-        if (item.id === page.id) {
-          return Object.assign({}, item, page , {deleted : true});
+        if (item.id === id) {
+          return Object.assign({}, item , {deleted : true});
         } else {
           return item;
         }
       });
       return list;
     });
-    API.deletePage(page).then(() => {
-      setSuccessMessage("Page deleted successfully")
+    
+    API.deletePage(id).then(() => {
       setDirty(true)
     }
-    ).catch(err => {setErrorMessage("Error deleting Page : " + err)})
+    ).catch(err => {
+      setErrorMessage("Error deleting Page : " + err.error)
+      setDirty(true);
+    })
   }
 
   const doLogOut = async () => {
     await API.logOut();
-    setPages(() => []);
+    clearPages();
     setLoggedIn(() => false);
     setUser(() => undefined);
   }
   
   const loginSuccessful = (user) => {
-    setPages( () => [] )
+    clearPages();
     setUser(user);
     setLoggedIn(true);
-    setDirty(true);
   }
   
   const updateSiteName = (name) => {
@@ -99,7 +105,7 @@ function App() {
     <BrowserRouter>
     <Container fluid>
         <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage, setErrorMessage : (message) =>setErrorMessage(message) , setSuccessMessage : (message) => setSuccessMessage(message)}}>
-          <authContext.Provider value={{user:user?user:null , loginSuccessful:loginSuccessful , doLogOut : doLogOut , loggedIn:loggedIn , nameSite}}>
+          <authContext.Provider value={{user:user?user:null , loginSuccessful , doLogOut , loggedIn , nameSite , clearPages}}>
           <Routes>
             <Route
               path="/" element={
@@ -108,11 +114,11 @@ function App() {
                 </>
               }
             >
-              <Route path="/"                   element={<MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={true}/>} />
-              <Route path="/back/"              element={!loggedIn? <Navigate replace to='/' /> : <MainTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}  name={user?user.name:null} doLogOut={doLogOut} front={false} updateSiteName={updateSiteName}/>} />
-              <Route path="/pages/:pageID"      element={<PageContainer editMode={false} pages={pages}/>}></Route>
-              <Route path="/pages/:pageID/edit" element={<PageContainer editMode={true}  pages={pages}/>}></Route>
-              <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageContainer editMode={true} pages={pages} newPage={true}/>}></Route>
+              <Route path="/"                   element={                                        <FrontTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty}/>} />
+              <Route path="/back/"              element={!loggedIn? <Navigate replace to='/' /> : <BackTable  pages={pages} setPages={setPages} dirty={dirty} setDirty={setDirty} updateSiteName={updateSiteName}/>} />
+              <Route path="/pages/:pageID"      element={<PageContainer editMode={false}/>}></Route>
+              <Route path="/pages/:pageID/edit" element={<PageContainer editMode={true}/>}></Route>
+              <Route path="/pages/new"          element={!loggedIn? <Navigate replace to='/' />:<PageContainer editMode={true} newPage={true}/>}></Route>
               <Route path='/login'              element={loggedIn? <Navigate replace to='/back/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
               <Route path="*" element={<h1>Not Found</h1>} />
             </Route>       

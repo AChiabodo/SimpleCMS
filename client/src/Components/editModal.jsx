@@ -104,7 +104,7 @@ export function EditModal(props) {
               <Form.Label>Type: </Form.Label>
               <Form.Select
                 value={tempContent.componentType}
-                onChange={()=>handleType()}
+                onChange={(event)=>handleType(event)}
                 >
                 <option value="Body">Body</option>
                 <option value="Header">Header</option>

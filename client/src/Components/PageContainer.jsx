@@ -114,9 +114,6 @@ function PageContainer(props) {
             if(error.response.status === 401){
               setErrorMessage("Unauthorized. Try to log in again");
             }
-            else if(error.response.status === 403){
-              setErrorMessage("An error occured while loading the page");
-            }
             else if(error.response.status === 404){
               setErrorMessage("Page not found");
             }
@@ -210,11 +207,11 @@ function PageContainer(props) {
           return;
         }
         
-        if(!tempPage.components.filter(e => e.componentType == "Header").lenght < 1){
+        if(tempPage.components.filter(e => e.componentType == "Header").length < 1){
           setErrorMessage("You need at least one header in the page");
           return;
         }
-        if(!tempPage.components.filter(e => e.componentType != "Header").lenght < 1){
+        if(tempPage.components.filter(e => e.componentType != "Header").length < 1){
           setErrorMessage("You need at least one component in the page");
           return;
         }
@@ -224,7 +221,7 @@ function PageContainer(props) {
         }
         else{
           modifyPage(tempPage);
-          setDirty(() => true);
+          navigate("/back/");
         }
       }
 

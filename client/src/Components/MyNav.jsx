@@ -11,22 +11,30 @@ import { useNavigate } from "react-router-dom";
 import authContext from "../Context/authContext";
 
 function MyNav() {
-  let {user , loggedIn , doLogOut , nameSite} = useContext(authContext);
+  let {user , loggedIn , doLogOut , nameSite , clearPages} = useContext(authContext);
   const navigate = useNavigate();
   function handleLogout() {
     doLogOut();
+    navigate('/');
+  }
+  function handleBackOffice() {
+    clearPages(false);
+    navigate('/back');
+  }
+  function handleFrontOffice() {
+    clearPages(false);
     navigate('/');
   }
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
       {nameSite !== "" ? 
-        <Navbar.Brand onClick={() => navigate('/')} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand> : 
+        <Navbar.Brand onClick={() => handleFrontOffice()} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand> : 
         <Spinner animation="border" variant="light" />}
-      { loggedIn ? <Nav justify={true}><Button variant="outline-danger" onClick={()=>navigate("/")}>
+      { loggedIn ? <Nav justify={true}><Button variant="outline-danger" onClick={()=>handleFrontOffice()}>
           Front Page
         </Button>
-        <Button variant="outline-warning" onClick={()=>navigate("/back")}>
+        <Button variant="outline-warning" onClick={()=>handleBackOffice()}>
           Back Office
         </Button>
         <Button variant="outline-success" onClick={()=>navigate("/pages/new")}>
