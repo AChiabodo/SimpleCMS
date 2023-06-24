@@ -203,7 +203,10 @@ app.post('/api/pages', isLoggedIn, [
   check('creationDate').isDate({ format: 'YYYY-MM-DD' }),
   check('author').isAlpha(),
   check('publishDate').optional(),
-  check('contentBlocks').isLength({ min: 2 })
+  check('contentBlocks').isLength({ min: 2 }),
+  check('contentBlocks.*.type').isIn(['Body', 'Header', 'Image']),
+  check('contentBlocks.*.content').isLength({ min: 1 }),
+  check('contentBlocks.*.position').isInt({ min: 0 })
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -299,14 +302,8 @@ app.put('/api/pages/:pageID', isLoggedIn, [
       let body = false;
       // Checks if all the components are valid
       for (let component of page.contentBlocks) {
-        if(component.position == null || component.position == undefined || component.position < 0 || component.position > page.contentBlocks.length){
+        if(component.position > page.contentBlocks.length){
           return res.status(422).json({ error: "The position of the component is not valid" });
-        }
-        if(component.type == null || component.type == undefined || component.type == ""){
-          return res.status(422).json({ error: "The type of the component is not valid" });
-        }
-        if(component.content == null || component.content == undefined || component.content == ""){
-          return res.status(422).json({ error: "The content of the component is not valid" });
         }
         if(component.type == "Header"){
           header = true;

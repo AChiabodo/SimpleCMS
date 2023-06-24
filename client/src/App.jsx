@@ -18,6 +18,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [nameSite , setNameSite] = useState("CMSmall");
+  const [currentLocation, setCurrentLocation] = useState("front");
 
   useEffect(() => {
     API.getNameSite().then( (e) => {
@@ -25,9 +26,9 @@ function App() {
     } );
   }, [nameSite]);
   
-  function clearPages(dirty = true) {
-    setPages(() => []);
-    if(dirty){setDirty(true);}
+  function clearPages(cleaning) {
+    if(cleaning){setPages(() => []);}
+    if(!cleaning){setDirty(() =>true);}
   }
 
   function addPage(page) {
@@ -50,11 +51,11 @@ function App() {
       return list;
     });
     API.updatePage(page).then( () =>{
-      setDirty(true)
+      setDirty(() => true)
     }
     ).catch(err => {
       setErrorMessage("Error updating Page : " + err.error)
-      setDirty(true);
+      setDirty(() => true)
     })
   }
 
@@ -69,7 +70,7 @@ function App() {
       });
       return list;
     });
-    
+
     API.deletePage(id).then(() => {
       setDirty(true)
     }
@@ -81,15 +82,19 @@ function App() {
 
   const doLogOut = async () => {
     await API.logOut();
-    clearPages();
+    setPages(() => []);
+    setDirty(() => true);
     setLoggedIn(() => false);
     setUser(() => undefined);
+    setCurrentLocation("front");
   }
   
   const loginSuccessful = (user) => {
-    clearPages();
+    setPages(() => []);
+    setDirty(() => true);
     setUser(user);
     setLoggedIn(true);
+    setCurrentLocation("back");
   }
   
   const updateSiteName = (name) => {
@@ -105,7 +110,7 @@ function App() {
     <BrowserRouter>
     <Container fluid>
         <pageManagementContext.Provider value={{ addPage, modifyPage, deletePage, setErrorMessage : (message) =>setErrorMessage(message) , setSuccessMessage : (message) => setSuccessMessage(message)}}>
-          <authContext.Provider value={{user:user?user:null , loginSuccessful , doLogOut , loggedIn , nameSite , clearPages}}>
+          <authContext.Provider value={{user:user?user:null , loginSuccessful , doLogOut , loggedIn , nameSite , clearPages , currentLocation, setCurrentLocation}}>
           <Routes>
             <Route
               path="/" element={

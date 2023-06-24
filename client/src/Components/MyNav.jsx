@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   Container,
   Button,
@@ -11,35 +11,52 @@ import { useNavigate } from "react-router-dom";
 import authContext from "../Context/authContext";
 
 function MyNav() {
-  let {user , loggedIn , doLogOut , nameSite , clearPages} = useContext(authContext);
+  let {user , loggedIn , doLogOut , nameSite , clearPages , currentLocation , setCurrentLocation} = useContext(authContext);
   const navigate = useNavigate();
+  
+  
   function handleLogout() {
     doLogOut();
     navigate('/');
   }
+  
   function handleBackOffice() {
-    clearPages(false);
     navigate('/back');
+    if(currentLocation === "back"){
+      clearPages(false);
+    }
+    else{
+      clearPages(true);
+    }
+    setCurrentLocation(()=>"back");
   }
+  
   function handleFrontOffice() {
-    clearPages(false);
     navigate('/');
+    if(currentLocation === "front"){
+      clearPages(false);
+    }
+    else{
+      clearPages(true);
+    }
+    setCurrentLocation(()=>"front");
   }
+
   return (
     <Navbar bg="dark" variant="dark">
       <Container>
       {nameSite !== "" ? 
         <Navbar.Brand onClick={() => handleFrontOffice()} style={{cursor : 'pointer', display: 'flex', justifyContent: 'center' }}>{nameSite}</Navbar.Brand> : 
         <Spinner animation="border" variant="light" />}
-      { loggedIn ? <Nav justify={true}><Button variant="outline-danger" onClick={()=>handleFrontOffice()}>
-          Front Page
+      { loggedIn ? <Nav  justify={true}><Button style={{marginBlockEnd : '1%'}} variant="outline-danger" onClick={()=>handleFrontOffice()}>
+          Front Office
         </Button>
-        <Button variant="outline-warning" onClick={()=>handleBackOffice()}>
+        <Button style={{marginBlockEnd : '1%'}} variant="outline-warning" onClick={()=>handleBackOffice()}>
           Back Office
         </Button>
-        <Button variant="outline-success" onClick={()=>navigate("/pages/new")}>
+        {currentLocation === "back" ? <Button style={{marginBlockEnd : '1%'}} variant="outline-success" onClick={()=>navigate("/pages/new")}>
           New Page
-        </Button>
+        </Button> : false}
          </Nav>: <></>}
       <Nav className="me-auto">
         </Nav> 
