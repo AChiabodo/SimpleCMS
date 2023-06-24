@@ -10,7 +10,7 @@ const session = require('express-session'); // enable sessions
 const userDao = require('./user-dao'); // module for accessing the user info in the DB
 const cors = require('cors');
 const dayjs = require('dayjs');
-const time_sleep = 1000;
+const time_sleep = 0;
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy

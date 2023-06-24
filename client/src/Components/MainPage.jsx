@@ -78,11 +78,8 @@ function MainPage(props){
     const {setErrorMessage} = useContext(pageManagementContext);
     const [nameSite,setNameSite] = useState("");
     const {loggedIn , user} = useContext(authContext);
-    const [number,setNum] = useState(0);
     
     useEffect(() => {
-      console.log("BackTable useEffect " + number);
-      setNum((e) => e+1);
       if(!loggedIn){return}
         API.getPages(user).then( (e) => {
           setPages(() => e);
@@ -144,11 +141,9 @@ function MainPage(props){
   function FrontTable(props) {
     let { pages, setPages, setDirty, dirty } = props;
     const { setErrorMessage } = useContext(pageManagementContext);
-    const [number,setNum] = useState(0);
+
 
     useEffect(() => {
-      console.log("FrontTable useEffect " + number);
-      setNum((e) => e+1);
       API.getPages().then((e) => {
         setPages(() => e);
         setDirty(() => false);

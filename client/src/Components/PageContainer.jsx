@@ -96,7 +96,7 @@ function PageContainer(props) {
     const [tempPage, setTempPage] = useState({});
     const [nextId, setNextId] = useState(0);
     const [nextPosition , setNextPosition] = useState(0);
-    const [dirty, setDirty] = useState(false); // true if the page has been modified
+    const [dirty, setDirty] = useState(false);
     const {addPage, modifyPage, setErrorMessage} = useContext(pageManagementContext);
     const [users, setUsers] = useState([]);
     const [images, setImages] = useState([]);
@@ -128,7 +128,17 @@ function PageContainer(props) {
             setNextId(()=>Math.max(...page.components.map(component => component.id))+1);
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(()=>false);
-          } );
+          } ).catch( (error) => {
+            if(error.response.status === 401){
+              setErrorMessage("Unauthorized. Try to log in again");
+            }
+            else if(error.response.status === 404){
+              setErrorMessage("Page not found");
+            }
+            else{
+              setErrorMessage("An error occured while loading the page");
+            }
+          });
         }
       }
       else{
