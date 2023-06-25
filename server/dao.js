@@ -38,7 +38,7 @@ exports.findPage = (id) => {
         reject(err);
         return;
       }
-      if (row === undefined) {
+      if (!rows || rows.length === 0) {
         resolve({ error: 'Page not found.' });
       } else {
         const page = { id: row.id, title: row.title, creationDate: dayjs(row.creationDate), publishDate: dayjs(row.publishDate), author: row.author }
@@ -59,11 +59,12 @@ exports.getPage = (id , onlyPublished = true) => {
     }
 
     db.all(sql, [id], (err, rows) => {
+      console.log(rows);
       if (err) {
         reject(err);
         return;
       }
-      if (rows == undefined) {
+      if (!rows || rows.length === 0) {
         resolve({ error: 'Page not found.' });
       } else {
         const contents = rows.map((e) => ({ id: e.id, title: e.title, creationDate: dayjs(e.creationDate), publishDate: dayjs(e.publishDate), author: e.name, content_id: e.cid, type: e.ctype, position: e.cposition , content: e.content }))

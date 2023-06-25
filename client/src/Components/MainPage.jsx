@@ -11,7 +11,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import API from "../API.jsx";
 import pageManagementContext from "../Context/pageManagementContext.jsx";
 
-export function MyRow(props) {
+export function PageRow(props) {
     const { pageData , front } = props;
     const {loggedIn,user} = useContext(authContext);
     const {deletePage} = useContext(pageManagementContext);
@@ -121,7 +121,7 @@ function MainPage(props){
         <tbody>
           {
             pages .sort((a, b) => a.id > b.id)
-                  .map((e) => <MyRow pageData={e} key={e.id} front={false} />)
+                  .map((e) => <PageRow pageData={e} key={e.id} front={false} />)
           }
         </tbody>
       </Table>
@@ -166,7 +166,7 @@ function MainPage(props){
         <tbody>
           {
             pages .sort((a, b) => dayjs(a.publishDate).diff(dayjs(b.publishDate)))
-                  .map((e) => <MyRow pageData={e} key={e.id} front={true} />)
+                  .map((e) => <PageRow pageData={e} key={e.id} front={true} />)
           }
         </tbody>
       </Table>

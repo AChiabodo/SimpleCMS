@@ -13,7 +13,7 @@ import pageManagementContext from "../Context/pageManagementContext";
 import Card from 'react-bootstrap/Card';
 import dayjs from "dayjs";
 
-function MyRow(props) {
+function ViewComponent(props) {
   let component;
   const { contentData } = props;
   switch (contentData.componentType) {
@@ -46,7 +46,7 @@ function MyRow(props) {
 }
 
 
-function EditRow(props) {
+function EditComponent(props) {
     const {contentData , handleOrder} = props;
     let component;
     switch (contentData.componentType) {
@@ -338,7 +338,7 @@ function PageContainer(props) {
             
              {tempPage.components
                   .sort((a,b) => a.position > b.position)
-                  .map((e) => <EditRow contentData={e} key={e.id} handleOrder={handleOrder}/>)}
+                  .map((e) => <EditComponent contentData={e} key={e.id} handleOrder={handleOrder}/>)}
                   
         </Container>
             
@@ -359,7 +359,7 @@ function PageContainer(props) {
                 </Card>
                 {tempPage.components
                   .sort((a,b) => a.position > b.position)
-                  .map((e) => <MyRow contentData={e} key={e.id} />)} 
+                  .map((e) => <ViewComponent contentData={e} key={e.id} />)} 
               </Container>
             } 
               
