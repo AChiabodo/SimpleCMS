@@ -3,7 +3,7 @@
 ###
 GET http://localhost:3001/api/front/pages HTTP/1.1
 ###
-GET http://localhost:3001/api/front/pages/1 HTTP/1.1
+GET http://localhost:3001/api/front/pages/4 HTTP/1.1
 ###
 GET http://localhost:3001/api/pages HTTP/1.1
 Cookie: connect.sid = {{session}}
@@ -49,4 +49,37 @@ Content-Type: application/json
         }]
 }
 ###
-DELETE http://localhost:3001/api/pages/0 HTTP/1.1
+DELETE http://localhost:3001/api/pages/5 HTTP/1.1
+
+###
+PUT http://localhost:3001/api/pages/4 HTTP/1.1
+Cookie: connect.sid = {{session}}
+Content-Type: application/json
+
+{
+    "id" : 2,
+    "title" : "Star wars : the dawn of the force",
+    "author" : "John",
+    "creationDate" : "2023-05-04",
+    "publishDate" : "2023-05-24",
+    "contentBlocks" : [
+        {
+            "page" : 4,
+            "type" : "Header",
+            "content" : "Star wars : the dawn of the force",
+            "position" : 0
+        },
+        {
+            "page" : 4,
+            "type" : "body",
+            "content" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc. Nulla facilisi. Nullam euismod, nisl eget ultricies ultricies, nunc nisl aliquam nunc, vitae ultricies ne que nunc eget nunc.",
+            "position" : 1    
+        },
+        {
+            "page" : 4,
+            "type" : "Image",
+            "content" : "starwars.jpeg",
+            "position" : 2 
+        }]
+}
+###

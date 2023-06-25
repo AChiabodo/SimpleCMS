@@ -1,7 +1,3 @@
-/**
- * All the API calls
- */
-
 import { mapFromPage, mapToPage } from "./Page";
 
 const URL = 'http://localhost:3001/api';
@@ -28,6 +24,9 @@ function getJson(httpResponsePromise) {
             reject({ error: "Server Error" });
           }
           if (response.status === 404) {
+            reject({ error: "Not Found" });
+          }
+          else {
           response
             .json()
             .then((obj) => reject(obj)) // error msg in the response body

@@ -111,15 +111,7 @@ function PageContainer(props) {
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(()=>false);
           } ).catch( (error) => {
-            if(error.response.status === 401){
-              setErrorMessage("Unauthorized. Try to log in again");
-            }
-            else if(error.response.status === 404){
-              setErrorMessage("Page not found");
-            }
-            else{
-              setErrorMessage("An error occured while loading the page");
-            }
+            setErrorMessage(error.error);
           } );
         }
         else{
@@ -129,15 +121,7 @@ function PageContainer(props) {
             setNextPosition(()=>Math.max(...page.components.map(component => component.position))+1);
             setDirty(()=>false);
           } ).catch( (error) => {
-            if(error.response.status === 401){
-              setErrorMessage("Unauthorized. Try to log in again");
-            }
-            else if(error.response.status === 404){
-              setErrorMessage("Page not found");
-            }
-            else{
-              setErrorMessage("An error occured while loading the page");
-            }
+              setErrorMessage(error.error);
           });
         }
       }
@@ -153,11 +137,15 @@ function PageContainer(props) {
         if(loggedIn){
           API.getImages().then( (images) => {
             setImages(images);
-          });
+          }).catch( (error) => {
+            setErrorMessage(error.error);
+          } );
           if(user.role === "Admin"){
             API.getUsers().then( (users) => {
               setUsers(users);
-            });
+            }).catch( (error) => {
+              setErrorMessage(error.error);
+            } );
           }
           else{
             setUsers([user]);

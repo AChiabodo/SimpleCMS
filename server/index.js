@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 const morgan = require('morgan'); // logging middleware
 const { check, validationResult } = require('express-validator'); // validation middleware
@@ -174,7 +173,7 @@ app.get('/api/users/:id', isLoggedIn, async (req, res) => {
   try {
     await delay(time_sleep);
     if (req.user.id != req.params.id && req.user.role != 'Admin')
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: 'Not authorized' });
     const result = await userDao.getUser(req.params.id);
     if (result.error)
       res.status(404).json(result);
@@ -214,16 +213,15 @@ app.post('/api/pages', isLoggedIn, [
     return res.status(422).json({ errors: errors });
   }
   
-  const user = req.body.author; // needed to ensure db consistency of the author
-  const e = req.body;
-  const resultUser = await userDao.getUserByUsername(user);  // needed to ensure db consistency of the author
+  const body = req.body;
+  const resultUser = await userDao.getUserByUsername(req.body.author);  // needed to ensure db consistency of the author
   if(req.user.id != resultUser.id && req.user.role != 'Admin'){
     return res.status(401).json({ error: 'Not authenticated' });
   }
   if (resultUser.error)
     res.status(404).json(resultUser);   //the author is not a valid user
   else {
-    const page = {'id' : e.id , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
+    const page = {'id' : body.id , 'title' : body.title , 'author' : resultUser.id, 'publishDate' : body.publishDate ? dayjs(body.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : body.creationDate ? dayjs(body.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : body.contentBlocks};
     let pageId;
     try {
       let header = false;
@@ -255,11 +253,13 @@ app.post('/api/pages', isLoggedIn, [
         await dao.createComponent(component);
       }
       
-      // Return the newly created id of the question to the caller. 
-      // A more complex object can also be returned (e.g., the original one with the newly created id)
+      // Return the newly created id of the page to the caller.
       res.status(201).json(pageId);
     } catch (err) {
-      if(pageId){await dao.deletePage(pageId, true)}
+      if(pageId){
+        await dao.deletePage(pageId, resultUser.id)
+        await dao.deleteComponents(pageId);
+      } //if the page has been created but the components not, the page is deleted
       res.status(503).json({ error: `Database error during the creation of page ${page.title} by user : ${page.user}.` });
     }
   }
@@ -281,25 +281,23 @@ app.put('/api/pages/:pageID', isLoggedIn, [
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors });
   }
-  //const oldPage = await dao.getPage(req.body.id);
 
-  const author = req.body.author; // needed to ensure db consistency of the author
   const pageID = req.params.pageID;
-  const e = req.body;
-  const resultUser = await userDao.getUserByUsername(author);  // needed to ensure db consistency
+  const body = req.body;
+  const resultUser = await userDao.getUserByUsername(req.body.author);  // needed to ensure db consistency
   if (resultUser.error)
     return res.status(404).json(resultUser);   //the author is not a valid user
-  if(pageID != e.id){
+  if(pageID != body.id){
     return res.status(422).json({ error: "The id of the page cannot be changed" });
   }
   if(req.user.id != resultUser.id && req.user.role != 'Admin'){
     return res.status(401).json({ error: 'Not authenticated' });
   }
   else {
-    const page = {'id' : pageID , 'title' : e.title , 'author' : resultUser.id, 'publishDate' : e.publishDate ? dayjs(e.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : e.creationDate ? dayjs(e.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : e.contentBlocks};
+    const page = {'id' : pageID , 'title' : body.title , 'author' : resultUser.id, 'publishDate' : body.publishDate ? dayjs(body.publishDate).format("YYYY-MM-DD") : null , 'creationDate' : body.creationDate ? dayjs(body.creationDate).format("YYYY-MM-DD") : null,'contentBlocks' : body.contentBlocks};
     try {
       let header = false;
-      let body = false;
+      let block = false;
       // Checks if all the components are valid
       for (let component of page.contentBlocks) {
         if(component.position > page.contentBlocks.length){
@@ -309,10 +307,10 @@ app.put('/api/pages/:pageID', isLoggedIn, [
           header = true;
         }
         if(component.type != "Header"){
-          body = true;
+          block = true;
         }
       }
-      if(!header || !body){
+      if(!header || !block){
         return res.status(422).json({ error: "The page must have at least one header and one content" });
       }
       await dao.updatePage(page , req.user);
@@ -322,11 +320,9 @@ app.put('/api/pages/:pageID', isLoggedIn, [
         await dao.createComponent(component);
       }
       
-      // Return the newly created id of the question to the caller. 
-      // A more complex object can also be returned (e.g., the original one with the newly created id)
+      // Return the length of the contentBlocks of the page to the caller.
       res.status(201).json(page.contentBlocks.lenght);
     } catch (err) {
-      //if(pageId){await dao.deletePage(pageId, true)}
       res.status(503).json({ error: `Database error during the update of page ${page.title} by user : ${page.user}.` });
     }
   }

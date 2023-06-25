@@ -10,7 +10,6 @@ import dayjs from 'dayjs'
 import { Outlet, useNavigate } from "react-router-dom";
 import API from "../API.jsx";
 import pageManagementContext from "../Context/pageManagementContext.jsx";
-import { number } from "prop-types";
 
 export function MyRow(props) {
     const { pageData , front } = props;
@@ -80,13 +79,13 @@ function MainPage(props){
     const {loggedIn , user} = useContext(authContext);
     
     useEffect(() => {
-      if(!loggedIn){return}
-        API.getPages(user).then( (e) => {
-          setPages(() => e);
-          setDirty(() => false);
-        } ).catch( (e) => {
-          setErrorMessage(e.error)
-        } );
+      if (!loggedIn) { return }
+      API.getPages(true).then((e) => {
+        setPages(() => e);
+        setDirty(() => false);
+      }).catch((e) => {
+        setErrorMessage(e.error)
+      });
     }, [dirty]);
 
     function handleSubmit(event){
@@ -144,7 +143,7 @@ function MainPage(props){
 
 
     useEffect(() => {
-      API.getPages().then((e) => {
+      API.getPages(false).then((e) => {
         setPages(() => e);
         setDirty(() => false);
       }).catch((e) => {
@@ -166,7 +165,7 @@ function MainPage(props){
         </thead>
         <tbody>
           {
-            pages .sort((a, b) => a.publishDate > b.publishDate )
+            pages .sort((a, b) => dayjs(a.publishDate).diff(dayjs(b.publishDate)))
                   .map((e) => <MyRow pageData={e} key={e.id} front={true} />)
           }
         </tbody>

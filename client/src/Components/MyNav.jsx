@@ -7,7 +7,6 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-
 import authContext from "../Context/authContext";
 
 function MyNav() {

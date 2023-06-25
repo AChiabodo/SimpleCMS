@@ -1,5 +1,4 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import {useEffect, useState} from "react";
 import API from './API.jsx'
 import MainPage, { BackTable , FrontTable } from "./Components/MainPage.jsx";
