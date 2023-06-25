@@ -59,7 +59,6 @@ exports.getPage = (id , onlyPublished = true) => {
     }
 
     db.all(sql, [id], (err, rows) => {
-      console.log(rows);
       if (err) {
         reject(err);
         return;

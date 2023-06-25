@@ -6,9 +6,9 @@
 
 - Route `/`: Pagina principale che mostra la lista completa delle pagine
 - Route `/back/` : Pagina per soli utenti autenticati, mostra tutte le pagine anche non pubblicate
-- Route `/pages/:pageID/` : Mostra il contenuto della singola pagina, per le pagine non pubblicate è neccessario essere autenticati
+- Route `/pages/:pageID/` : Mostra il contenuto della singola pagina, per le pagine non pubblicate è necessario essere autenticati
 - Route `/pages/:pageID/edit` : Permette di editare la pagina se autenticati
-- Route `/pages/new/` : permette di aggiungere una nuova pagina se autenticati
+- Route `/pages/new/` : Permette di aggiungere una nuova pagina se autenticati
 - Route `/login` : Pagina per effettuare il login
 
 ## API Server
@@ -22,10 +22,7 @@
 - GET `/api/front/name`
   - Nessun parametro per la richiesta
   - Nome del sito web
-### API Back Office
-- POST `/api/login`
-  - request parameters and request body content
-  - response body content
+### API Back Office (Necessitano login)
 - GET `/api/pages`
   - Nessun parametro per la richiesta
   - Lista di tutte le pagine sul sito, senza i loro contenuti
@@ -83,31 +80,33 @@
 
 ## Main React Components
 
-- `ListOfSomething` (in `List.js`): component purpose and main functionality
-- `GreatButton` (in `GreatButton.js`): component purpose and main functionality
 - `App` (in `App.js`): Componente principale dell'applicazione che si occupa principalmente della gestione degli stati e delle route
 - `MainPage` (in `MainPage.js`): Componente utilizzato per il rendering delle sotto-pagine e per la gestione degli errori
-- `MainTable` (in `MainPage.js`): Componente utilizzato per scaricare le pagine e per mostrarne l'elenco su tabella 
-- `MyRow` (in `MainPage.js`): Componente che lista le proprietàdella singola pagina in una riga della tabella
+- `FrontTable` (in `MainPage.js`): Componente utilizzato per scaricare le pagine e per mostrarne l'elenco su tabella nel Front Office
+- `BackTable` (in `MainPage.js`): Componente utilizzato per scaricare le pagine e per mostrarne l'elenco su tabella  nel Back Office
+- `PageRow` (in `MainPage.js`): Componente che lista le proprietà della singola pagina in una riga della tabella
 - `LoginForm` (in `AuthComponent.js`): Componente per il login
 - `PageContainer` (in `PageContainer.js`) : Gestisce visualizzazione e modifica delle singole pagine
-- `EditRow` (in `PageContainer.js`) : Visualizza un contentBlock e ne permette la modifica
-- `MyRow` (in `PageContainer.js`) : Visualizza un singolo contentBlock
+- `EditComponent` (in `PageContainer.js`) : Visualizza un contentBlock e ne permette la modifica
+- `ViewComponent` (in `PageContainer.js`) : Visualizza un singolo contentBlock
 - `EditModal` (in `EditModal.js`) : Fornisce il modale per la modifica o la creazione di un nuovo contentBlock
-(only _main_ components, minor ones may be skipped)
 - `MyNav` (in `MyNav.js`) : Componente per la navbar con logica per gestire login / logout e passaggio tra Front Office e Back Office
+
 ## Screenshot
 
-![Screenshot](./img/backOffice.png)
+### Front Office
 ![Screenshot](./img/frontOffice.png)
+### Back Office
+![Screenshot](./img/backOffice.png)
+### A page
 ![Screenshot](./img/page.png)
+### Editing a page
 ![Screenshot](./img/pageEdit.png)
 
 ## Users Credentials
 
-- user-email                    - passwords - Role
-- mario.rossi@polito.it         - password  - Regular
-- user.admin@polito.it          - password  - Admin
-- luigi.pallini@polito.it       - password  - Regular
-- alessandro.chiabodo@polito.it - password  - Regular
+- mario.rossi@polito.it         - "password"  - Regular
+- user.admin@polito.it          - "password"  - Admin
+- luigi.pallini@polito.it       - "password"  - Regular
+- alessandro.chiabodo@polito.it - "password"  - Regular
 

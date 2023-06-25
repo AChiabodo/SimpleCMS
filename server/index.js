@@ -100,7 +100,6 @@ app.get('/api/front/pages/:idPage', async (req, res) => {
   try {
     await delay(time_sleep);
     const result = await dao.getPage(req.params.idPage,true);
-    console.log(result);
     if (result.error)
       res.status(404).json(result);
     else
