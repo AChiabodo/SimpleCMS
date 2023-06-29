@@ -8,6 +8,7 @@ const LocalStrategy = require('passport-local').Strategy; // username and passwo
 const session = require('express-session'); // enable sessions
 const userDao = require('./user-dao'); // module for accessing the user info in the DB
 const cors = require('cors');
+const env  = require('dotenv').config();
 const dayjs = require('dayjs');
 const time_sleep = 0;
 
@@ -49,10 +50,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use('/public', express.static('public'));
 
-
 // set-up the CORS middleware
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: env.CORS_ORIGIN || 'http://localhost:3001',
   credentials: true,
 };
 
