@@ -52,7 +52,7 @@ app.use('/public', express.static('public'));
 
 // set-up the CORS middleware
 const corsOptions = {
-  origin: env.CORS_ORIGIN || 'http://localhost:3001',
+  origin: env.parsed.CORS_ORIGIN || 'http://localhost:3001',
   credentials: true,
 };
 
@@ -398,5 +398,6 @@ app.post('/api/sessions', function (req, res, next) {
 
 // Activate the server
 app.listen(port, () => {
+  console.log(env.parsed.CORS_ORIGIN);
   console.log(`react-cms-server listening at http://localhost:${port}`);
 });
