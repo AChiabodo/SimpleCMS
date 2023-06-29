@@ -1,6 +1,6 @@
 import { mapFromPage, mapToPage } from "./Page";
 
-const URL = import.meta.env.VITE_URL;
+const URL = import.meta.env.VITE_URL + "/api";
 
 function getJson(httpResponsePromise) {
   // server API always return JSON, in case of error the format is the following { error: <message> }
@@ -43,6 +43,7 @@ function getJson(httpResponsePromise) {
  * The list of pages could be filtered in the server-side through the optional parameter: filter.
  */
 const getPages = async (isAuthenticated) => {
+  console.log(URL);
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
   return getJson(
