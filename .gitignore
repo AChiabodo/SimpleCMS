@@ -6,3 +6,5 @@ node_modules/
 Thumbs.db
 Desktop.ini
 *.env
+*.db
+dist

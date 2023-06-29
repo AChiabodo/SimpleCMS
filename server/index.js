@@ -50,6 +50,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use('/public', express.static('public'));
 
+app.use('/', express.static('dist'));
+
 // set-up the CORS middleware
 const corsOptions = {
   origin: env.parsed.CORS_ORIGIN || 'http://localhost:3001',
