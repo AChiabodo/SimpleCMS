@@ -1,6 +1,6 @@
 import { mapFromPage, mapToPage } from "./Page";
 
-const URL = 'http://localhost:3001/api';
+const URL = import.meta.env.VITE_URL;
 
 function getJson(httpResponsePromise) {
   // server API always return JSON, in case of error the format is the following { error: <message> }
