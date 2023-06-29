@@ -30,7 +30,7 @@ function ViewComponent(props) {
             width={290}
             height={360}
             alt={contentData.componentData}
-            src={`http://localhost:3001/public/${contentData.componentData}`}
+            src={`${import.meta.env.VITE_URL}/public/${contentData.componentData}`}
           />
         </Figure>
       );
@@ -63,7 +63,7 @@ function EditComponent(props) {
               width={290}
               height={360}
               alt={contentData.componentData}
-              src={`http://localhost:3001/public/${contentData.componentData}`}
+              src={`${import.meta.env.VITE_URL}/public/${contentData.componentData}`}
             />
           </Figure>
         );
