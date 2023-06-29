@@ -397,6 +397,15 @@ app.post('/api/sessions', function (req, res, next) {
   })(req, res, next);
 });
 
+const path = require('node:path'); 
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "dist/index.html"), function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
+});
+
 
 // Activate the server
 app.listen(port, () => {
