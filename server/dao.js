@@ -1,24 +1,32 @@
 'use strict';
 /* Data Access Object (DAO) module for accessing questions and answers */
 
-const sqlite = require('sqlite3');
 const dayjs = require('dayjs');
 const e = require('cors');
+const mysql = require('mysql');
 
-// open the database
-const db = new sqlite.Database('CMSmall.db', (err) => {
-  if (err) throw err;
+const con = mysql.createConnection({
+  host: '192.168.1.234',
+  user: 'alessandro',
+  password: 'scricciolo',
+  database: 'CMS'
 });
+
+con.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to MySQL');
+});
+
 //List all pages
 exports.listPages = (onlyPublished = true) => {
   return new Promise((resolve, reject) => {
     let sql;
     if (onlyPublished) {
-      sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE pages.publishDate <= date(\'now\') and users.id = pages.author ORDER BY publishDate DESC';
+      sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE pages.publishDate <= NOW() and users.id = pages.author ORDER BY publishDate DESC';
     } else {
       sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name FROM pages , users WHERE users.id = pages.author ORDER BY publishDate DESC';
     }
-    db.all(sql, [], (err, rows) => {
+      con.query(sql, (err, rows) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -32,19 +40,21 @@ exports.listPages = (onlyPublished = true) => {
 
 exports.findPage = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM pages WHERE id = ?';
-    db.get(sql, [id], (err, row) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      if (!rows || rows.length === 0) {
-        resolve({ error: 'Page not found.' });
-      } else {
-        const page = { id: row.id, title: row.title, creationDate: dayjs(row.creationDate), publishDate: dayjs(row.publishDate), author: row.author }
-        resolve(page);
-      }
-    });
+    const sql = 'SELECT * FROM pages WHERE id = ?'; 
+      if (err) throw err;
+      con.query(sql, [id], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        if (!rows || rows.length === 0) {
+          resolve({ error: 'Page not found.' });
+        } else {
+          row = row[0];
+          const page = { id: row.id, title: row.title, creationDate: dayjs(row.creationDate), publishDate: dayjs(row.publishDate), author: row.author }
+          resolve(page);
+        }
+      });
   });
 }
 
@@ -58,7 +68,7 @@ exports.getPage = (id , onlyPublished = true) => {
       sql = 'SELECT pages.id as id , pages.title as title , pages.creationDate as creationDate , pages.publishDate as publishDate , users.name as name , contentBlock.id as cid , contentBlock.Type as ctype , contentBlock.Position as cposition, contentBlock.Content as content FROM pages , users , contentBlock WHERE pages.id = ? and users.id = pages.author and pages.id = contentBlock.page ORDER BY publishDate DESC';
     }
 
-    db.all(sql, [id], (err, rows) => {
+    con.query(sql, [id], (err, rows) => {
       if (err) {
         reject(err);
         return;
@@ -93,7 +103,7 @@ exports.getPage = (id , onlyPublished = true) => {
 exports.listUsers = () => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM users';
-    db.all(sql, (err, rows) => {
+    con.query(sql, (err, rows) => {
       if (err) {
         reject(err);
         return;
@@ -115,9 +125,8 @@ exports.listUsers = () => {
 exports.createPage = (page) => {
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO pages(title, creationDate,  author , publishDate) VALUES(?, DATE(?), ?, DATE(?))';
-    db.run(sql, [page.title, page.creationDate, page.author, page.publishDate], function (err) {
+    con.query(sql, [page.title, page.creationDate, page.author, page.publishDate], function (err) {
       if (err) {
-         
         reject(err);
         return;
       }
@@ -129,7 +138,7 @@ exports.createPage = (page) => {
 exports.createComponent = (component) => {
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO contentBlock(page, Type,  Content, Position) VALUES(?, ?, ?, ?)';
-    db.run(sql, [component.page, component.type, component.content, component.position], function (err) {
+    con.query(sql, [component.page, component.type, component.content, component.position], function (err) {
       if (err) {
         reject(err);
         return;
@@ -145,7 +154,7 @@ exports.updatePage = (page, user) => {
     let sql;
     if (user.role == 'Admin') { // if the user is an admin, he can update any page
       sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ?';
-      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id], function (err) {
+      con.query(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id], function (err) {
         if (err) {
           console.log(err)
           reject(err);
@@ -156,7 +165,7 @@ exports.updatePage = (page, user) => {
     }
     else{
       sql = 'UPDATE pages SET title = ? , author = ? , creationDate = DATE(?) , publishDate = DATE(?) WHERE id = ? and author = ?';
-      db.run(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user.id], function (err) {
+      con.query(sql, [page.title, page.author, page.creationDate, page.publishDate, page.id, user.id], function (err) {
         if (err) {
           console.log(err)
           reject(err);
@@ -175,7 +184,7 @@ exports.deletePage = (id, user) => {
     if (user.role == 'Admin') { // if the user is an admin, he can delete any page
 
       sql = 'DELETE FROM pages WHERE id = ?';
-      db.run(sql, [id], function (err) {
+      con.query(sql, [id], function (err) {
         if (err) {
           reject(err);
           return;
@@ -185,7 +194,7 @@ exports.deletePage = (id, user) => {
     }
     else {
       sql = 'DELETE FROM pages WHERE id = ? and author = ?';
-      db.run(sql, [id, user.id], function (err) {
+      con.query(sql, [id, user.id], function (err) {
         if (err) {
           reject(err);
           return;
@@ -199,7 +208,7 @@ exports.deletePage = (id, user) => {
 exports.deleteComponents = (page) => {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM contentBlock WHERE page = ?';
-    db.run(sql, [page], function (err) {
+    con.query(sql, [page], function (err) {
       if (err) {
         reject(err);
         return;
@@ -212,7 +221,7 @@ exports.deleteComponents = (page) => {
 exports.listImages = () => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM images';
-    db.all(sql, (err, rows) => {
+    con.query(sql, (err, rows) => {
       if (err) {
         reject(err);
         return;
@@ -233,7 +242,7 @@ exports.listImages = () => {
 exports.updateNameSite = (name) => {
   return new Promise((resolve, reject) => {
     const sql = 'UPDATE site SET name = ?';
-    db.run(sql, [name], function (err) {
+    con.query(sql, [name], function (err) {
       if (err) {
         reject(err);
         return;
@@ -246,7 +255,8 @@ exports.updateNameSite = (name) => {
 exports.getNameSite = () => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT name FROM site';
-    db.get(sql, (err, row) => {
+    con.query(sql, (err, row) => {
+      row = row[0];
       if (err) {
         reject(err);
         return;
