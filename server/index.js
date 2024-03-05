@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
 // Set up multer middleware with the defined storage configuration
 const upload = multer({ storage });
 app.use('/uploads', express.static('uploads'));
-app.use('/', express.static('target'));
+app.use('/', express.static('dist'));
 
 // Set up a POST endpoint for handling file uploads
 app.post("/api/upload", upload.single("file"), function (req, res) {
