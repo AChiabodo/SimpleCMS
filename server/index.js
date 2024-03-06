@@ -89,6 +89,6 @@ const options = {
   options.cert = String(options.cert).replace(/\\n/g, '\n')
   console.log('SSL_KEY: ' + options.cert);
 const sslServer=https.createServer(options,app);
-  sslServer.listen(1337,()=>{
+  sslServer.listen(httpsPort,()=>{
     console.log('API server listening on port ' + httpsPort + ' (SSL Connection)');
   })
