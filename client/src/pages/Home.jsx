@@ -7,7 +7,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
 
   // Getting the current URL query string (if any) using the useLocation hook from react-router-dom
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = new URLSearchParams(useLocation().search);
   const cat = queryParams.get('cat');
 
   // Defining an effect that runs when the cat variable changes
