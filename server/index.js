@@ -10,14 +10,16 @@ import https from "https";
 import fs from "fs";
 import path from "path";
 
-// Load ports from the .env file
-const httpsPort = process.env.HTTPS_PORT || 1337;
-const httpPort = process.env.HTTP_PORT || 3001;
+
 
 // Load environment variables from the .env file
 const result = env.config();
 // Create an instance of the Express application
 const app = express();
+
+// Load ports from the .env file
+const httpsPort = result.parsed.HTTPS_PORT || 1337;
+const httpPort = result.parsed.HTTP_PORT || 3001;
 
 // Use the built-in JSON middleware to parse incoming requests
 app.use(express.json());
@@ -84,37 +86,9 @@ const options = {
   key:fs.readFileSync('./cert/key.pem'),
   cert:fs.readFileSync('./cert/cert.pem')
   }
+  options.cert = String(options.cert).replace(/\\n/g, '\n')
+  console.log('SSL_KEY: ' + options.cert);
 const sslServer=https.createServer(options,app);
   sslServer.listen(1337,()=>{
     console.log('API server listening on port ' + httpsPort + ' (SSL Connection)');
   })
-
-/*
-let urlConfig = {};
-urlConfig.SSL_KEY = "/etc/ssl/PATH/example.key";
-urlConfig.SSL_CERT = "/etc/ssl/PATH/STAR_example_com.crt";
-urlConfig.SSL_CA = "/etc/ssl/PATH/STAR_example_com.ca-bundle";var app = express();
-var fs = require('fs');
-var appPort = 5000;
-var appPortHttps = 5001; //for SSL. yes!! we can use different port for SSL other then 443.// SSL Configuration
-if (urlConfig.SSL_KEY != "") {
- let key = fs.readFileSync(urlConfig.SSL_KEY);
- let cert = fs.readFileSync(urlConfig.SSL_CERT);
- let ca = fs.readFileSync(urlConfig.SSL_CA);
-let options = {
- key: key,
- cert: cert,
- ca: ca
- };
-let https = require('https').Server(options, app);
- https.listen(appPortHttps, function () {
- console.log('API server listening on port ' + appPortHttps + ' (SSL Connection)');
- });
-}
-// SSL Configuration ends // Normal HTTP configuration
-let http = require('http').Server(app);
-http.listen(appPort, function() {
- console.log('API server listening on port ' + appPort);
-});
-// Normal HTTP configuration ends
-*/

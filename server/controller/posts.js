@@ -26,7 +26,7 @@ export const getPost = (req, res) => {
   // Select specific fields from both the users and posts table,
   // and join them based on the user ID of the post author.
   const q =
-    "SELECT p.id, `username`, `title`, `desc`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ?";
+    "SELECT p.id, `username`, `title`, `desc`, `text`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ?";
 
   // Use the database object to query the database for the post with
   // the given ID, and any necessary parameters.
@@ -52,13 +52,14 @@ export const addPost = (req, res) => {
 
     // Otherwise, construct the SQL query to insert a new post into the database
     const q =
-      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`,`uid`) VALUES (?)";
+      "INSERT INTO posts(`title`, `desc`, `text`, `img`, `cat`, `date`,`uid`) VALUES (?)";
 
     // Define an array of values to be inserted into the database, including the
     // post data from the request body and the user ID from the decoded token
     const values = [
       req.body.title,
       req.body.desc,
+      req.body.text,
       req.body.img,
       req.body.cat,
       req.body.date,

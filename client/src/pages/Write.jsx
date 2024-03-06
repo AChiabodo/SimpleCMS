@@ -13,7 +13,8 @@ const Write = () => {
 
   // Define the state variables
   const [title, setTitle] = useState(state?.title || "");
-  const [value, setValue] = useState(state?.desc || "");
+  const [desc, setDesc] = useState(state?.desc || "");
+  const [text, setText] = useState(state?.text || "");
   const [file, setFile] = useState(null);
   const [cat, setCat] = useState(state?.cat || "");
   const [preview, setPreview] = useState()
@@ -63,14 +64,16 @@ const Write = () => {
       state
         ? await API.updatePost({
             title,
-            desc: value,
+            desc: desc,
+            text: text,
             cat,
             img: file ? imgUrl : "",
             draft : false,
           })
         : await API.createPost({
             title,
-            desc: value,
+            desc: desc,
+            text: text,
             cat,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
@@ -98,14 +101,16 @@ const Write = () => {
       state
         ? await API.updatePost({
             title,
-            desc: value,
+            desc: desc,
+            text: text,
             cat,
             img: file ? imgUrl : "",
             draft : true,
           })
         : await API.createPost({
             title,
-            desc: value,
+            desc: desc,
+            text: text,
             cat,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
@@ -140,9 +145,17 @@ const Write = () => {
         <div className="editor-container">
           <ReactQuill
             className="editor"
+            theme="bubble"
+            value={desc}
+            onChange={setDesc}
+          />
+        </div>
+        <div className="editor-container">
+          <ReactQuill
+            className="editor"
             theme="snow"
-            value={value}
-            onChange={setValue}
+            value={text}
+            onChange={setText}
           />
         </div>
       </div>
