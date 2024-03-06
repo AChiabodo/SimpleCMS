@@ -68,7 +68,8 @@ $light-gray: #707070;
       }
     }
 
-    // NAVBAR
+    // OLD NAVBAR
+    /*
     .navbar {
       .container {
         padding: 10px 0px;
@@ -120,7 +121,73 @@ $light-gray: #707070;
         }
       }
     }
-
+    */
+    .navbar {
+      .container {
+         padding: 10px 0px;
+         display: flex;
+         flex-direction: column; // Stack elements vertically
+         align-items: center;
+         justify-content: space-between;
+     
+         .logo {
+           img {
+             width: 100px;
+           }
+         }
+     
+         .links {
+           display: flex;
+           flex-wrap: wrap; // Allow items to wrap onto multiple lines
+           align-items: center;
+           gap: 10px;
+     
+           & > *:not(:last-child):hover {
+             border-bottom: 1px solid $light-orange;
+           }
+     
+           // Adjust the layout based on viewport width
+           @media (min-width: 600px) {
+             & > * {
+               flex-basis: calc(50% - 10px); // Adjust the width for 2 items per line
+             }
+           }
+     
+           @media (min-width: 900px) {
+             & > * {
+               flex-basis: calc(33.33% - 10px); // Adjust the width for 3 items per line
+             }
+           }
+         }
+     
+         h6 {
+           font-size: 16px;
+           font-weight: 300;
+         }
+     
+         span {
+           cursor: pointer;
+         }
+     
+         .write {
+           background-color: $light-orange;
+           width: 50px;
+           height: 50px;
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-weight: 300;
+           border: 1px solid white; // to prevent items move when hover because the extra pixel of the border when hover
+     
+           &:hover {
+             color: $brown-orange;
+             background-color: white;
+             border: 1px solid $dark-orange;
+           }
+         }
+      }
+     }
     // FOOTER
     footer {
       display: flex;
@@ -412,4 +479,117 @@ $light-gray: #707070;
       }
     }
   }
+
+// Responsive styles for mobile devices
+@media (max-width: 600px) {
+ .app {
+    // Adjustments for mobile devices
+    flex-direction: column; // Stack elements vertically
+    align-items: center; // Center items horizontally
+ }
+ .post {
+  flex-direction: column !important; // Stack elements vertically
+}
+
+ .post-img {
+  flex: 2;
+  position: relative;
+
+  &::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: $light-orange;
+    position: absolute;
+    top: 20px;
+    left: -20px;
+    z-index: -1;
+  }
+
+  img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+  }
+}
+
+ .container {
+    width: 100%; // Make the container full width on mobile
+ }
+
+}
+@media (max-width: 900px) {
+  .app {
+     // Adjustments for mobile devices
+     flex-direction: column; // Stack elements vertically
+     align-items: center; // Center items horizontally
+  }
+  .post {
+   flex-direction: column !important; // Stack elements vertically
+ }
+ 
+  .post-img {
+   flex: 2;
+   position: relative;
+ 
+   &::after {
+     content: "";
+     width: 100%;
+     height: 100%;
+     background-color: $light-orange;
+     position: absolute;
+     top: 20px;
+     left: -20px;
+     z-index: -1;
+   }
+ 
+   img {
+     width: 100%;
+     max-height: 400px;
+     object-fit: cover;
+   }
+ }
+ 
+  .container {
+     width: 100%; // Make the container full width on mobile
+  }
+ 
+ }
+ @media (max-width: 1200px) {
+  .app {
+     // Adjustments for mobile devices
+     flex-direction: column; // Stack elements vertically
+     align-items: center; // Center items horizontally
+  }
+  .post {
+   flex-direction: column !important; // Stack elements vertically
+ }
+ 
+  .post-img {
+   flex: 2;
+   position: relative;
+ 
+   &::after {
+     content: "";
+     width: 100%;
+     height: 100%;
+     background-color: $light-orange;
+     position: absolute;
+     top: 20px;
+     left: -20px;
+     z-index: -1;
+   }
+ 
+   img {
+     width: 100%;
+     max-height: 400px;
+     object-fit: cover;
+   }
+ }
+ 
+  .container {
+     width: 100%; // Make the container full width on mobile
+  }
+ 
+ }
 }
