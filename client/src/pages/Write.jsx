@@ -1,7 +1,6 @@
 import React, { useState , useEffect} from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 import API from "../API";
@@ -10,38 +9,29 @@ const Write = () => {
   // Get the location state using the `useLocation` hook
   // will be used to check if we are in writing o edit mode
   const state = useLocation().state;
-
+  console.log("state : " + JSON.stringify(state));
   // Define the state variables
   const [title, setTitle] = useState(state?.title || "");
   const [desc, setDesc] = useState(state?.desc || "");
   const [text, setText] = useState(state?.text || "");
   const [file, setFile] = useState(null);
   const [cat, setCat] = useState(state?.cat || "");
-  const [preview, setPreview] = useState()
+  const [preview, setPreview] = useState(state?.img ? import.meta.env.VITE_URL + `/uploads/${state?.img}` : "");
 
   // Define the navigate function
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!file) {
-        setPreview(undefined)
-        return
+    if (file){
+      const objectUrl = URL.createObjectURL(file)
+      setPreview(objectUrl)  
     }
-
-    const objectUrl = URL.createObjectURL(file)
-    setPreview(objectUrl)
-
 }, [file])
 
   // Define the upload function
   const upload = async () => {
     try {
-      // Create a new FormData object and append the file to it
-      //const formData = new FormData();
-      //formData.append("file", file);
-
-      // Send a POST request to upload the file
-      //const res = await axios.post("/upload", formData);
+      if (!file) return "";
       const res = await API.uploadImage(file)
       console.log("filename : " + JSON.stringify(res));
       // Return the filename of the uploaded file
@@ -63,6 +53,7 @@ const Write = () => {
       // otherwise send a POST request to create a new post
       state
         ? await API.updatePost({
+            id: state.id,
             title,
             desc: desc,
             text: text,

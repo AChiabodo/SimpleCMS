@@ -15,7 +15,6 @@ const Home = () => {
     const fetchData = async () => {
       try {
         // Making an HTTP GET request to the server to retrieve posts data based on the cat variable
-        console.log(cat);
         const res = await API.getPosts(cat);
         // Updating the posts state variable with the retrieved data
         setPosts(res);

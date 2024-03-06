@@ -53,7 +53,7 @@ export const addPost = (req, res) => {
     // Otherwise, construct the SQL query to insert a new post into the database
     const q =
       "INSERT INTO posts(`title`, `desc`, `text`, `img`, `cat`, `date`,`uid`) VALUES (?)";
-
+    console.log(req.body.text);
     // Define an array of values to be inserted into the database, including the
     // post data from the request body and the user ID from the decoded token
     const values = [
@@ -122,12 +122,34 @@ export const updatePost = (req, res) => {
     const postId = req.params.id;
 
     // SQL query to update the post with new values.
-    const q =
-      "UPDATE posts SET `title`=?,`desc`=?,`img`=?,`cat`=? WHERE `id` = ? AND `uid` = ?";
-
-    // An array containing the new values for the post.
-    const values = [req.body.title, req.body.desc, req.body.img, req.body.cat];
-
+    let q = "UPDATE posts SET" 
+    const values = [];
+    if (req.body.title){
+      q += " `title` = ?"
+      values.push(req.body.title)
+    }
+    if (req.body.desc){
+      q += ", `desc` = ?"
+      values.push(req.body.desc)
+    }
+    if (req.body.img){
+      q += ", `img` = ?"
+      values.push(req.body.img)
+    }
+    if (req.body.cat){
+      q += ", `cat` = ?"
+      values.push(req.body.cat)
+    }
+    if (req.body.text){
+      q += ", `text` = ?"
+      values.push(req.body.text)
+    }
+    if (req.body.draft){
+      q += ", `draft` = ?"
+      values.push(req.body.draft)
+    }
+    q += " WHERE `id` = ? AND `uid` = ?";
+    console.log(q);
     // Execute the query using the values and post ID. If there's an error, return an error response. Otherwise, return a success response.
     db.query(q, [...values, postId, userInfo.id], (err, data) => {
       if (err) return res.status(500).json(err);

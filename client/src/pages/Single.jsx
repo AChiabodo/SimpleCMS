@@ -7,6 +7,7 @@ import moment from "moment";
 import { AuthContext } from "../context/authContext";
 import API from "../API";
 import DOMPurify from "dompurify";
+import parse from 'html-react-parser';
 
 const URL = import.meta.env.VITE_URL;
 
@@ -81,10 +82,10 @@ const Single = () => {
         {/* Render the post title and description. */}
         {<h1>{post.title}</h1>}
         {<i>"{getText(post.desc)}"</i>}
-        {<p>{getText(post.text)}</p>}
+        {<div>{parse(String(post.text))}</div>}
       </div>
       )}
-      {post && <Menu cat={post.cat} />}
+      {post && <Menu cat={post.cat} id={post.id}/>}
     </div>
   );
 };

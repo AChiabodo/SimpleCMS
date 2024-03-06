@@ -45,7 +45,8 @@ function getJson(httpResponsePromise) {
 const getPosts = async (cat) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(fetch(URL + "/posts" + cat,reqObj)
+  const postUrl = cat ? URL + "/posts?cat=" + cat : URL + "/posts";
+  return getJson(fetch(postUrl,reqObj)
   ).then((json) => {
     return json;
   });
