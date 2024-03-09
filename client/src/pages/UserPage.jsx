@@ -35,6 +35,7 @@ const Home = () => {
 
   // Rendering the Home component
   return (
+    <div className="container">
     <div className="home">
       <div className="posts">
         {/* Mapping over the posts state variable and rendering a Post component for each post */}
@@ -59,6 +60,7 @@ const Home = () => {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 };

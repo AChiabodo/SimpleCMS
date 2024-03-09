@@ -116,10 +116,10 @@ function updatePost(post) {
   });
 }
 
-function deletePage(page) {
+function deletePost(post) {
   // call  DELETE /api/pages/:id
   return new Promise((resolve, reject) => {
-    fetch(URL+`/pages/${page}`, {
+    fetch(URL+`/posts/${post}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
@@ -224,6 +224,17 @@ async function getImages(){
   }
 }
 
+async function getCategories(){
+  const response = await fetch(URL+'/categories', {
+    credentials: 'include'
+  });
+  const categories = await response.json();
+  if (response.ok) {
+    return categories;
+  } else {
+    throw categories;  // an object with the error coming from the server
+  }
+}
 
-const API = {getPosts , getPost , createPost , updatePost , deletePage , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage};
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories};
 export default API;

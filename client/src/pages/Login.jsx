@@ -38,6 +38,7 @@ const Login = () => {
 
   // Render the login form with input fields for username and password and a button to submit the form
   return (
+    <div className="container">
     <div className="auth">
       <h1>Login</h1>
       <form>
@@ -59,6 +60,7 @@ const Login = () => {
           Don't you have an account? <Link to="/register">Register</Link>
         </span>
       </form>
+    </div>
     </div>
   );
 };

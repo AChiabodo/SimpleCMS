@@ -59,7 +59,7 @@ export const login = (req, res) => {
       return res.status(400).json("Wrong username or password!");
 
     // If the login is successful, create a JSON web token
-    const token = jwt.sign({ id: data[0].id }, "jwtkey");
+    const token = jwt.sign({ id: data[0].id , role: data[0].role }, "jwtkey");
 
     // Remove the password from the user data
     const { password, ...other } = data[0];

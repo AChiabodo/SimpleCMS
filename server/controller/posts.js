@@ -7,8 +7,8 @@ export const getPosts = (req, res) => {
   // select all posts from the given category. Otherwise,
   // select all posts.
   const q = req.query.cat
-    ? "SELECT * FROM posts WHERE cat=?"
-    : "SELECT * FROM posts";
+    ? "SELECT * FROM posts WHERE cat=? and draft = 0"
+    : "SELECT * FROM posts WHERE draft = 0";
 
   // Use the database object to query the database with the
   // appropriate SQL statement and any necessary parameters.
@@ -49,10 +49,9 @@ export const addPost = (req, res) => {
   jwt.verify(token, "jwtkey", (err, userInfo) => {
     // If there's an error, the token is not valid
     if (err) return res.status(403).json("Token is not valid!");
-
+    if (userInfo.role !== "admin") return res.status(403).json("You are not allowed to create a post");
     // Otherwise, construct the SQL query to insert a new post into the database
-    const q =
-      "INSERT INTO posts(`title`, `desc`, `text`, `img`, `cat`, `date`,`uid`) VALUES (?)";
+    const q ="INSERT INTO posts(`title`, `desc`, `text`, `img`, `cat`, `date`,`uid`,`draft`) VALUES (?)";
     console.log(req.body.text);
     // Define an array of values to be inserted into the database, including the
     // post data from the request body and the user ID from the decoded token
@@ -64,6 +63,7 @@ export const addPost = (req, res) => {
       req.body.cat,
       req.body.date,
       userInfo.id,
+      req.body.draft,
     ];
 
     // Use the database object to execute the SQL query with the values array
@@ -82,11 +82,11 @@ export const deletePost = (req, res) => {
   // Check if the user is authenticated by checking for a token in the cookies
   const token = req.cookies.access_token;
   if (!token) return res.status(401).json("Not authenticated");
-
   // Verify the token using the secret key
   jwt.verify(token, "jwtkey", (err, userInfo) => {
     // If there's an error, the token is not valid
     if (err) return res.status(403).json("Token is not valid");
+    if (userInfo.role !== "admin") return res.status(403).json("You are not allowed to delete a post");
 
     // Otherwise, get the ID of the post to be deleted from the request parameters
     const postId = req.params.id;
@@ -110,13 +110,12 @@ export const deletePost = (req, res) => {
 export const updatePost = (req, res) => {
   // Get the access token from the request cookies.
   const token = req.cookies.access_token;
-
   // Check if the token exists, if not, return an error response.
   if (!token) return res.status(401).json("Not authenticated!");
-
   // Verify the token using the "jwtkey" secret key. If the token is not valid, return an error response.
   jwt.verify(token, "jwtkey", (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
+    if (userInfo.role !== "admin") return res.status(403).json("You are not allowed to update a post");
 
     // Get the post ID from the request parameters.
     const postId = req.params.id;

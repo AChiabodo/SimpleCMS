@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 import API from "../API";
+import Editor from "../components/Editor";
 
 const Write = () => {
   // Get the location state using the `useLocation` hook
@@ -142,12 +143,14 @@ const Write = () => {
           />
         </div>
         <div className="editor-container">
-          <ReactQuill
-            className="editor"
-            theme="snow"
-            value={text}
-            onChange={setText}
-          />
+        <ReactQuill
+        theme="snow"
+        onChange={setText}
+        value={text}
+        modules={Editor.modules}
+        formats={Editor.formats}
+        bounds={'#root'}
+      />
         </div>
       </div>
       <div className="menu">

@@ -57,6 +57,7 @@ const Single = () => {
 
   // Render the blog post.
   return (
+    <div className="container">
     <div className="single">
       {post && (<div className="content">
         {/* Render the post image. */}
@@ -86,6 +87,7 @@ const Single = () => {
       </div>
       )}
       {post && <Menu cat={post.cat} id={post.id}/>}
+    </div>
     </div>
   );
 };
