@@ -41,7 +41,7 @@ const Navbar = () => {
           <button className="dropdown-button">CATEGORIE</button>
           <div className="dropdown-content">
               {categories.map((cat) => (
-                <a key={cat.id} href={`/category/${cat.id}`}>
+                <a key={cat.id} href={`/?cat=${cat.id}`}>
                   {cat.category.toUpperCase()}
                 </a>
               ))}

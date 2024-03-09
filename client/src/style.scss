@@ -5,6 +5,16 @@ $brown-orange: #c58c68;
 $light-gray: #707070;
 $navbar-color: #7a7a7a;
 $backgound: #f5f5f5;
+$navbar-background: rgba(red($navbar-color), green($navbar-color), blue($navbar-color), 0.96);
+$navbar-content: rgba(red($navbar-color), green($navbar-color), blue($navbar-color), 0);
+.body {
+  font-family: Arial, sans-serif; // Usa il font predefinito per il corpo del documento
+  margin: 0 !important; // Rimuovi il margine predefinito del body
+  padding: 0; // Rimuovi il padding predefinito del body
+  background-color: $backgound; // Usa il colore di sfondo definito per il body
+  color: #333; // Usa il colore di testo predefinito per il body
+}
+
 .app {
   display: flex;
   justify-content: center; // Centra orizzontalmente il contenuto
@@ -23,21 +33,23 @@ $backgound: #f5f5f5;
   .full-width {
     width: 100%;
     margin: 0 auto;
-
     .navbar {
-      width: auto; // Rendi la navbar full-width
+      width: 100%; // Rendi la navbar full-width
       display: flex;
       justify-content: space-between; // Allinea gli elementi in modo che occupino tutto lo spazio disponibile
-      align-items: center; // Centra verticalmente gli elementi
-      padding: 5px 20px; // Aggiungi un po' di padding per migliorare l'aspetto
-      background-color: $navbar-color; // Usa il colore definito per lo sfondo
-     
+      align-items: stretch; // Centra verticalmente gli elementi
+      padding: 0em 12%; // Aggiungi un po' di padding per migliorare l'aspetto
+      background-color: $navbar-background;
+      position: fixed; // Rendi la navbar fissa
+      top: 0; // Posiziona la navbar in cima allo schermo
+      left: 0; // Posiziona la navbar a sinistra dello schermo
+      z-index: 1000; // Assicura che la navbar sia visibile sopra gli altri elementi
       .container {
          display: flex;
          justify-content: space-between; // Allinea gli elementi in modo che occupino tutto lo spazio disponibile
          align-items: center; // Centra verticalmente gli elementi
-         width: 100%; // Assicura che il contenitore occupi tutto lo spazio disponibile
-         margin: 0 auto; // Centra il contenitore orizzontalmente
+         width: 80%; // Assicura che il contenitore occupi tutto lo spazio disponibile
+         margin: 0 0; // Centra il contenitore orizzontalmente
       }
       .logo {
         img {
@@ -51,27 +63,27 @@ $backgound: #f5f5f5;
   position: relative;
   display: inline-block;
   text-align: center;
-  :hover {
-    background-color: $dark-orange;
-  }
+  
 }
  
  .dropdown-button {
-  background-color: $navbar-color;
+  background-color: $navbar-content;
   border: none;
-  border-radius: 4px;
-  padding: 10px;
+  border-radius: 0px;
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   height: 100%;
+  margin: 0em 1em;
 }
  
  .dropdown-content {
   display: none;
   position: absolute;
-  background-color: white;
+  background-color: $navbar-content;
+  padding: 0em;
+  margin: 0em 1em;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
@@ -87,7 +99,7 @@ $backgound: #f5f5f5;
  }
  
  .dropdown-content a:hover {
-  background-color: #f1f1f1;
+  background-color: $dark-orange;
  }
  
  .dropdown-container:hover .dropdown-content {
@@ -135,7 +147,7 @@ $backgound: #f5f5f5;
 
   .container {
     width: 60%; // Make the container full width
-    margin: 0 auto; // Center the container horizontally
+    margin: 60px auto; // Center the container horizontally
     .link {
       text-decoration: none;
       color: inherit;
@@ -295,7 +307,8 @@ $backgound: #f5f5f5;
     // SINGLE
     .single {
       display: flex;
-      gap: 50px;
+      gap: 30px;
+      padding: 1% 0px;
 
              // Responsive styles for mobile devices
       @media (max-width: 900px) {
