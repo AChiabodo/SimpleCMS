@@ -87,7 +87,7 @@ export const addPost = (req, res) => {
       // If there's an error, return a 500 status code and the error message
       if (err) return res.status(500).json(err);
       try {
-        addPlatforms(data.insertId, req.body.consoles);
+        addPlatforms(data.insertId, req.body.platforms);
       }
       catch (err) {
         console.log(err);
@@ -172,7 +172,7 @@ export const updatePost = (req, res) => {
       q += ", `text` = ?"
       values.push(req.body.text)
     }
-    if (req.body.draft){
+    if (req.body.draft !== undefined){
       q += ", `draft` = ?"
       values.push(req.body.draft)
     }
@@ -229,18 +229,20 @@ export const getDraftedPosts = (req, res) => {
  };
 
 const addPlatforms = (idPost, platforms) => {
-  const q = "INSERT INTO post_platforms(`id_post`, `id_platform`) VALUES ?";
+  const q = "INSERT INTO post_platforms(`post_id`, `platform_id`) VALUES ?";
   const values = platforms.map((platform) => [idPost, platform]);
+  console.log("addPlatforms : " + values);
   db.query(q, [values], (err, data) => {
     if (err) return err;
+    return data;
   });
 }
 
 const updatePlatforms = (idPost, platforms) => {
-  const q = "DELETE FROM post_platforms WHERE `id_post` = ?";
+  const q = "DELETE FROM post_platforms WHERE `post_id` = ?";
   db.query(q, [idPost], (err, data) => {
     if (err) return err;
-    addPlatforms(idPost, platforms);
+    return addPlatforms(idPost, platforms);
   });
 }
 

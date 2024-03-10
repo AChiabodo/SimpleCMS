@@ -21,7 +21,7 @@ const Write = () => {
   const [categories, setCategories] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id.map((id) => (parseInt(id))) || []);
-  const [status, setStatus] = useState(state?.draft || 1); // Imposta lo stato predefinito su 'draft'
+  const [status, setStatus] = useState(state ? state.draft : 1); // Imposta lo stato predefinito su 'draft'
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -33,9 +33,9 @@ const Write = () => {
   }, [desc]);
 
   useEffect(() => {
-    console.log("status : " + status);
-    console.log("state : " + JSON.stringify(state));
-    console.log("platforms : " + JSON.stringify(state?.platforms_id));
+    //console.log("Initial status : " + state?.draft);
+    //console.log("state : " + JSON.stringify(state));
+    //console.log("platforms : " + JSON.stringify(state?.platforms_id));
   }, [state]);
 
   // Define the navigate function
@@ -109,8 +109,8 @@ const Write = () => {
             text: text,
             cat: selectedCategory,
             img: file ? imgUrl : "",
-            draft : false,
-            consoles : selectedPlatforms,
+            draft : parseInt(status) == 1 ? true : false,
+            platforms : selectedPlatforms,
           })
         : await API.createPost({
             title,
@@ -119,8 +119,8 @@ const Write = () => {
             cat: selectedCategory,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-            draft : false,
-            consoles : selectedPlatforms,
+            draft : parseInt(status) == 1 ? true : false,
+            platforms : selectedPlatforms,
           });
 
       // Navigate to the homepage after the post is saved or updated
@@ -145,7 +145,10 @@ const Write = () => {
       <select
         id="status"
         value={status}
-        onChange={(e) => setStatus(e.target.value)}
+        onChange={(e) => {
+          console.log("old status : " + status + " New Status : " + e.target.value);
+          setStatus(e.target.value)
+        }}
       >
         <option value={1}>Draft</option>
         <option value={0}>Public</option>
