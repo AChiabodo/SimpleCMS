@@ -8,5 +8,4 @@ Desktop.ini
 *.env
 *.db
 dist
-uploads
 cert
