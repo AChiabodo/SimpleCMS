@@ -13,7 +13,7 @@ export const getPosts = (req, res) => {
     values = [req.query.cat];
   }
   else if (req.query.platform) {
-    q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
+    q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date`,`img` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
     values = [req.query.platform];
   }
   // Use the database object to query the database with the
