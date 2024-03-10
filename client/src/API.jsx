@@ -265,5 +265,20 @@ async function getDrafts(uid){
   }
 }
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts};
+async function registerUser(inputs){
+  const response = await fetch(URL+'/auth/register', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(inputs),
+  });
+  if (response.ok) {
+    const user = await response.json();
+    return user;
+  }
+}
+
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser};
 export default API;

@@ -140,21 +140,6 @@ const Write = () => {
   return (
     <div className="add">
       <div className="content">
-      <div className="status-container">
-      <label htmlFor="status">Status</label>
-      <select
-        id="status"
-        value={status}
-        onChange={(e) => {
-          console.log("old status : " + status + " New Status : " + e.target.value);
-          setStatus(e.target.value)
-        }}
-      >
-        <option value={1}>Draft</option>
-        <option value={0}>Public</option>
-      </select>
-      <button onClick={handlePublish}>Confirm</button>
-    </div>
       <label htmlFor="title">Titolo</label>
         <input
           type="text"
@@ -198,6 +183,20 @@ const Write = () => {
 </div>
       </div>
       <div className="menu">
+      <div className="status-container">
+      <label htmlFor="status">Status</label>
+      <select
+        id="status"
+        value={status}
+        onChange={(e) => {
+          console.log("old status : " + status + " New Status : " + e.target.value);
+          setStatus(e.target.value)
+        }}
+      >
+        <option value={1}>Draft</option>
+        <option value={0}>Public</option>
+      </select>
+    </div>
         <div className="item">
           <h1>Copertina</h1>
           
@@ -257,6 +256,8 @@ const Write = () => {
     </div>
   ))}
 </div>
+
+<button onClick={handlePublish}>Confirm Changes</button>
       </div>
     </div>
   );

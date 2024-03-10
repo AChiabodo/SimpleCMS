@@ -28,18 +28,18 @@ const Menu = ({ cat,id }) => {
 
   return (
     <div className="menu">
-      <h1>Other posts you may like</h1>
-      {posts && posts.filter((post) => (post.id != id)).map((post) => (
-        <div className="post" key={post.id}>
-          <img src={`${URL}/uploads/${post.img}`} alt="post cover" />
-          <h2>{post.title}</h2>
-          {/* Using Link component to navigate to the post */}
-          <Link className="link" to={`/post/${post.id}`}>
-            <button>Read More</button>
-          </Link>
-        </div>
-      ))}
-    </div>
+ <h1>Other posts you may like</h1>
+ {posts && posts.filter((post) => (post.id != id)).map((post) => (
+   <div className="post" key={post.id}>
+     <Link className="link" to={`/post/${post.id}`}>
+       <div className="post-content">
+         <h2 className="post-title">{post.title}</h2>
+         <img src={`${URL}/uploads/${post.img}`} alt="post cover" className="post-image" />
+       </div>
+     </Link>
+   </div>
+ ))}
+</div>
   );
 };
 

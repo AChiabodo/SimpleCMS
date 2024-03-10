@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../API";
 
 const Register = () => {
   const [inputs, setInputs] = useState({
@@ -24,7 +24,7 @@ const Register = () => {
     // function to handle form submit
     e.preventDefault(); // preventing the default form submission behavior
     try {
-      await axios.post("/auth/register", inputs); // making a post request to register the user using axios library
+      await API.registerUser(inputs); // making a post request to register the user using axios library
       navigate("/login"); // navigating to login page after successful registration
     } catch (err) {
       // handling errors if any

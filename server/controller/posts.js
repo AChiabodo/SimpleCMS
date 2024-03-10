@@ -16,6 +16,7 @@ export const getPosts = (req, res) => {
     q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date`,`img` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
     values = [req.query.platform];
   }
+  q += " ORDER BY `date` DESC";
   // Use the database object to query the database with the
   // appropriate SQL statement and any necessary parameters.
   db.query(q,values, (err, data) => {

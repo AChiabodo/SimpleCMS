@@ -57,8 +57,8 @@ const Single = () => {
   // Render the blog post.
   return (
     <div className="single">
-    <div className="single-container">
-      {post && (<div className="content">
+    {post && (<div className="single-container">
+      <div className="content">
         {/* Render the post image. */}
         {post?.img ? <img src={`${URL}/uploads/${post?.img}`} alt="post cover" /> : null}
         <div className="user">
@@ -93,9 +93,10 @@ const Single = () => {
         {<i>"{getText(post.desc)}"</i>}
         {<div>{parse(String(post.text))}</div>}
       </div>
-      )}
-      {post && <Menu cat={post.cat} id={post.id}/>}
+      <Menu cat={post.cat} id={post.id}/>
+      
     </div>
+    )}
     </div>
   );
 };
