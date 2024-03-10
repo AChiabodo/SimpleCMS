@@ -127,7 +127,6 @@ const Write = () => {
   return (
     <div className="add">
       <div className="content">
-      
         <input
           type="text"
           value={title}

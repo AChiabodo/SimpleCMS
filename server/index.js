@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
 import categoryRoutes from "./routes/categories.js";
+import platformsRoutes from "./routes/platforms.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
 import cors from "cors";
@@ -71,6 +72,7 @@ app.post("/api/upload", upload.single("file"), function (req, res) {
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/platforms",platformsRoutes);
 
 // Start the server and listen on port 3001
 app.listen(httpPort, () => {

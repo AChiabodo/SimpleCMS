@@ -235,6 +235,17 @@ async function getCategories(){
     throw categories;  // an object with the error coming from the server
   }
 }
+async function getPlatforms(){
+  const response = await fetch(URL+'/platforms', {
+    credentials: 'include'
+  });
+  const platforms = await response.json();
+  if (response.ok) {
+    return platforms;
+  } else {
+    throw platforms;  // an object with the error coming from the server
+  }
+}
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories};
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms};
 export default API;

@@ -4,11 +4,12 @@ import { AuthContext } from "../context/authContext";
 import Logo from "../images/logo.png";
 import API from "../API";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser,faLayerGroup,faGamepad} from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
   const [categories, setCategories] = React.useState([]);
+  const [platforms, setPlatforms] = React.useState([]);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -20,7 +21,16 @@ const Navbar = () => {
         console.log(error);
       }
     };
+    const getPlatforms = async () => {
+      try {
+        const data = await API.getPlatforms();
+        setPlatforms(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     getCategories();
+    getPlatforms();
   }, []);
 
   const logoutNavbar = () => {
@@ -30,7 +40,7 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-       <div className="container">
+       <div className="navbar-container">
          <div className="logo">
            <a href="/">
              <img src={Logo} alt="logo" />
@@ -38,7 +48,17 @@ const Navbar = () => {
          </div>
          <div className="links">
           <div className="dropdown-container">
-          <button className="dropdown-button">CATEGORIE</button>
+          <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
+          <div className="dropdown-content">
+              {platforms.map((cat) => (
+                <a key={cat.id} href={`/?cat=${cat.id}`}>
+                  {cat.console.toUpperCase()}
+                </a>
+              ))}
+          </div>
+          </div>
+          <div className="dropdown-container">
+          <button className="dropdown-button"><FontAwesomeIcon icon={faLayerGroup} />CATEGORIE</button>
           <div className="dropdown-content">
               {categories.map((cat) => (
                 <a key={cat.id} href={`/?cat=${cat.id}`}>

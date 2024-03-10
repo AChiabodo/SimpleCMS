@@ -57,8 +57,8 @@ const Single = () => {
 
   // Render the blog post.
   return (
-    <div className="container">
     <div className="single">
+    <div className="single-container">
       {post && (<div className="content">
         {/* Render the post image. */}
         {<img src={`${URL}/uploads/${post?.img}`} alt="post cover" />}
