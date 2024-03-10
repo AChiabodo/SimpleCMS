@@ -4,7 +4,7 @@ import { AuthContext } from "../context/authContext";
 import Logo from "../images/logo.png";
 import API from "../API";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser,faLayerGroup,faGamepad} from '@fortawesome/free-solid-svg-icons';
+import { faUser,faLayerGroup,faGamepad,faRightToBracket} from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
@@ -50,9 +50,9 @@ const Navbar = () => {
           <div className="dropdown-container">
           <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
           <div className="dropdown-content">
-              {platforms.map((cat) => (
-                <a key={cat.id} href={`/?cat=${cat.id}`}>
-                  {cat.console.toUpperCase()}
+              {platforms.map((plat) => (
+                <a key={plat.id} href={`/?platform=${plat.id}`}>
+                  {plat.console.toUpperCase()}
                 </a>
               ))}
           </div>
@@ -89,8 +89,8 @@ const Navbar = () => {
               </div>
           </div>
           ) : (
-            <div className="link">
-              <Link to="/login">Login</Link>
+            <div className="dropdown-container">
+              <Link to="/login"><FontAwesomeIcon icon={faRightToBracket} />LOGIN</Link>
             </div>
           )}           
          </div>

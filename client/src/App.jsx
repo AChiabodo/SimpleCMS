@@ -49,17 +49,17 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <UserPage />,
-      }
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/register",
+        element: <Register />,
+      },
     ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
-  },
+  }
 ]);
 
 // Define the App function that returns the RouterProvider component that provides the routing context to the entire app

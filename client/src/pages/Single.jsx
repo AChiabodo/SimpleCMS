@@ -81,7 +81,16 @@ const Single = () => {
           )}
         </div>
         {/* Render the post title and description. */}
+        <div className="title">
         {<h1>{post.title}</h1>}
+        <div className="platforms" style={{ textAlign: 'right', color: 'red' }}>
+        {post.platforms && post.platforms.map((platform, index) => (
+          <span key={index} style={{ marginRight: '10px' }}>
+            {platform}
+          </span>
+        ))}
+      </div>
+      </div>
         {<i>"{getText(post.desc)}"</i>}
         {<div>{parse(String(post.text))}</div>}
       </div>

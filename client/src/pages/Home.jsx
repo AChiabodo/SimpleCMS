@@ -9,6 +9,7 @@ const Home = () => {
   // Getting the current URL query string (if any) using the useLocation hook from react-router-dom
   const queryParams = new URLSearchParams(useLocation().search);
   const cat = queryParams.get('cat');
+  const platform = queryParams.get('platform');
 
   // Defining an effect that runs when the cat variable changes
   useEffect(() => {
@@ -16,7 +17,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         // Making an HTTP GET request to the server to retrieve posts data based on the cat variable
-        const res = await API.getPosts(cat);
+        const res = await API.getPosts(cat,platform);
         // Updating the posts state variable with the retrieved data
         setPosts(res);
       } catch (err) {

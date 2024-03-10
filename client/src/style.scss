@@ -456,7 +456,9 @@ $content-width: 70%;
       margin-top: 20px;
       display: flex;
       gap: 20px;
-
+      padding: 3% 0px;
+      margin: 0px auto;
+      width: $content-width;
       .content {
         flex: 5;
         display: flex;

@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useRef, useState , useEffect} from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,14 +10,30 @@ const Write = () => {
   // Get the location state using the `useLocation` hook
   // will be used to check if we are in writing o edit mode
   const state = useLocation().state;
-  console.log("state : " + JSON.stringify(state));
   // Define the state variables
   const [title, setTitle] = useState(state?.title || "");
   const [desc, setDesc] = useState(state?.desc || "");
   const [text, setText] = useState(state?.text || "");
   const [file, setFile] = useState(null);
-  const [cat, setCat] = useState(state?.cat || "");
+  const [selectedCategory, setSelectedCategory] = useState(state?.cat || "");
   const [preview, setPreview] = useState(state?.img ? import.meta.env.VITE_URL + `/uploads/${state?.img}` : "");
+  const [categories, setCategories] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id.map((id) => (parseInt(id))) || []);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+  const textarea = textareaRef.current;
+  if (textarea) {
+      textarea.style.height = 'auto'; // Reset the height
+      textarea.style.height = `${textarea.scrollHeight}px`; // Set the new height
+  }
+  }, [desc]);
+
+  useEffect(() => {
+    console.log("state : " + JSON.stringify(state));
+    console.log("platforms : " + JSON.stringify(state?.platforms_id));
+  }, [state]);
 
   // Define the navigate function
   const navigate = useNavigate();
@@ -28,6 +44,32 @@ const Write = () => {
       setPreview(objectUrl)  
     }
 }, [file])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await API.getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlatforms = async () => {
+       try {
+         const data = await API.getPlatforms();
+         setPlatforms(data);
+       } catch (error) {
+         console.log(error);
+       }
+    };
+   
+    fetchPlatforms();
+   }, []);
 
   // Define the upload function
   const upload = async () => {
@@ -41,6 +83,10 @@ const Write = () => {
       console.log(err);
     }
   };
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+   }
 
   // Define the handleClick function to handle the form submission
   const handlePublish = async (e) => {
@@ -58,18 +104,20 @@ const Write = () => {
             title,
             desc: desc,
             text: text,
-            cat,
+            cat: selectedCategory,
             img: file ? imgUrl : "",
             draft : false,
+            consoles : selectedPlatforms,
           })
         : await API.createPost({
             title,
             desc: desc,
             text: text,
-            cat,
+            cat: selectedCategory,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
             draft : false,
+            consoles : selectedPlatforms,
           });
 
       // Navigate to the homepage after the post is saved or updated
@@ -95,18 +143,20 @@ const Write = () => {
             title,
             desc: desc,
             text: text,
-            cat,
+            cat: selectedCategory,
             img: file ? imgUrl : "",
             draft : true,
+            consoles : selectedPlatforms,
           })
         : await API.createPost({
             title,
             desc: desc,
             text: text,
-            cat,
+            cat: selectedCategory,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
             draft : true,
+            consoles : selectedPlatforms,
           });
 
       // Navigate to the homepage after the post is saved or updated
@@ -132,25 +182,38 @@ const Write = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        
-        <div className="editor-container">
-          <ReactQuill
-            className="editor"
-            theme="bubble"
-            value={desc}
-            onChange={setDesc}
-          />
-        </div>
-        <div className="editor-container">
-        <ReactQuill
-        theme="snow"
-        onChange={setText}
-        value={text}
-        modules={Editor.modules}
-        formats={Editor.formats}
-        bounds={'#root'}
-      />
-        </div>
+        <div className="desc-container">
+        <textarea
+        ref={textareaRef}
+        className="editor"
+        value={desc}
+        onChange={(e) => setDesc(e.target.value)}
+        onInput={() => {
+            const textarea = textareaRef.current;
+            if (textarea) {
+              textarea.style.height = 'auto'; // Reset the height
+              textarea.style.height = `${textarea.scrollHeight}px`; // Set the new height
+            }
+        }}
+        style={{
+            width: '100%',
+            height: 'auto',
+            resize: 'none', // Disabilita il ridimensionamento dell'area di testo
+            overflow: 'hidden', // Nasconde la barra di scorrimento
+        }}
+        />
+</div>
+<div className="editor-container" style={{ width: '100%', height: '100%', overflowY: 'hidden' }}>
+ <ReactQuill
+    theme="snow"
+    onChange={setText}
+    value={text}
+    modules={Editor.modules}
+    formats={Editor.formats}
+    bounds={'#root'}
+    style={{ width: '100%', height: '100%' }}
+ />
+</div>
       </div>
       <div className="menu">
         <div className="item">
@@ -183,74 +246,45 @@ const Write = () => {
           </div>
         </div>
         <div className="item">
-          <h1>Category</h1>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "art"}
-              name="cat"
-              value="art"
-              id="art"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="art">Art</label>
-          </div>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "science"}
-              name="cat"
-              value="science"
-              id="science"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="science">Science</label>
-          </div>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "technology"}
-              name="cat"
-              value="technology"
-              id="technology"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="technology">Technology</label>
-          </div>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "cinema"}
-              name="cat"
-              value="cinema"
-              id="cinema"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="cinema">Cinema</label>
-          </div>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "design"}
-              name="cat"
-              value="design"
-              id="design"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="design">Design</label>
-          </div>
-          <div className="cat">
-            <input
-              type="radio"
-              checked={cat === "food"}
-              name="cat"
-              value="food"
-              id="food"
-              onChange={(e) => setCat(e.target.value)}
-            />
-            <label htmlFor="food">Food</label>
-          </div>
+        <h1>Category</h1>
+        {categories.map((category) => (
+            <div className="cat" key={category.id}>
+              <input
+                type="radio"
+                checked={selectedCategory == category.id}
+                name="cat"
+                value={category.category}
+                id={category.id}
+                onChange={() => {
+                  setSelectedCategory(category.id)}}
+              />
+              {<label htmlFor={category.id}>{capitalizeFirstLetter(category.category)}</label>}
+            </div>
+          ))}
         </div>
+        <div className="item">
+ <h1>Platforms</h1>
+ {platforms.map((platform) => (
+    <div className="cat" key={platform.id}>
+      <input
+        type="checkbox"
+        checked={selectedPlatforms.includes(platform.id)}
+        name="platform"
+        value={platform.id}
+        id={platform.id}
+        onChange={(e) => {
+          const isChecked = e.target.checked;
+          if (isChecked) {
+            setSelectedPlatforms([...selectedPlatforms, platform.id]);
+          } else {
+            setSelectedPlatforms(selectedPlatforms.filter(id => id !== platform.id));
+          }
+        }}
+      />
+      <label htmlFor={platform.id}>{capitalizeFirstLetter(platform.console)}</label>
+    </div>
+  ))}
+</div>
       </div>
     </div>
   );

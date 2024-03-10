@@ -6,13 +6,20 @@ export const getPosts = (req, res) => {
   // If the query string includes a category parameter,
   // select all posts from the given category. Otherwise,
   // select all posts.
-  const q = req.query.cat
-    ? "SELECT * FROM posts WHERE cat=? and draft = 0"
-    : "SELECT * FROM posts WHERE draft = 0";
-
+  let values = [];
+  let q = "SELECT * FROM posts WHERE draft = 0";
+  if (req.query.cat) {
+    q = "SELECT * FROM posts WHERE draft = 0 AND `cat` = ?";
+    values = [req.query.cat];
+  }
+  else if (req.query.platform) {
+    q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
+    values = [req.query.platform];
+  }
   // Use the database object to query the database with the
   // appropriate SQL statement and any necessary parameters.
-  db.query(q, [req.query.cat], (err, data) => {
+  db.query(q,values, (err, data) => {
+    console.log(q);
     // If there's an error, send a 500 status code and the error message
     if (err) return res.status(500).send(err);
 
@@ -26,18 +33,27 @@ export const getPost = (req, res) => {
   // Select specific fields from both the users and posts table,
   // and join them based on the user ID of the post author.
   const q =
-    "SELECT p.id, `username`, `title`, `desc`, `text`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ?";
-
+     "SELECT p.id, `username`, `title`, `desc`, `text`, p.img, u.img AS userImg, `cat`,`date`, GROUP_CONCAT(pl.console) as platforms, GROUP_CONCAT(pl.id) as platforms_id FROM users u JOIN posts p ON u.id = p.uid LEFT JOIN post_platforms pp ON p.id = pp.post_id LEFT JOIN platforms pl ON pp.platform_id = pl.id WHERE p.id = ? GROUP BY p.id";
+ 
   // Use the database object to query the database for the post with
   // the given ID, and any necessary parameters.
   db.query(q, [req.params.id], (err, data) => {
-    // If there's an error, send a 500 status code and the error message
-    if (err) return res.status(500).json(err);
-
-    // Otherwise, send a 200 status code and the first item in the data array as JSON
-    return res.status(200).json(data[0]);
+     // If there's an error, send a 500 status code and the error message
+     if (err) return res.status(500).json(err);
+ 
+     // Otherwise, send a 200 status code and the first item in the data array as JSON
+     // Convert the platforms string into an array
+     if (data[0] && data[0].platforms) {
+       data[0].platforms = data[0].platforms.split(',');
+        data[0].platforms_id = data[0].platforms_id.split(',');
+     }
+     else {
+        data[0].platforms = [];
+        data[0].platforms_id = [];
+     }
+     return res.status(200).json(data[0]);
   });
-};
+ };
 
 // Adds a new post to the database
 export const addPost = (req, res) => {
@@ -70,7 +86,13 @@ export const addPost = (req, res) => {
     db.query(q, [values], (err, data) => {
       // If there's an error, return a 500 status code and the error message
       if (err) return res.status(500).json(err);
-
+      try {
+        addPlatforms(postId, req.body.platforms);
+      }
+      catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
       // Otherwise, return a 200 status code and a success message
       return res.json("Post has been created.");
     });
@@ -99,7 +121,14 @@ export const deletePost = (req, res) => {
     db.query(q, [postId, userInfo.id], (err, data) => {
       // If there's an error, return a 403 status code and an error message
       if (err) return res.status(403).json("You can delete only your post");
-
+      try {
+        deletePlatforms(postId);
+      }
+      catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+      
       // Otherwise, return a 200 status code and a success message
       return res.json("Post has been deleted");
     });
@@ -152,6 +181,13 @@ export const updatePost = (req, res) => {
     // Execute the query using the values and post ID. If there's an error, return an error response. Otherwise, return a success response.
     db.query(q, [...values, postId, userInfo.id], (err, data) => {
       if (err) return res.status(500).json(err);
+      try {
+        updatePlatforms(postId, req.body.platforms);
+      }
+      catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
       return res.json("Post has been updated.");
     });
   });
@@ -170,3 +206,26 @@ export const getDraftedPosts = (req, res) => {
       });
     });
 };
+
+const addPlatforms = (idPost, platforms) => {
+  const q = "INSERT INTO post_platforms(`id_post`, `id_platform`) VALUES ?";
+  const values = platforms.map((platform) => [idPost, platform]);
+  db.query(q, [values], (err, data) => {
+    if (err) return err;
+  });
+}
+
+const updatePlatforms = (idPost, platforms) => {
+  const q = "DELETE FROM post_platforms WHERE `id_post` = ?";
+  db.query(q, [idPost], (err, data) => {
+    if (err) return err;
+    addPlatforms(idPost, platforms);
+  });
+}
+
+const deletePlatforms = (idPost) => {
+  const q = "DELETE FROM post_platforms WHERE `id_post` = ?";
+  db.query(q, [idPost], (err, data) => {
+    if (err) return err;
+  });
+}

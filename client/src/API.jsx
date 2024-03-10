@@ -42,10 +42,16 @@ function getJson(httpResponsePromise) {
  * Getting from the server side and returning the list of pages.
  * The list of pages could be filtered in the server-side through the optional parameter: filter.
  */
-const getPosts = async (cat) => {
+const getPosts = async (cat,platform) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  const postUrl = cat ? URL + "/posts?cat=" + cat : URL + "/posts";
+  let postUrl = URL + "/posts";
+  if (cat){
+    postUrl += "?cat=" + cat;
+  }
+  else if (platform){
+    postUrl += "?platform=" + platform;
+  }
   return getJson(fetch(postUrl,reqObj)
   ).then((json) => {
     return json;
