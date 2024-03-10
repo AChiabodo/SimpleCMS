@@ -61,7 +61,7 @@ const Single = () => {
     <div className="single-container">
       {post && (<div className="content">
         {/* Render the post image. */}
-        {<img src={`${URL}/uploads/${post?.img}`} alt="post cover" />}
+        {post?.img ? <img src={`${URL}/uploads/${post?.img}`} alt="post cover" /> : null}
         <div className="user">
           {/* Render the user image if it exists. */}
           {post.userImg && <img src={post.userImg} alt="user" />}

@@ -459,6 +459,37 @@ $content-width: 70%;
       padding: 3% 0px;
       margin: 0px auto;
       width: $content-width;
+      // Nel tuo file style.scss
+      @media (max-width: 600px) {
+          margin-top: 90px;
+          display: flex;
+          flex-direction: column;
+          width: 95%; // Make the container full width
+      
+        .add .menu {
+          order: -1; // Posiziona il menu sopra al titolo
+        }
+      }
+      @media (max-width: 800px) {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        width: 90%; // Make the container full width
+    
+      .add .menu {
+        order: -1; // Posiziona il menu sopra al titolo
+      }
+    }
+    @media (max-width: 1000px) {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      width: 85%; // Make the container full width
+  
+    .add .menu {
+      order: -1; // Posiziona il menu sopra al titolo
+    }
+  }
       .content {
         flex: 5;
         display: flex;
