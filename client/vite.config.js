@@ -10,16 +10,3 @@ export default defineConfig({
     outDir : '../server/dist'
   }
 })
-
-/*
-server: {
-  proxy: {
-    '/': {
-      target: "http://localhost:3001/api/",
-      changeOrigin: true,
-      secure: false,
-      agent: new http.Agent(),
-    },
-  },
-},
-*/

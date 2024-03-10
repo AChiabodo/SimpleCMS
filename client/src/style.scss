@@ -46,6 +46,12 @@ $content-width: 70%;
          align-items: center; // Centra verticalmente gli elementi
          width: $content-width; // Assicura che il contenitore occupi tutto lo spazio disponibile
          margin: 0 auto; // Centra il contenitore orizzontalmente
+         @media (max-width: 600px) {
+          // Adjustments for mobile devices
+          flex-direction: column; // Stack elements vertically
+          align-items: center; // Center items horizontally
+          width: 100%; // Make the container full width
+         }
       }
       .logo {
         img {
@@ -455,33 +461,15 @@ $content-width: 70%;
     .add {
       margin-top: 20px;
       display: flex;
-      gap: 20px;
+      gap: 5vh;
       padding: 3% 0px;
       margin: 0px auto;
       width: $content-width;
       // Nel tuo file style.scss
-      @media (max-width: 600px) {
-          margin-top: 90px;
-          display: flex;
-          flex-direction: column;
-          width: 95%; // Make the container full width
       
-        .add .menu {
-          order: -1; // Posiziona il menu sopra al titolo
-        }
-      }
-      @media (max-width: 800px) {
-        margin-top: 40px;
-        display: flex;
-        flex-direction: column;
-        width: 90%; // Make the container full width
-    
-      .add .menu {
-        order: -1; // Posiziona il menu sopra al titolo
-      }
-    }
+      
     @media (max-width: 1000px) {
-      margin-top: 40px;
+      margin-top: 5vh;
       display: flex;
       flex-direction: column;
       width: 85%; // Make the container full width
@@ -489,12 +477,40 @@ $content-width: 70%;
     .add .menu {
       order: -1; // Posiziona il menu sopra al titolo
     }
+    @media (max-width: 800px) {
+      margin-top: 8vh;
+      display: flex;
+      flex-direction: column;
+      width: 90%; // Make the container full width
+  
+    .add .menu {
+      order: -1; // Posiziona il menu sopra al titolo
+    }
+  }
+    @media (max-width: 600px) {
+      margin-top: 16vh;
+      display: flex;
+      flex-direction: column;
+      width: 95%; // Make the container full width
+      gap: 1vh;
+  
+    .add .menu {
+      order: -1; // Posiziona il menu sopra al titolo
+    }
+  }
   }
       .content {
         flex: 5;
         display: flex;
         flex-direction: column;
         gap: 20px;
+        
+        label {
+          display: block;
+          margin-bottom: 0.5em;
+          font-weight: bold;
+          color: #333;
+         }
 
         input {
           padding: 10px;
@@ -511,6 +527,42 @@ $content-width: 70%;
             border: none;
           }
         }
+        .status-container {
+          display: flex;
+          align-items: center; // Allinea gli elementi verticalmente al centro
+          gap: 10px; // Aggiunge uno spazio tra gli elementi
+          margin-bottom: 1em;
+          width: 10vh;
+          @media (max-width: 600px) {
+            width: 100%;
+          }
+         }
+         
+         .status-container label {
+          margin-bottom: 0.5em;
+          font-weight: bold;
+          color: #333;
+         }
+         
+         .status-container select {
+          padding: 0.5em;
+          font-size: 1em;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+         }
+         .status-container button {
+          padding: 0.5em 1em;
+          font-size: 1em;
+          border: none;
+          border-radius: 4px;
+          background-color: #007bff; // Colore di sfondo blu
+          color: white; // Colore del testo bianco
+          cursor: pointer;
+         }
+         
+         .status-container button:hover {
+          background-color: #0056b3; // Colore di sfondo blu scuro al passaggio del mouse
+         }
       }
 
       .menu {
@@ -574,6 +626,86 @@ $content-width: 70%;
         }
       }
     }
+    .user-page {
+      display: flex;
+      gap: 30px;
+      padding: 3% 0px;
+      margin: 0px auto;
+      width: $content-width;
+      min-height: 100vh;
+
+      @media (max-width: 900px) {
+         flex-direction: column; // Stack elements vertically
+         width: 100%; // Make the container full width
+         .content {
+           order: 1; // Ensure content appears above the menu on mobile
+         }
+     
+         .menu {
+           order: 2; // Ensure menu appears below the content on mobile
+           align-self: stretch; // Make the menu stretch to fill the width
+         }
+      }
+     }
+     
+     .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem auto;
+      background-color: $white;
+      th,
+      td {
+         padding: 0.75rem;
+         vertical-align: top;
+         border-top: 1px solid #dee2e6;
+         text-align: center;
+      }
+      
+      caption {
+        padding: 10px;
+        font-size: 1.2em; // Dimensione del font simile a un titolo h1
+        font-weight: bold; // Peso del font simile a un titolo h1
+        text-align: center; // Centra il testo
+        color: #333; // Colore del testo
+        background-color: $white; // Applica lo stesso colore di sfondo della tabella
+        border-bottom: 1px solid #dee2e6; // Aggiunge un bordo inferiore per separare il titolo dalla tabella
+       }
+
+      thead th {
+         vertical-align: bottom;
+         border-bottom: 2px solid #dee2e6;
+         text-align: center;
+         height: 5vh;
+      }
+     
+      tbody + tbody {
+         border-top: 2px solid #dee2e6;
+      }
+     
+      .table-primary,
+      .table-primary > th,
+      .table-primary > td {
+         background-color: #b8daff;
+      }
+     
+      .table-hover tbody tr:hover {
+         color: #212529;
+         background-color: rgba(0, 0, 0, 0.075);
+      }
+     
+      .table-active,
+      .table-active > th,
+      .table-active > td {
+         color: #212529;
+         background-color: rgba(0, 0, 0, 0.075);
+      }
+     
+      .table-active:hover,
+      .table-active:hover > th,
+      .table-active:hover > td {
+         background-color: rgba(0, 0, 0, 0.075);
+      }
+     }
   }
 
 // Responsive styles for mobile devices

@@ -33,7 +33,7 @@ export const getPost = (req, res) => {
   // Select specific fields from both the users and posts table,
   // and join them based on the user ID of the post author.
   const q =
-     "SELECT p.id, `username`, `title`, `desc`, `text`, p.img, u.img AS userImg, `cat`,`date`, GROUP_CONCAT(pl.console) as platforms, GROUP_CONCAT(pl.id) as platforms_id FROM users u JOIN posts p ON u.id = p.uid LEFT JOIN post_platforms pp ON p.id = pp.post_id LEFT JOIN platforms pl ON pp.platform_id = pl.id WHERE p.id = ? GROUP BY p.id";
+     "SELECT p.id, `username`, `title`, `desc`, `text`, p.img, u.img AS userImg, `cat`,`date`,`draft`, GROUP_CONCAT(pl.console) as platforms, GROUP_CONCAT(pl.id) as platforms_id FROM users u JOIN posts p ON u.id = p.uid LEFT JOIN post_platforms pp ON p.id = pp.post_id LEFT JOIN platforms pl ON pp.platform_id = pl.id WHERE p.id = ? GROUP BY p.id";
  
   // Use the database object to query the database for the post with
   // the given ID, and any necessary parameters.
@@ -47,7 +47,7 @@ export const getPost = (req, res) => {
        data[0].platforms = data[0].platforms.split(',');
         data[0].platforms_id = data[0].platforms_id.split(',');
      }
-     else {
+     else if(data[0]){
         data[0].platforms = [];
         data[0].platforms_id = [];
      }
@@ -194,18 +194,39 @@ export const updatePost = (req, res) => {
 };
 
 export const getDraftedPosts = (req, res) => {
-    // Check if the user is authenticated by checking for a token in the cookies
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated");
-    jwt.verify(token, "jwtkey", (err, userInfo) => {
-      if (err) return res.status(403).json("Token is not valid");
-      const q = "SELECT * FROM posts WHERE `uid` = ? AND `draft` = 1";
-      db.query(q, [userInfo.id], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.status(200).json(data);
-      });
-    });
-};
+  // Check if the user is authenticated by checking for a token in the cookies
+  const token = req.cookies.access_token;
+  if (!token) return res.status(401).json("Not authenticated");
+  jwt.verify(token, "jwtkey", (err, userInfo) => {
+    console.log(JSON.stringify(userInfo) + " " + req.params.uid);
+     if (err) return res.status(403).json("Token is not valid");
+     if (userInfo.role !== "admin") return res.status(403).json("You are not allowed to see drafts");
+     if (userInfo.id != req.params.uid) return res.status(403).json("You are not allowed to see drafts");
+     const q = `
+       SELECT p.*, c.category, GROUP_CONCAT(pl.console) as platforms, GROUP_CONCAT(pl.id) as platforms_id , draft
+       FROM posts p
+       LEFT JOIN categories c ON p.cat = c.id
+       LEFT JOIN post_platforms pp ON p.id = pp.post_id
+       LEFT JOIN platforms pl ON pp.platform_id = pl.id
+       WHERE p.uid = ? AND p.draft = 1
+       GROUP BY p.id
+     `;
+     db.query(q, [userInfo.id], (err, data) => {
+       if (err) return res.status(500).json(err);
+       // Convert the platforms string into an array
+       data.forEach(post => {
+         if (post.platforms) {
+           post.platforms = post.platforms.split(',');
+            post.platforms_id = post.platforms_id.split(',');
+         } else {
+           post.platforms = [];
+            post.platforms_id = [];
+         }
+       });
+       return res.status(200).json(data);
+     });
+  });
+ };
 
 const addPlatforms = (idPost, platforms) => {
   const q = "INSERT INTO post_platforms(`id_post`, `id_platform`) VALUES ?";

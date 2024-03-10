@@ -10,9 +10,10 @@ const Write = () => {
   // Get the location state using the `useLocation` hook
   // will be used to check if we are in writing o edit mode
   const state = useLocation().state;
+  
   // Define the state variables
-  const [title, setTitle] = useState(state?.title || "");
-  const [desc, setDesc] = useState(state?.desc || "");
+  const [title, setTitle] = useState(state?.title || "Titolo");
+  const [desc, setDesc] = useState(state?.desc || "Descrizione");
   const [text, setText] = useState(state?.text || "");
   const [file, setFile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(state?.cat || "");
@@ -20,6 +21,7 @@ const Write = () => {
   const [categories, setCategories] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id.map((id) => (parseInt(id))) || []);
+  const [status, setStatus] = useState(state?.draft || 1); // Imposta lo stato predefinito su 'draft'
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -31,6 +33,7 @@ const Write = () => {
   }, [desc]);
 
   useEffect(() => {
+    console.log("status : " + status);
     console.log("state : " + JSON.stringify(state));
     console.log("platforms : " + JSON.stringify(state?.platforms_id));
   }, [state]);
@@ -127,46 +130,6 @@ const Write = () => {
     }
   };
 
-  const handleDraft = async (e) => {
-    e.preventDefault();
-    let imgUrl = "";
-    if (file){
-    // Upload the image and get the filename
-       imgUrl = await upload();
-    }
-
-    try {
-      // Send a PUT request to update a post if the location state is defined (writing),
-      // otherwise send a POST request to create a new post
-      state
-        ? await API.updatePost({
-            title,
-            desc: desc,
-            text: text,
-            cat: selectedCategory,
-            img: file ? imgUrl : "",
-            draft : true,
-            consoles : selectedPlatforms,
-          })
-        : await API.createPost({
-            title,
-            desc: desc,
-            text: text,
-            cat: selectedCategory,
-            img: file ? imgUrl : "",
-            date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-            draft : true,
-            consoles : selectedPlatforms,
-          });
-
-      // Navigate to the homepage after the post is saved or updated
-      navigate("/");
-    } catch (err) {
-      console.log(err);
-    }
-
-  }
-
   const handleRemoveImage = async (e) => {
     setFile(null)
     setPreview(undefined)
@@ -177,14 +140,30 @@ const Write = () => {
   return (
     <div className="add">
       <div className="content">
+      <div className="status-container">
+      <label htmlFor="status">Status</label>
+      <select
+        id="status"
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
+      >
+        <option value={1}>Draft</option>
+        <option value={0}>Public</option>
+      </select>
+      <button onClick={handlePublish}>Confirm</button>
+    </div>
+      <label htmlFor="title">Titolo</label>
         <input
           type="text"
+          id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <div className="desc-container">
+        <label htmlFor="desc">Descrizione</label>
         <textarea
         ref={textareaRef}
+        id="desc"
         className="editor"
         value={desc}
         onChange={(e) => setDesc(e.target.value)}
@@ -217,14 +196,11 @@ const Write = () => {
       </div>
       <div className="menu">
         <div className="item">
-          <h1>Publish</h1>
-          <span>
-            <b>Status: </b> Draft
-          </span>
-          <span>
-            <b>Visibility: </b> Public
-          </span>
-          <span>
+          <h1>Copertina</h1>
+          
+          {file ? <img src={preview} height="auto" width="100%" /> : <img src={preview} height="auto" width="100%" />}
+          
+          <div className="buttons">
           <input
             style={{ display: "none" }}
             type="file"
@@ -235,18 +211,11 @@ const Write = () => {
           <label className="file" htmlFor="file">
             Upload Image
           </label>
-          </span>
-          
-          {file &&  <img src={preview} height="auto" width="100%" /> }
-          
-          <div className="buttons">
-            <button onClick={handleDraft}>Save as a draft</button>
             {preview && <button onClick={handleRemoveImage}>Remove Image</button>}
-            <button onClick={handlePublish}>Publish</button>
           </div>
         </div>
         <div className="item">
-        <h1>Category</h1>
+        <h1>Categoria</h1>
         {categories.map((category) => (
             <div className="cat" key={category.id}>
               <input
@@ -263,7 +232,7 @@ const Write = () => {
           ))}
         </div>
         <div className="item">
- <h1>Platforms</h1>
+ <h1>Piattaforme</h1>
  {platforms.map((platform) => (
     <div className="cat" key={platform.id}>
       <input

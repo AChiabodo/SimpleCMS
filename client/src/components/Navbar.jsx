@@ -75,7 +75,7 @@ const Navbar = () => {
                 <FontAwesomeIcon icon={faUser} /> {currentUser.username}
               </button>
               <div className="dropdown-content">
-                <Link to={`/user/${currentUser.id}`}>
+                <Link to={`/user`}>
                     {currentUser.username}
                 </Link>
                 {currentUser?.role === "admin" && (

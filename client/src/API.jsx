@@ -253,5 +253,17 @@ async function getPlatforms(){
   }
 }
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms};
+async function getDrafts(uid){
+  const response = await fetch(URL+'/posts/drafts/' + uid, {
+    credentials: 'include'
+  });
+  const drafts = await response.json();
+  if (response.ok) {
+    return drafts;
+  } else {
+    throw drafts;  // an object with the error coming from the server
+  }
+}
+
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts};
 export default API;

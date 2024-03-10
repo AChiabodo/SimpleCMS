@@ -6,7 +6,6 @@ import Menu from "../components/Menu";
 import moment from "moment";
 import { AuthContext } from "../context/authContext";
 import API from "../API";
-import DOMPurify from "dompurify";
 import parse from 'html-react-parser';
 
 const URL = import.meta.env.VITE_URL;
@@ -73,7 +72,7 @@ const Single = () => {
           {/* Render the edit and delete buttons if the current user is the author of the post. */}
           {currentUser && currentUser.username === post.username && (
             <div className="edit">
-              <Link to={`/write?edit=2`} state={post}>
+              <Link to={`/write`} state={post}>
                 <img src={EditImage} alt="edit" />
               </Link>
               <img onClick={handleDelete} src={DeleteImage} alt="delete" />
