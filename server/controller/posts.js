@@ -87,8 +87,7 @@ export const addPost = (req, res) => {
       // If there's an error, return a 500 status code and the error message
       if (err) return res.status(500).json(err);
       try {
-        console.log(data);
-        addPlatforms(data.id, req.body.platforms);
+        addPlatforms(data.insertId, req.body.consoles);
       }
       catch (err) {
         console.log(err);
