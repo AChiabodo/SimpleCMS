@@ -87,11 +87,12 @@ export const addPost = (req, res) => {
       // If there's an error, return a 500 status code and the error message
       if (err) return res.status(500).json(err);
       try {
-        addPlatforms(postId, req.body.platforms);
+        console.log(data);
+        addPlatforms(data.id, req.body.platforms);
       }
       catch (err) {
         console.log(err);
-        res.status(500).json(err);
+        return res.status(500).json(err);
       }
       // Otherwise, return a 200 status code and a success message
       return res.json("Post has been created.");
