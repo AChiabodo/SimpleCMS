@@ -52,6 +52,15 @@ $content-width: 70%;
           align-items: center; // Center items horizontally
           width: 100%; // Make the container full width
          }
+         @media (max-width: 700px) {
+          width: 90%; // Make the container full width
+         }
+         @media (max-width: 800px) {
+          width: 85%; // Make the container full width
+         }
+         @media (max-width: 900px) {
+          width: 80%; // Make the container full width
+         }
       }
       .logo {
         img {
@@ -219,9 +228,12 @@ $content-width: 70%;
          align-items: center;
          width: $content-width;
          margin: 0 auto;
-         @media (max-width: 600px) {
+         @media (max-width: 700px) {
            flex-direction: column;
            align-items: center;
+         }
+         @media (max-width: 900px) {
+            width: 95%;
          }
          .footer-logo {
            img {
@@ -276,13 +288,17 @@ $content-width: 70%;
         margin: 50px auto;
         display: flex;
         flex-direction: column;
-        gap: 150px;
+        gap: 5vh;
 
         .post {
           width: 95%;
           margin: 2% auto;
           display: flex;
-          gap: 100px;
+          //gap: 5vh;
+          column-gap: 2vw;
+          @media (max-width: 900px) {
+            gap: 0vh;
+          }
 
           &:nth-child(2n + 1) {
             flex-direction: row-reverse;
@@ -354,19 +370,7 @@ $content-width: 70%;
       padding: 3% 0px;
       margin: 0px auto;
 
-             // Responsive styles for mobile devices
-      @media (max-width: 900px) {
-        flex-direction: column; // Stack elements vertically
-        width: 100%; // Make the container full width
-        .content {
-          order: 1; // Ensure content appears above the menu on mobile
-        }
-
-        .menu {
-          order: 2; // Ensure menu appears below the content on mobile
-          align-self: stretch; // Make the menu stretch to fill the width
-        }
-      }
+      
       width: $content-width;
 
       .single-container{
@@ -501,7 +505,22 @@ $content-width: 70%;
           }
         }
       }
-    }
+      // Responsive styles for .single .menu
+            @media (max-width: 900px) {
+              flex-direction: column; // Stack elements vertically
+              width: 100%; // Make the container full width
+      
+              .content {
+                order: 1; // Ensure content appears above the menu on mobile
+              }
+      
+              .menu {
+                order: 2; // Ensure menu appears below the content on mobile
+                align-self: stretch; // Make the menu stretch to fill the width
+                gap: 1vh;
+                padding: 5%;
+              }
+            }    }
 
     // WRITE
     .add {

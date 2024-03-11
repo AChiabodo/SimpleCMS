@@ -28,7 +28,7 @@ const Menu = ({ cat,id }) => {
 
   return (
     <div className="menu">
- <h1>Other posts you may like</h1>
+ <h1>Potrebbe anche interessarti :</h1>
  {posts && posts.filter((post) => (post.id != id)).map((post) => (
    <div className="post" key={post.id}>
      <Link className="link" to={`/post/${post.id}`}>
