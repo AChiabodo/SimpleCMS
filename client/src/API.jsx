@@ -1,6 +1,7 @@
 import { mapFromPage, mapToPage } from "./Page";
 
 const URL = import.meta.env.VITE_URL + "/api";
+const LIMIT = import.meta.env.VITE_SIZE;
 
 function getJson(httpResponsePromise) {
   // server API always return JSON, in case of error the format is the following { error: <message> }
@@ -42,46 +43,56 @@ function getJson(httpResponsePromise) {
  * Getting from the server side and returning the list of pages.
  * The list of pages could be filtered in the server-side through the optional parameter: filter.
  */
-const getPages = async (isAuthenticated) => {
-  console.log(URL);
+const getPosts = async (cat,platform,page,limit) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(
-    isAuthenticated
-      ? fetch(URL + "/pages" ,reqObj)
-      : fetch(URL + "/front/pages",reqObj)
+  let postUrl = URL + "/posts";
+  const pageUrl = page ? "page=" + page : "page=1";
+  const limitUrl = "limit=" + (limit || LIMIT);
+  console.log(LIMIT);
+  if (cat){
+    postUrl += "?cat=" + cat;
+    postUrl += "&" + pageUrl + "&" + limitUrl;
+  }
+  else if (platform){
+    postUrl += "?platform=" + platform;
+    postUrl += "&" + pageUrl + "&" + limitUrl;
+  }
+  else{
+    postUrl += "?" + pageUrl + "&" + limitUrl;
+  }
+  return getJson(fetch(postUrl,reqObj)
   ).then((json) => {
-    return json.map((page) => mapToPage(page));
+    return json;
   });
 };
 
-const getPage = async (idPage,isAuthenticated) => {
+const getPost = async (idPost) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(
-    isAuthenticated
-      ? fetch(URL + "/pages/" + idPage ,reqObj)
-      : fetch(URL + "/front/pages/" + idPage,reqObj)
+  return getJson(fetch(URL + "/posts/" + idPost,reqObj)
   ).then((json) => {
-    return mapToPage(json);
+    return json;
+  }).catch((err) => {
+    console.log(err);
   });
 };
 
 /**
  * 
- * @param {Object} page 
+ * @param {Object} post 
  * @returns Promise<Object> the id of the page created
  */
-function addPage(page) {
+function createPost(post) {
   // call  POST /api/answers
   return new Promise((resolve, reject) => {
-    fetch(URL+`/pages`, {
+    fetch(URL+`/posts`, {
       method: 'POST',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(Object.assign({}, mapFromPage(page))),
+      body: JSON.stringify(Object.assign({}, post)),
     }).then((response) => {
       if (response.ok) {
         response.json()
@@ -97,16 +108,16 @@ function addPage(page) {
   });
 }
 
-function updatePage(page) {
+function updatePost(post) {
   // call  PUT /api/pages/:id
   return new Promise((resolve, reject) => {
-    fetch(URL+`/pages/${page.id}`, {
+    fetch(URL+`/posts/${post.id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(Object.assign({}, mapFromPage(page))),
+      body: JSON.stringify(Object.assign({}, post)),
     }).then((response) => {
       if (response.ok) {
         resolve(null);
@@ -120,10 +131,10 @@ function updatePage(page) {
   });
 }
 
-function deletePage(page) {
+function deletePost(post) {
   // call  DELETE /api/pages/:id
   return new Promise((resolve, reject) => {
-    fetch(URL+`/pages/${page}`, {
+    fetch(URL+`/posts/${post}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
@@ -144,8 +155,31 @@ function deletePage(page) {
   });
 }
 
+function uploadImage(file) {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch(URL + '/upload', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    }).then((response) => {
+      if (response.ok) {
+        response.json()
+          .then((filename) => resolve(filename))
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      } else {
+        // analyze the cause of error
+        response.json()
+          .then((message) => { reject(message); }) // error message in the response body
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      }
+    }).catch(() => { reject({ error: "Cannot communicate with the server." }) }); // connection errors
+  });
+}
+
 async function logIn(credentials) {
-  let response = await fetch(URL + '/sessions', {
+  let response = await fetch(URL + '/auth/login', {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -163,8 +197,8 @@ async function logIn(credentials) {
 }
 
 async function logOut() {
-  await fetch(URL+'/sessions/current', {
-    method: 'DELETE', 
+  await fetch(URL+'/auth/logout', {
+    method: 'POST', 
     credentials: 'include' 
   });
 }
@@ -205,34 +239,71 @@ async function getImages(){
   }
 }
 
-async function getNameSite(){
-  const response = await fetch(URL+'/front/name', {
+async function getCategories(){
+  const response = await fetch(URL+'/categories', {
     credentials: 'include'
   });
-  const nameSite = await response.json();
+  const categories = await response.json();
   if (response.ok) {
-    return nameSite;
+    return categories;
   } else {
-    throw nameSite;  // an object with the error coming from the server
+    throw categories;  // an object with the error coming from the server
   }
 }
-
-async function updateNameSite(name){
-  const response = await fetch(URL+'/namesite', {
-    method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({"name" : name}),
+async function getPlatforms(){
+  const response = await fetch(URL+'/platforms', {
+    credentials: 'include'
   });
-  const nameSite = await response.json();
+  const platforms = await response.json();
   if (response.ok) {
-    return nameSite;
+    return platforms;
   } else {
-    throw nameSite;  // an object with the error coming from the server
+    throw platforms;  // an object with the error coming from the server
   }
 }
 
-const API = {getPages , getPage , addPage , updatePage , deletePage , getUserInfo , logIn , logOut , getUsers , getImages , getNameSite , updateNameSite};
+async function getDrafts(uid){
+  const response = await fetch(URL+'/posts/drafts/' + uid, {
+    credentials: 'include'
+  });
+  const drafts = await response.json();
+  if (response.ok) {
+    return drafts;
+  } else {
+    throw drafts;  // an object with the error coming from the server
+  }
+}
+
+async function registerUser(inputs){
+  const response = await fetch(URL+'/auth/register', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(inputs),
+  });
+  if (response.ok) {
+    const user = await response.json();
+    return user;
+  }
+}
+
+async function getPostsNumber(cat,platform){
+  const reqObj = {method: 'GET',credentials: 'include'};
+  let postUrl = URL + "/posts/number";
+  if (cat){
+    postUrl += "?cat=" + cat;
+  }
+  else if (platform){
+    postUrl += "?platform=" + platform;
+  }
+  return getJson(fetch(postUrl,reqObj)
+  ).then((json) => {
+    return json;
+  });
+
+}
+
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber};
 export default API;
