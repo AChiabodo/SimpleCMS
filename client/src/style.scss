@@ -373,7 +373,8 @@ $content-width: 70%;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         background-color: $white;
         display: flex;
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
+          margin: 0px auto;
           flex-direction: column; // Stack elements vertically
           align-items: center; // Center items horizontally
           width: 100%; // Make the container full width
@@ -386,6 +387,7 @@ $content-width: 70%;
         display: flex;
         flex-direction: column;
         gap: 30px;
+        width: 90%;
 
         img {
           width: 100%;
