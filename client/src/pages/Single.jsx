@@ -26,6 +26,15 @@ const Single = () => {
 
   // Use the useEffect hook to fetch the blog post data from the server when the component mounts.
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await API.getPost(postId);
+        console.log(res);
+        setPost(res);
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchData();
   }, [postId]);
 
@@ -36,17 +45,7 @@ const Single = () => {
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const fetchData = async () => {
-    try {
-      const res = await API.getPost(postId);
-      console.log(res);
-      setPost(res);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  };  
 
   // Helper function to extract plain text from an HTML string.
   const getText = (html) => {
