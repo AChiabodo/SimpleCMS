@@ -10,18 +10,21 @@ const Write = () => {
   // Get the location state using the `useLocation` hook
   // will be used to check if we are in writing o edit mode
   const state = useLocation().state;
-  
+  // Define the navigate function
+  const navigate = useNavigate();
   // Define the state variables
-  const [title, setTitle] = useState(state?.title || "Titolo");
-  const [desc, setDesc] = useState(state?.desc || "Descrizione");
+  const [title, setTitle] = useState(state?.title || "");
+  const [desc, setDesc] = useState(state?.desc || "");
   const [text, setText] = useState(state?.text || "");
   const [file, setFile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(state?.cat || "");
   const [preview, setPreview] = useState(state?.img ? import.meta.env.VITE_URL + `/uploads/${state?.img}` : "");
   const [categories, setCategories] = useState([]);
   const [platforms, setPlatforms] = useState([]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id.map((id) => (parseInt(id))) || []);
-  const [status, setStatus] = useState(state ? state.draft : 1); // Imposta lo stato predefinito su 'draft'
+  const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id ? state.platforms_id.map((id) => (parseInt(id))) : []);
+  const [status, setStatus] = useState(state?.draft == 0 ? 0 : 1); // Imposta lo stato predefinito su 'draft'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -32,14 +35,6 @@ const Write = () => {
   }
   }, [desc]);
 
-  useEffect(() => {
-    //console.log("Initial status : " + state?.draft);
-    //console.log("state : " + JSON.stringify(state));
-    //console.log("platforms : " + JSON.stringify(state?.platforms_id));
-  }, [state]);
-
-  // Define the navigate function
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (file){
@@ -84,6 +79,7 @@ const Write = () => {
       return res;
     } catch (err) {
       console.log(err);
+      return "";
     }
   };
 
@@ -94,10 +90,48 @@ const Write = () => {
   // Define the handleClick function to handle the form submission
   const handlePublish = async (e) => {
     e.preventDefault();
-
+    if (selectedPlatforms.length == 0 && status == 0){
+      setError("Seleziona almeno una piattaforma");
+      return;
+    }
+    if (selectedCategory.length == 0){
+      setError("Seleziona una categoria");
+      return;
+    }
+    if (title.length == 0){
+      setError("Inserisci un titolo");
+      return;
+    }
+    if (desc.length == 0){
+      setError("Inserisci una descrizione");
+      return;
+    }
+    if (text.length == 0  && status == 0){
+      setError("Inserisci un testo per poter pubblicare il post");
+      return;
+    }
+    if (file && file.size > 1000000){
+      setError("L'immagine è troppo grande, massimo 1MB");
+      return;
+    }
+    
+    setLoading(true);
     // Upload the image and get the filename
-    const imgUrl = await upload();
-
+    let imgUrl = "";
+    if (file){
+      imgUrl = await upload();
+      if (!imgUrl || imgUrl == "") {
+        setLoading(false);
+        setError("Errore durante il caricamento dell'immagine");
+        return;
+      }
+    }
+    if (!file && !preview && status == 0){
+      setLoading(false);
+      setError("Inserisci un'immagine di copertina");
+      return;
+    }
+    setError(null);
     try {
       // Send a PUT request to update a post if the location state is defined (writing),
       // otherwise send a POST request to create a new post
@@ -127,6 +161,7 @@ const Write = () => {
       navigate("/");
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -144,6 +179,7 @@ const Write = () => {
         <input
           type="text"
           id="title"
+          placeholder="Inserisci un titolo..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -152,6 +188,7 @@ const Write = () => {
         <textarea
         ref={textareaRef}
         id="desc"
+        placeholder="Inserisci una descrizione..."
         className="editor"
         value={desc}
         onChange={(e) => setDesc(e.target.value)}
@@ -197,6 +234,7 @@ const Write = () => {
         <option value={0}>Public</option>
       </select>
     </div>
+    {error && <div className="error">{error}</div>}
         <div className="item">
           <h1>Copertina</h1>
           
@@ -257,7 +295,7 @@ const Write = () => {
   ))}
 </div>
 
-<button onClick={handlePublish}>Confirm Changes</button>
+  {loading ? <button onClick={handlePublish} disabled>Confirm Changes</button> : <button onClick={handlePublish}>Confirm Changes</button>}
       </div>
     </div>
   );

@@ -79,7 +79,7 @@ const Navbar = () => {
                     {currentUser.username}
                 </Link>
                 {currentUser?.role === "admin" && (
-                  <Link to="/write">
+                  <Link to="/write" state={""}>
                     Write
                   </Link>
                 )}
