@@ -8,6 +8,7 @@ import Write from "./pages/Write";
 import UserPage from "./pages/UserPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import NotFound from "./pages/NotFound";
 import "./style.scss";
 
 // Create a Layout component that defines the structure of the web page
@@ -57,7 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
-      },
+      },{
+        path: "*",
+        element: <NotFound />,
+      }
     ],
   }
 ]);
