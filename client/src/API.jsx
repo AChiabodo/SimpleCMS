@@ -1,6 +1,7 @@
 import { mapFromPage, mapToPage } from "./Page";
 
 const URL = import.meta.env.VITE_URL + "/api";
+const LIMIT = import.meta.env.VITE_SIZE;
 
 function getJson(httpResponsePromise) {
   // server API always return JSON, in case of error the format is the following { error: <message> }
@@ -42,15 +43,23 @@ function getJson(httpResponsePromise) {
  * Getting from the server side and returning the list of pages.
  * The list of pages could be filtered in the server-side through the optional parameter: filter.
  */
-const getPosts = async (cat,platform) => {
+const getPosts = async (cat,platform,page,limit) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
   let postUrl = URL + "/posts";
+  const pageUrl = page ? "page=" + page : "page=1";
+  const limitUrl = "limit=" + (limit || LIMIT);
+  console.log(LIMIT);
   if (cat){
     postUrl += "?cat=" + cat;
+    postUrl += "&" + pageUrl + "&" + limitUrl;
   }
   else if (platform){
     postUrl += "?platform=" + platform;
+    postUrl += "&" + pageUrl + "&" + limitUrl;
+  }
+  else{
+    postUrl += "?" + pageUrl + "&" + limitUrl;
   }
   return getJson(fetch(postUrl,reqObj)
   ).then((json) => {
@@ -280,5 +289,21 @@ async function registerUser(inputs){
   }
 }
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser};
+async function getPostsNumber(cat,platform){
+  const reqObj = {method: 'GET',credentials: 'include'};
+  let postUrl = URL + "/posts/number";
+  if (cat){
+    postUrl += "?cat=" + cat;
+  }
+  else if (platform){
+    postUrl += "?platform=" + platform;
+  }
+  return getJson(fetch(postUrl,reqObj)
+  ).then((json) => {
+    return json;
+  });
+
+}
+
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber};
 export default API;

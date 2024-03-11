@@ -15,7 +15,7 @@ const Menu = ({ cat,id }) => {
       try {
         console.log(cat);
         if (cat){
-          const res = await API.getPosts(cat);
+          const res = await API.getPosts(cat,null,1,3);
           setPosts(res);
         }
       } catch (err) {
@@ -29,7 +29,7 @@ const Menu = ({ cat,id }) => {
   return (
     <div className="menu">
  <h1>Potrebbe anche interessarti :</h1>
- {posts && posts.filter((post) => (post.id != id)).map((post) => (
+ {posts && posts.filter((post) => (post.id != id)).slice(0, 2).map((post) => (
    <div className="post" key={post.id}>
      <Link className="link" to={`/post/${post.id}`}>
        <div className="post-content">

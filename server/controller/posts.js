@@ -17,6 +17,17 @@ export const getPosts = (req, res) => {
     values = [req.query.platform];
   }
   q += " ORDER BY `date` DESC";
+  if (req.query.limit && !isNaN(req.query.limit) && parseInt(req.query.limit) > 0){
+    if (req.query.page && !isNaN(req.query.page) && parseInt(req.query.page) > 0){
+      q += " LIMIT ? OFFSET ?";
+      values.push(parseInt(req.query.limit));
+      values.push((parseInt(req.query.page) - 1) * parseInt(req.query.limit));
+    }
+    else{
+      q += " LIMIT ?";
+      values.push(parseInt(req.query.limit));  
+    }
+  }
   // Use the database object to query the database with the
   // appropriate SQL statement and any necessary parameters.
   db.query(q,values, (err, data) => {
@@ -251,5 +262,31 @@ const deletePlatforms = (idPost) => {
   const q = "DELETE FROM post_platforms WHERE `id_post` = ?";
   db.query(q, [idPost], (err, data) => {
     if (err) return err;
+  });
+}
+
+export const getPostsNumber = (req, res) => {
+    // If the query string includes a category parameter,
+  // select all posts from the given category. Otherwise,
+  // select all posts.
+  let values = [];
+  let q = "SELECT COUNT(*) as num FROM posts WHERE draft = 0";
+  if (req.query.cat) {
+    q = "SELECT COUNT(*)  as num FROM posts WHERE draft = 0 AND `cat` = ?";
+    values = [req.query.cat];
+  }
+  else if (req.query.platform) {
+    q = "SELECT COUNT(*)  as num FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
+    values = [req.query.platform];
+  }
+  // Use the database object to query the database with the
+  // appropriate SQL statement and any necessary parameters.
+  db.query(q,values, (err, data) => {
+    console.log(q);
+    // If there's an error, send a 500 status code and the error message
+    if (err) return res.status(500).send(err);
+
+    // Otherwise, send a 200 status code and the data as JSON
+    return res.status(200).json(data[0]);
   });
 }
