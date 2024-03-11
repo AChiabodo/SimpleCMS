@@ -57,7 +57,6 @@ const storage = multer.diskStorage({
 // Set up multer middleware with the defined storage configuration
 const upload = multer({ storage });
 app.use('/uploads', express.static('uploads'));
-app.use('/', express.static('dist'));
 
 // Set up a POST endpoint for handling file uploads
 app.post("/api/upload", upload.single("file"), function (req, res) {
@@ -74,6 +73,9 @@ app.use("/api/posts", postRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/platforms",platformsRoutes);
 
+//MUST BE THE LAST DEFINITION
+// Serve the static files from the React app
+app.use('/*', express.static('dist'));
 // Start the server and listen on port 3001
 app.listen(httpPort, () => {
   console.log("Unsecure API server Listening on port " + httpPort);
