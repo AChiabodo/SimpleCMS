@@ -46,7 +46,7 @@ function getJson(httpResponsePromise) {
 const getPosts = async (cat,platform,page,limit) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  let postUrl = URL + "/posts";
+  let postUrl = URL + "/posts/public";
   const pageUrl = page ? "page=" + page : "page=1";
   const limitUrl = "limit=" + (limit || LIMIT);
   console.log(LIMIT);
@@ -70,7 +70,7 @@ const getPosts = async (cat,platform,page,limit) => {
 const getPost = async (idPost) => {
   const reqObj = {method: 'GET',credentials: 'include'};
   // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(fetch(URL + "/posts/" + idPost,reqObj)
+  return getJson(fetch(URL + "/posts/public/" + idPost,reqObj)
   ).then((json) => {
     return json;
   }).catch((err) => {
@@ -240,7 +240,7 @@ async function getImages(){
 }
 
 async function getCategories(){
-  const response = await fetch(URL+'/categories', {
+  const response = await fetch(URL+'/categories/reviews', {
     credentials: 'include'
   });
   const categories = await response.json();
@@ -250,8 +250,21 @@ async function getCategories(){
     throw categories;  // an object with the error coming from the server
   }
 }
+
 async function getPlatforms(){
-  const response = await fetch(URL+'/platforms', {
+  const response = await fetch(URL+'/categories/platforms', {
+    credentials: 'include'
+  });
+  const platforms = await response.json();
+  if (response.ok) {
+    return platforms;
+  } else {
+    throw platforms;  // an object with the error coming from the server
+  }
+}
+
+async function getNews(){
+  const response = await fetch(URL+'/categories/news', {
     credentials: 'include'
   });
   const platforms = await response.json();
@@ -305,5 +318,5 @@ async function getPostsNumber(cat,platform){
 
 }
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber};
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber,getNews};
 export default API;

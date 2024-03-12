@@ -13,7 +13,7 @@ export const getPosts = (req, res) => {
     values = [req.query.cat];
   }
   else if (req.query.platform) {
-    q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date`,`img` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 0";
+    q = "SELECT p.id, `title`, `desc`, `text`, `cat`,`date`,`img` FROM posts p JOIN post_platforms pp ON p.id = pp.post_id JOIN categories cat ON cat.id = p.cat WHERE pp.platform_id = ? AND p.draft = 0 AND cat.type = 'review'";
     values = [req.query.platform];
   }
   q += " ORDER BY `date` DESC";
