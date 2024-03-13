@@ -4,7 +4,7 @@ import { AuthContext } from "../context/authContext";
 import Logo from "../images/logo.png";
 import API from "../API";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser,faLayerGroup,faGamepad,faRightToBracket} from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLayerGroup, faGamepad, faRightToBracket, faNewspaper } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const { currentUser, logout } = useContext(AuthContext);
@@ -40,43 +40,46 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-       <div className="navbar-container">
-         <div className="logo">
-           <a href="/">
-             <img src={Logo} alt="logo" />
-           </a>
-         </div>
-         <div className="links">
+      <div className="navbar-container">
+        <div className="logo">
+          <a href="/">
+            <img src={Logo} alt="logo" />
+          </a>
+        </div>
+        <div className="links">
           <div className="dropdown-container">
-          <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
-          <div className="dropdown-content">
+            <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
+            <div className="dropdown-content">
               {platforms.map((plat) => (
                 <a key={plat.id} href={`/?platform=${plat.id}`}>
                   {plat.console.toUpperCase()}
                 </a>
               ))}
-          </div>
+            </div>
           </div>
           <div className="dropdown-container">
-          <button className="dropdown-button"><FontAwesomeIcon icon={faLayerGroup} />CATEGORIE</button>
-          <div className="dropdown-content">
+            <button className="dropdown-button"><FontAwesomeIcon icon={faLayerGroup} />RECENSIONI</button>
+            <div className="dropdown-content">
               {categories.map((cat) => (
                 <a key={cat.id} href={`/?cat=${cat.id}`}>
                   {cat.category.toUpperCase()}
                 </a>
               ))}
+            </div>
           </div>
-          </div>
-          </div>
-          <div className="links">
-          {currentUser ? (
           <div className="dropdown-container">
+          <button className="dropdown-button" onClick={() => navigate("/news")}><FontAwesomeIcon icon={faNewspaper} /> NEWS</button>
+          </div>
+        </div>
+        <div className="links">
+          {currentUser ? (
+            <div className="dropdown-container">
               <button className="dropdown-button">
                 <FontAwesomeIcon icon={faUser} /> {currentUser.username}
               </button>
               <div className="dropdown-content">
                 <Link to={`/user`}>
-                    {currentUser.username}
+                  {currentUser.username}
                 </Link>
                 {currentUser?.role === "admin" && (
                   <Link to="/write" state={""}>
@@ -84,19 +87,19 @@ const Navbar = () => {
                   </Link>
                 )}
                 <Link onClick={logoutNavbar}>
-               Logout
-             </Link>
+                  Logout
+                </Link>
               </div>
-          </div>
+            </div>
           ) : (
             <div className="dropdown-container">
               <Link to="/login"><FontAwesomeIcon icon={faRightToBracket} />LOGIN</Link>
             </div>
-          )}           
-         </div>
-       </div>
+          )}
+        </div>
+      </div>
     </div>
-   );
+  );
 };
 
 export default Navbar;

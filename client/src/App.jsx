@@ -9,6 +9,7 @@ import UserPage from "./pages/UserPage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
+import News from "./pages/News";
 import "./style.scss";
 
 // Create a Layout component that defines the structure of the web page
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <UserPage />,
+      },
+      {
+        path: "/news",
+        element: <News />,
       },
       {
         path: "/login",
