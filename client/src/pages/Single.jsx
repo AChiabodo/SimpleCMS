@@ -41,6 +41,7 @@ const Single = () => {
   // Handler function for deleting a blog post.
   const handleDelete = async () => {
     try {
+      API.deletePost(postId);
       navigate("/");
     } catch (err) {
       console.log(err);
