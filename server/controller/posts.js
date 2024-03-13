@@ -290,3 +290,29 @@ export const getPostsNumber = (req, res) => {
     return res.status(200).json(data[0]);
   });
 }
+
+export const getDraftsNumber = (req, res) => {
+  // If the query string includes a category parameter,
+  // select all posts from the given category. Otherwise,
+  // select all posts.
+  let values = [];
+  let q = "SELECT COUNT(*) as num FROM posts WHERE draft = 1";
+  if (req.query.cat) {
+    q = "SELECT COUNT(*)  as num FROM posts WHERE draft = 1 AND `cat` = ?";
+    values = [req.query.cat];
+  }
+  else if (req.query.platform) {
+    q = "SELECT COUNT(*)  as num FROM posts p JOIN post_platforms pp ON p.id = pp.post_id WHERE pp.platform_id = ? AND p.draft = 1";
+    values = [req.query.platform];
+  }
+  // Use the database object to query the database with the
+  // appropriate SQL statement and any necessary parameters.
+  db.query(q,values, (err, data) => {
+    console.log(q);
+    // If there's an error, send a 500 status code and the error message
+    if (err) return res.status(500).send(err);
+
+    // Otherwise, send a 200 status code and the data as JSON
+    return res.status(200).json(data[0]);
+  });
+}

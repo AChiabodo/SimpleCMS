@@ -304,7 +304,7 @@ async function registerUser(inputs){
 
 async function getPostsNumber(cat,platform){
   const reqObj = {method: 'GET',credentials: 'include'};
-  let postUrl = URL + "/posts/number";
+  let postUrl = URL + "/posts/number/public/";
   if (cat){
     postUrl += "?cat=" + cat;
   }
@@ -315,7 +315,6 @@ async function getPostsNumber(cat,platform){
   ).then((json) => {
     return json;
   });
-
 }
 
 const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber,getNews};

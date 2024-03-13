@@ -6,7 +6,8 @@ import {
   getPosts,
   updatePost,
   getDraftedPosts,
-  getPostsNumber
+  getPostsNumber,
+  getDraftsNumber
 } from "../controller/posts.js";
 
 // Create a new Router object
@@ -20,4 +21,5 @@ router.get("/public/", getPosts); // Get all posts
 router.get("/public/:id", getPost); // Get a specific post by its ID
 router.get("/drafts/:uid", getDraftedPosts); // Get all drafts
 router.get("/number/public/",getPostsNumber); // Get the number of posts (for pagination purposes)
+router.get("/number/drafts/:uid",getDraftsNumber); // Get the number of posts (for pagination purposes)
 export default router;
