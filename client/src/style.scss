@@ -9,6 +9,7 @@ $white: #ffffff;
 $navbar-background: rgba(red($navbar-color), green($navbar-color), blue($navbar-color), 0.96);
 $navbar-content: rgba(red($navbar-color), green($navbar-color), blue($navbar-color), 0);
 $content-width: 70%;
+
 .app {
   display: flex;
   justify-content: center; // Centra orizzontalmente il contenuto
@@ -18,16 +19,17 @@ $content-width: 70%;
   margin: 0; // Rimuovi il margine predefinito del body
   // Limita la larghezza del container principale
   margin: 0 auto; // Centra il container orizzontalmente
- 
+
   @media (max-width: 600px) {
     // Adjustments for mobile devices
     flex-direction: column; // Stack elements vertically
     align-items: center; // Center items horizontally
   }
+
   .full-width {
     width: 100%;
     margin: 0 auto;
-    
+
     .navbar {
       width: 100%; // Rendi la navbar full-width
       display: flex;
@@ -40,125 +42,135 @@ $content-width: 70%;
       left: 0; // Posiziona la navbar a sinistra dello schermo
       z-index: 1000; // Assicura che la navbar sia visibile sopra gli altri elementi
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Aggiungi un'ombra più pronunciata alla navbar
+
       .navbar-container {
-         display: flex;
-         justify-content: space-between; // Allinea gli elementi in modo che occupino tutto lo spazio disponibile
-         align-items: center; // Centra verticalmente gli elementi
-         width: $content-width; // Assicura che il contenitore occupi tutto lo spazio disponibile
-         margin: 0 auto; // Centra il contenitore orizzontalmente
-         @media (max-width: 600px) {
+        display: flex;
+        justify-content: space-between; // Allinea gli elementi in modo che occupino tutto lo spazio disponibile
+        align-items: center; // Centra verticalmente gli elementi
+        width: $content-width; // Assicura che il contenitore occupi tutto lo spazio disponibile
+        margin: 0 auto; // Centra il contenitore orizzontalmente
+
+        @media (max-width: 600px) {
           // Adjustments for mobile devices
           flex-direction: column; // Stack elements vertically
           align-items: center; // Center items horizontally
           width: 100%; // Make the container full width
-         }
-         @media (max-width: 700px) {
+        }
+
+        @media (max-width: 700px) {
           width: 90%; // Make the container full width
-         }
-         @media (max-width: 800px) {
+        }
+
+        @media (max-width: 800px) {
           width: 85%; // Make the container full width
-         }
-         @media (max-width: 900px) {
+        }
+
+        @media (max-width: 900px) {
           width: 80%; // Make the container full width
-         }
+        }
+
       }
+
       .logo {
         img {
           width: 50px;
         }
       }
-      
+
       // style.scss
 
-.dropdown-container {
-  position: relative;
-  display: inline-block;
-  text-align: center;
-  
-}
- 
- .dropdown-button {
-  background-color: $navbar-content;
-  border: none;
-  border-radius: 0px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  height: 100%;
-  margin: 0em 1em;
-}
- 
- .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: $navbar-color;
-  padding: 0em;
-  margin: 0em 1em;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  left: 50%; // Posiziona il dropdown al centro del suo contenitore
- transform: translateX(-50%); // Sposta il dropdown indietro di metà della sua larghezza per centrarlo
- }
- 
- .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
- }
- 
- .dropdown-content a:hover {
-  background-color: $dark-orange;
- }
- 
- .dropdown-container:hover .dropdown-content {
-  display: block;
- }
-      
-      .links {
-         display: flex;
-         flex-wrap: wrap; // Allow items to wrap onto multiple lines
-        height: 100%;
-         .link {
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           //padding: 10px 20px; // Aggiungi un po' di padding ai blocchi
-           background-color: white; // Usa il colore bianco per i blocchi
-           border-radius: 4px; // Aggiungi bordi arrotondati
-           cursor: pointer; // Cambia il cursore in un puntatore quando si passa sopra
-     
-           &:hover {
-             background-color: $light-gray; // Cambia il colore di sfondo al passaggio del mouse
-           }
-         }
+      .dropdown-container {
+        position: relative;
+        display: inline-block;
+        text-align: center;
 
-         // Adjust the layout based on viewport width
-         @media (min-width: 600px) {
-          & > * {
+      }
+
+      .dropdown-button {
+        background-color: $navbar-content;
+        border: none;
+        border-radius: 0px;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        height: 100%;
+        margin: 0em 1em;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: $navbar-color;
+        padding: 0em;
+        margin: 0em 1em;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        left: 50%; // Posiziona il dropdown al centro del suo contenitore
+        transform: translateX(-50%); // Sposta il dropdown indietro di metà della sua larghezza per centrarlo
+      }
+
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-content a:hover {
+        background-color: $dark-orange;
+      }
+
+      .dropdown-container:hover .dropdown-content {
+        display: block;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap; // Allow items to wrap onto multiple lines
+        height: 100%;
+
+        .link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          //padding: 10px 20px; // Aggiungi un po' di padding ai blocchi
+          background-color: white; // Usa il colore bianco per i blocchi
+          border-radius: 4px; // Aggiungi bordi arrotondati
+          cursor: pointer; // Cambia il cursore in un puntatore quando si passa sopra
+
+          &:hover {
+            background-color: $light-gray; // Cambia il colore di sfondo al passaggio del mouse
+          }
+        }
+
+        // Adjust the layout based on viewport width
+        @media (min-width: 600px) {
+          &>* {
             flex-basis: calc(33.3% - 10px); // Adjust the width for 3 items per line
           }
         }
-  
+
         @media (max-width: 900px) {
-         & > * {
-           flex-basis: calc(25% - 10px); // Adjust the width for 4 items per line
-         }
-       }
-       @media (min-width: 900px) {
-         & > * {
-           flex-basis: calc(5% - 10px); // All in one line
-         }
-       }
+          &>* {
+            flex-basis: calc(25% - 10px); // Adjust the width for 4 items per line
+          }
+        }
+
+        @media (min-width: 900px) {
+          &>* {
+            flex-basis: calc(5% - 10px); // All in one line
+          }
+        }
       }
-     }
+    }
   }
 
   .container {
     margin: 54px 0 0 0; // Center the container horizontally
     background-color: $backgound;
+
     .link {
       text-decoration: none;
       color: inherit;
@@ -222,68 +234,81 @@ $content-width: 70%;
       background-color: $dark-orange;
       color: white;
       padding: 20px 0;
+
       .footer-container {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         width: $content-width;
-         margin: 0 auto;
-         @media (max-width: 700px) {
-           flex-direction: column;
-           align-items: center;
-         }
-         @media (max-width: 900px) {
-            width: 95%;
-         }
-         .footer-logo {
-           img {
-             width: 100px;
-           }
-         }
-         .footer-links,
-         .footer-contact,
-         .footer-social {
-           ul {
-             list-style-type: none;
-             padding: 0;
-             li {
-               margin-bottom: 10px;
-               a {
-                 color: white;
-                 text-decoration: none;
-                 &:hover {
-                   text-decoration: underline;
-                 }
-               }
-             }
-           }
-         }
-         .footer-copyright {
-           text-align: center;
-           margin-top: 20px;
-         }
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: $content-width;
+        margin: 0 auto;
+
+        @media (max-width: 700px) {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        @media (max-width: 900px) {
+          width: 95%;
+        }
+
+        .footer-logo {
+          img {
+            width: 100px;
+          }
+        }
+
+        .footer-links,
+        .footer-contact,
+        .footer-social {
+          ul {
+            list-style-type: none;
+            padding: 0;
+
+            li {
+              margin-bottom: 10px;
+
+              a {
+                color: white;
+                text-decoration: none;
+
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+          }
+        }
+
+        .footer-copyright {
+          text-align: center;
+          margin-top: 20px;
+        }
       }
-     }
+    }
 
     // HOME
     .home {
-      
-      margin: 0px auto;    
+
+      margin: 0px auto;
       padding-top: 5%;
+      min-height: 60vh;
+
       @media (max-width: 600px) {
         flex-direction: column; // Stack elements vertically
         align-items: center; // Center items horizontally
         width: 100%; // Make the container full width
       }
+
       @media (max-width: 900px) {
         flex-direction: column; // Stack elements vertically
         align-items: center; // Center items horizontally
         width: 100%; // Make the container full width
       }
+
       width: $content-width;
-      
+
       .posts {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         background-color: $white;
         margin: 50px auto;
         display: flex;
@@ -296,6 +321,7 @@ $content-width: 70%;
           display: flex;
           //gap: 5vh;
           column-gap: 2vw;
+
           @media (max-width: 900px) {
             gap: 0vh;
           }
@@ -370,13 +396,14 @@ $content-width: 70%;
       padding: 3% 0px;
       margin: 0px auto;
 
-      
+
       width: $content-width;
 
-      .single-container{
+      .single-container {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         background-color: $white;
         display: flex;
+
         @media (max-width: 700px) {
           margin: 0px auto;
           flex-direction: column; // Stack elements vertically
@@ -463,6 +490,7 @@ $content-width: 70%;
             align-items: center; // Allinea gli elementi verticalmente al centro
             gap: 10px; // Aggiunge uno spazio tra gli elementi
           }
+
           .post-title {
             position: absolute; // Posiziona il titolo in modo assoluto
             top: 0; // Posiziona il titolo in cima al contenitore
@@ -470,11 +498,12 @@ $content-width: 70%;
             background-color: rgba(0, 0, 0, 0.5); // Aggiunge uno sfondo semi-trasparente al titolo
             color: white; // Cambia il colore del testo a bianco
             padding: 10px; // Aggiunge un po' di padding al titolo
-           }
-           .post-image {
+          }
+
+          .post-image {
             width: 100%; // Adatta la larghezza dell'immagine
             height: auto; // Mantiene le proporzioni dell'immagine
-           }
+          }
 
           img {
             width: 90%;
@@ -505,22 +534,24 @@ $content-width: 70%;
           }
         }
       }
+
       // Responsive styles for .single .menu
-            @media (max-width: 900px) {
-              flex-direction: column; // Stack elements vertically
-              width: 100%; // Make the container full width
-      
-              .content {
-                order: 1; // Ensure content appears above the menu on mobile
-              }
-      
-              .menu {
-                order: 2; // Ensure menu appears below the content on mobile
-                align-self: stretch; // Make the menu stretch to fill the width
-                gap: 1vh;
-                padding: 5%;
-              }
-            }    }
+      @media (max-width: 900px) {
+        flex-direction: column; // Stack elements vertically
+        width: 100%; // Make the container full width
+
+        .content {
+          order: 1; // Ensure content appears above the menu on mobile
+        }
+
+        .menu {
+          order: 2; // Ensure menu appears below the content on mobile
+          align-self: stretch; // Make the menu stretch to fill the width
+          gap: 1vh;
+          padding: 5%;
+        }
+      }
+    }
 
     // WRITE
     .add {
@@ -531,42 +562,44 @@ $content-width: 70%;
       margin: 0px auto;
       width: $content-width;
       // Nel tuo file style.scss
-      
-      
-    @media (max-width: 1000px) {
-      margin-top: 5vh;
-      display: flex;
-      flex-direction: column;
-      width: 85%; // Make the container full width
-  
-    @media (max-width: 900px) {
-      margin-top: 8vh;
-      display: flex;
-      flex-direction: column;
-      width: 90%; // Make the container full width
-  
-  }
-    @media (max-width: 600px) {
-      margin-top: 16vh;
-      display: flex;
-      flex-direction: column;
-      width: 95%; // Make the container full width
-      gap: 1vh;
-  
-  }
-  }
+
+
+      @media (max-width: 1000px) {
+        margin-top: 5vh;
+        display: flex;
+        flex-direction: column;
+        width: 85%; // Make the container full width
+
+        @media (max-width: 900px) {
+          margin-top: 8vh;
+          display: flex;
+          flex-direction: column;
+          width: 90%; // Make the container full width
+
+        }
+
+        @media (max-width: 600px) {
+          margin-top: 16vh;
+          display: flex;
+          flex-direction: column;
+          width: 95%; // Make the container full width
+          gap: 1vh;
+
+        }
+      }
+
       .content {
         flex: 5;
         display: flex;
         flex-direction: column;
         gap: 20px;
-        
+
         label {
           display: block;
           margin-bottom: 0.5em;
           font-weight: bold;
           color: #333;
-         }
+        }
 
         input {
           padding: 10px;
@@ -590,42 +623,52 @@ $content-width: 70%;
         display: flex;
         flex-direction: column;
         gap: 20px;
+
         .error {
-          color: #fff; /* Testo bianco */
-          background-color: #f44336; /* Rosso acceso */
-          padding: 10px; /* Spazio interno */
-          margin-bottom: 10px; /* Spazio sotto l'errore */
-          border-radius: 5px; /* Bordi arrotondati */
-          font-weight: bold; /* Testo in grassetto */
-          text-align: center; /* Testo centrato */
-         }
+          color: #fff;
+          /* Testo bianco */
+          background-color: #f44336;
+          /* Rosso acceso */
+          padding: 10px;
+          /* Spazio interno */
+          margin-bottom: 10px;
+          /* Spazio sotto l'errore */
+          border-radius: 5px;
+          /* Bordi arrotondati */
+          font-weight: bold;
+          /* Testo in grassetto */
+          text-align: center;
+          /* Testo centrato */
+        }
       }
 
-      
+
       .status-container {
         display: flex;
         align-items: center; // Allinea gli elementi verticalmente al centro
         gap: 10px; // Aggiunge uno spazio tra gli elementi
         margin-bottom: 1em;
         width: 10vh;
+
         @media (max-width: 600px) {
           width: 100%;
         }
-       }
-       
-       .status-container label {
+      }
+
+      .status-container label {
         margin-bottom: 0.5em;
         font-weight: bold;
         color: #333;
-       }
-       
-       .status-container select {
+      }
+
+      .status-container select {
         padding: 0.5em;
         font-size: 1em;
         border: 1px solid #ccc;
         border-radius: 4px;
-       }
-       .status-container button {
+      }
+
+      .status-container button {
         padding: 0.5em 1em;
         font-size: 1em;
         border: none;
@@ -633,11 +676,11 @@ $content-width: 70%;
         background-color: #007bff; // Colore di sfondo blu
         color: white; // Colore del testo bianco
         cursor: pointer;
-       }
-       
-       .status-container button:hover {
+      }
+
+      .status-container button:hover {
         background-color: #0056b3; // Colore di sfondo blu scuro al passaggio del mouse
-       }
+      }
 
       .item {
         padding: 10px;
@@ -693,41 +736,44 @@ $content-width: 70%;
         }
       }
     }
+
     .user-page {
       display: flex;
       gap: 30px;
       padding: 3% 0px;
       margin: 0px auto;
       width: $content-width;
-      min-height: 100vh;
+      min-height: 60vh;
 
       @media (max-width: 900px) {
-         flex-direction: column; // Stack elements vertically
-         width: 100%; // Make the container full width
-         .content {
-           order: 1; // Ensure content appears above the menu on mobile
-         }
-     
-         .menu {
-           order: 2; // Ensure menu appears below the content on mobile
-           align-self: stretch; // Make the menu stretch to fill the width
-         }
+        flex-direction: column; // Stack elements vertically
+        width: 100%; // Make the container full width
+
+        .content {
+          order: 1; // Ensure content appears above the menu on mobile
+        }
+
+        .menu {
+          order: 2; // Ensure menu appears below the content on mobile
+          align-self: stretch; // Make the menu stretch to fill the width
+        }
       }
-     }
-     
-     .custom-table {
+    }
+
+    .custom-table {
       width: 100%;
       border-collapse: collapse;
       margin: 1rem auto;
       background-color: $white;
+
       th,
       td {
-         padding: 0.75rem;
-         vertical-align: top;
-         border-top: 1px solid #dee2e6;
-         text-align: center;
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
       }
-      
+
       caption {
         padding: 10px;
         font-size: 1.2em; // Dimensione del font simile a un titolo h1
@@ -736,188 +782,291 @@ $content-width: 70%;
         color: #333; // Colore del testo
         background-color: $white; // Applica lo stesso colore di sfondo della tabella
         border-bottom: 1px solid #dee2e6; // Aggiunge un bordo inferiore per separare il titolo dalla tabella
-       }
+      }
 
       thead th {
-         vertical-align: bottom;
-         border-bottom: 2px solid #dee2e6;
-         text-align: center;
-         height: 5vh;
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+        text-align: center;
+        height: 5vh;
       }
-     
-      tbody + tbody {
-         border-top: 2px solid #dee2e6;
+
+      tbody+tbody {
+        border-top: 2px solid #dee2e6;
       }
-     
+
       .table-primary,
-      .table-primary > th,
-      .table-primary > td {
-         background-color: #b8daff;
+      .table-primary>th,
+      .table-primary>td {
+        background-color: #b8daff;
       }
-     
+
       .table-hover tbody tr:hover {
-         color: #212529;
-         background-color: rgba(0, 0, 0, 0.075);
+        color: #212529;
+        background-color: rgba(0, 0, 0, 0.075);
       }
-     
+
       .table-active,
-      .table-active > th,
-      .table-active > td {
-         color: #212529;
-         background-color: rgba(0, 0, 0, 0.075);
+      .table-active>th,
+      .table-active>td {
+        color: #212529;
+        background-color: rgba(0, 0, 0, 0.075);
       }
-     
+
       .table-active:hover,
-      .table-active:hover > th,
-      .table-active:hover > td {
-         background-color: rgba(0, 0, 0, 0.075);
+      .table-active:hover>th,
+      .table-active:hover>td {
+        background-color: rgba(0, 0, 0, 0.075);
       }
-     }
-         // Aggiungi questo stile nel tuo file style.scss
-         .pagination {
-           display: flex;
-           justify-content: center;
-           align-items: center;
-           gap: 1vw;
-           margin: 1em 0;
-         }
-    
-         .pagination button {
-           background-color: $light-orange;
-           color: $white;
-           border: none;
-           border-radius: 4px;
-           padding: 0.8rem 1.4rem;
-           cursor: pointer;
-           transition: background-color 0.3s ease;
-    
-           &:hover {
-             background-color: $dark-orange;
-           }
-    
-           &:disabled {
-             background-color: $light-gray;
-           }
-         }
-  // File: style.scss
-.not-found {
-  text-align: center;
-  padding: 50px 0;
-  background-color: $white;
-  color: $dark-orange;
-  min-height:60vh;
- 
-  h1 {
-     font-size: 3em;
-     margin-bottom: 20px;
-  }
- 
-  p {
-     font-size: 1.5em;
-     margin-bottom: 20px;
-  }
- 
-  a {
-     color: $dark-orange;
-     text-decoration: none;
-     padding: 10px 20px;
-     border: 1px solid $dark-orange;
-     border-radius: 4px;
-     transition: background-color 0.3s ease;
- 
-     &:hover {
-       background-color: $dark-orange;
-       color: $white;
-     }
-  }
- }
+    }
+
+    // Aggiungi questo stile nel tuo file style.scss
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1vw;
+      margin: 1em 0;
+    }
+
+    .pagination button {
+      background-color: $light-orange;
+      color: $white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.8rem 1.4rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: $dark-orange;
+      }
+
+      &:disabled {
+        background-color: $light-gray;
+      }
+    }
+
+    .news {
+
+      margin: 0px auto;
+      padding-top: 5%;
+
+      @media (max-width: 600px) {
+        flex-direction: column; // Stack elements vertically
+        align-items: center; // Center items horizontally
+        width: 100%; // Make the container full width
+      }
+
+      @media (max-width: 900px) {
+        flex-direction: column; // Stack elements vertically
+        align-items: center; // Center items horizontally
+        width: 100%; // Make the container full width
+      }
+
+      width: $content-width;
+
+      .posts {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: $white;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        gap: 5vh;
+
+        .post {
+          width: 95%;
+          margin: 2% auto;
+          display: flex;
+          //gap: 5vh;
+          column-gap: 2vw;
+
+          @media (max-width: 900px) {
+            gap: 0vh;
+          }
+          .post-img {
+            flex: 2;
+            position: relative;
+
+            &::after {
+              content: "";
+              width: 100%;
+              height: 100%;
+              background-color: $light-orange;
+              position: absolute;
+              top: 20px;
+              left: -20px;
+              z-index: -1;
+            }
+
+            img {
+              width: 100%;
+              max-height: 400px;
+              object-fit: cover;
+            }
+          }
+
+          .content {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            h1 {
+              font-size: 48px;
+            }
+
+            p {
+              margin-top: 20px;
+              font-size: 18px;
+            }
+
+            button {
+              width: max-content;
+              font-size: 16px;
+              margin-top: 40px;
+              padding: 10px 20px;
+              border: none;
+              cursor: pointer;
+              background-color: white;
+              border: 1px solid $dark-orange;
+              color: $dark-orange;
+
+              &:hover {
+                border: 1px solid white;
+                background-color: $light-orange;
+                color: white;
+              }
+            }
+          }
         }
+      }
+    }
 
-// Responsive styles for mobile devices
 
-@media (max-width: 600px) {
- .app {
-    // Adjustments for mobile devices
-    flex-direction: column; // Stack elements vertically
-    align-items: center; // Center items horizontally
- }
- .post {
-  flex-direction: column !important; // Stack elements vertically
-}
 
- .post-img {
-  flex: 2;
-  position: relative;
+    // File: style.scss
+    .not-found {
+      text-align: center;
+      padding: 50px 0;
+      background-color: $white;
+      color: $dark-orange;
+      min-height: 60vh;
 
-  &::after {
-    content: "";
-    width: 100%;
-    height: 100%;
-    background-color: $light-orange;
-    position: absolute;
-    top: 20px;
-    left: -20px;
-    z-index: -1;
-  }
+      h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+      }
 
-  img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-  }
-}
+      p {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+      }
 
- .container {
-    width: 100%; // Make the container full width on mobile
- }
+      a {
+        color: $dark-orange;
+        text-decoration: none;
+        padding: 10px 20px;
+        border: 1px solid $dark-orange;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
 
-}
-
-@media (max-width: 900px) {
-  .app {
-     // Adjustments for mobile devices
-     flex-direction: column; // Stack elements vertically
-     align-items: center; // Center items horizontally
-  }
-  .post {
-   flex-direction: column !important; // Stack elements vertically
- }
- 
-  .post-img {
-   flex: 2;
-   position: relative;
- 
-   &::after {
-     content: "";
-     width: 100%;
-     height: 100%;
-     background-color: $light-orange;
-     position: absolute;
-     top: 20px;
-     left: -20px;
-     z-index: -1;
-   }
- 
-   img {
-     width: 100%;
-     max-height: 400px;
-     object-fit: cover;
-   }
- }
- 
-  .container {
-     width: 100%; // Make the container full width on mobile
-  }
- 
- }
-
- @media (max-width: 1000px){
-  .container {
-    width: 100%; // Make the container full width on mobile
-    .home {
-      width: 90%; // Make the container full width on mobile
+        &:hover {
+          background-color: $dark-orange;
+          color: $white;
+        }
+      }
     }
   }
- }
-  
+
+  // Responsive styles for mobile devices
+
+  @media (max-width: 600px) {
+    .app {
+      // Adjustments for mobile devices
+      flex-direction: column; // Stack elements vertically
+      align-items: center; // Center items horizontally
+    }
+
+    .post {
+      flex-direction: column !important; // Stack elements vertically
+    }
+
+    .post-img {
+      flex: 2;
+      position: relative;
+
+      &::after {
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: $light-orange;
+        position: absolute;
+        top: 20px;
+        left: -20px;
+        z-index: -1;
+      }
+
+      img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+      }
+    }
+
+    .container {
+      width: 100%; // Make the container full width on mobile
+    }
+
+  }
+
+  @media (max-width: 900px) {
+    .app {
+      // Adjustments for mobile devices
+      flex-direction: column; // Stack elements vertically
+      align-items: center; // Center items horizontally
+    }
+
+    .post {
+      flex-direction: column !important; // Stack elements vertically
+    }
+
+    .post-img {
+      flex: 2;
+      position: relative;
+
+      &::after {
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: $light-orange;
+        position: absolute;
+        top: 20px;
+        left: -20px;
+        z-index: -1;
+      }
+
+      img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+      }
+    }
+
+    .container {
+      width: 100%; // Make the container full width on mobile
+    }
+
+  }
+
+  @media (max-width: 1000px) {
+    .container {
+      width: 100%; // Make the container full width on mobile
+
+      .home {
+        width: 90%; // Make the container full width on mobile
+      }
+    }
+  }
+
 }
