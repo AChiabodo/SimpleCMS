@@ -12,6 +12,22 @@ export const AuthContextProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("user")) || null
   );
 
+  useEffect(() => {
+    // Funzione per verificare la validità del token con una richiesta al server
+    const checkTokenValidity = async () => {
+      API.checkTokenValidity()
+        .then((_) => {
+          console.log("Token valido con user loggato : " + JSON.stringify(currentUser));
+        })
+        .catch((err) => {
+          console.log(err);
+          setCurrentUser(null);
+        });
+    };
+
+    checkTokenValidity();
+ }, []); // Esegui l'effetto solo al montaggio del componente
+
   // Define a function called login that makes a POST request to the /auth/login endpoint with the given inputs and sets the currentUser state variable to the response data
   const login = async (inputs) => {
     const res = await API.logIn(inputs);

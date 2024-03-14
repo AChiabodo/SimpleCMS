@@ -1,6 +1,6 @@
 // importing express and the necessary controller functions
 import express from "express";
-import { login, logout, register } from "../controller/auth.js";
+import { login, logout, register, check} from "../controller/auth.js";
 
 // creating a new router instance
 const router = express.Router();
@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
+router.get("/current", check);
 
 // exporting the router instance
 export default router;

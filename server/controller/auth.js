@@ -85,3 +85,21 @@ export const logout = (req, res) => {
     .status(200)
     .json("User has been logged out.");
 };
+
+
+export const check = (req, res) => {
+  // Get the access_token from the cookie
+  const token = req.cookies.access_token;
+
+  // If the token is not present, return an error
+  if (!token) return res.status(401).json("Unauthorized");
+
+  // Verify the token
+  jwt.verify(token, "jwtkey", (err, user) => {
+    // If the token is invalid, return an error
+    if (err) return res.status(401).json("Unauthorized");
+
+    // If the token is valid, return the user data
+    return res.status(200).json(user);
+  });
+};

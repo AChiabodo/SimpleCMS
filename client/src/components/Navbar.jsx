@@ -93,7 +93,7 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="dropdown-container">
-              <Link to="/login"><FontAwesomeIcon icon={faRightToBracket} />LOGIN</Link>
+              <button className="dropdown-button" onClick={() => navigate("/login")}><FontAwesomeIcon icon={faRightToBracket} />LOGIN</button>
             </div>
           )}
         </div>

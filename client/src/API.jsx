@@ -324,5 +324,25 @@ async function getPostsNumber(cat,platform){
   });
 }
 
-const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber,getNews};
+const checkTokenValidity = () => {
+  return new Promise((resolve, reject) => {
+    fetch(URL + '/auth/current', {
+      method: 'GET',
+      credentials: 'include',
+    }).then((response) => {
+      if (response.ok) {
+        response.json()
+          .then((user) => resolve(user))
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      } else {
+        // analyze the cause of error
+        response.json()
+          .then((message) => { reject(message); }) // error message in the response body
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      }
+    }).catch(() => { reject({ error: "Cannot communicate with the server." }) }); // connection errors
+  });
+}
+
+const API = {getPosts , getPost , createPost , updatePost , deletePost , getUserInfo , logIn , logOut , getUsers , getImages, uploadImage, getCategories, getPlatforms,getDrafts,registerUser,getPostsNumber,getNews,checkTokenValidity};
 export default API;
