@@ -27,13 +27,13 @@ const Single = () => {
   // Use the useEffect hook to fetch the blog post data from the server when the component mounts.
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await API.getPost(postId);
-        console.log(res);
+      API.getPost(postId).then((res) => {
+        //console.log(res);
         setPost(res);
-      } catch (err) {
+      }).catch((err) => {
         console.log(err);
-      }
+        navigate("/404");
+      });
     };
     fetchData();
   }, [postId]);

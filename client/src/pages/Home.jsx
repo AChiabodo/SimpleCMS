@@ -15,10 +15,7 @@ const Home = () => {
   const cat = queryParams.get('cat');
   const platform = queryParams.get('platform');
 
-  // Funzione per recuperare il numero totale di post
- 
-
-  // Effetto per recuperare il numero totale di post al montaggio del componente
+  // Recuperare il numero totale di post al montaggio del componente
  useEffect(() => {
   const fetchTotalPosts = async () => {
     try {
