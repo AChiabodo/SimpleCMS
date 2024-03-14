@@ -333,6 +333,13 @@ $content-width: 70%;
           .post-img {
             flex: 2;
             position: relative;
+            overflow: hidden;
+
+            img {
+              width: 100%;
+              height: 100%; // Imposta un'altezza fissa
+              object-fit: cover; // Questo farà sì che l'immagine si adatti al contenitore mantenendo le sue proporzioni
+           }
 
             &::after {
               content: "";
