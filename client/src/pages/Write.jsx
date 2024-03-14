@@ -20,6 +20,7 @@ const Write = () => {
   const [selectedCategory, setSelectedCategory] = useState(state?.cat || "");
   const [preview, setPreview] = useState(state?.img ? import.meta.env.VITE_URL + `/uploads/${state?.img}` : "");
   const [categories, setCategories] = useState([]);
+  const [news, setNews] = useState([]);
   const [platforms, setPlatforms] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState(state?.platforms_id ? state.platforms_id.map((id) => (parseInt(id))) : []);
   const [status, setStatus] = useState(state?.draft == 0 ? 0 : 1); // Imposta lo stato predefinito su 'draft'
@@ -44,19 +45,6 @@ const Write = () => {
 }, [file])
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await API.getCategories();
-        setCategories(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
     const fetchPlatforms = async () => {
        try {
          const data = await API.getPlatforms();
@@ -65,8 +53,27 @@ const Write = () => {
          console.log(error);
        }
     };
+    const fetchCategories = async () => {
+      try {
+        const data = await API.getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const fetchNews = async () => {
+      try {
+        const data = await API.getNews();
+        setNews(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
    
     fetchPlatforms();
+    fetchCategories();
+    fetchNews();
+    console.log("news : " + JSON.stringify(news));
    }, []);
 
   // Define the upload function
@@ -268,6 +275,23 @@ const Write = () => {
                   setSelectedCategory(category.id)}}
               />
               {<label htmlFor={category.id}>{capitalizeFirstLetter(category.category)}</label>}
+            </div>
+          ))}
+        </div>
+        <div className="item">
+        <h1>News</h1>
+        {news.map((newsCat) => (
+            <div className="cat" key={newsCat.id}>
+              <input
+                type="radio"
+                checked={selectedCategory == newsCat.id}
+                name="cat"
+                value={newsCat.category}
+                id={newsCat.id}
+                onChange={() => {
+                  setSelectedCategory(newsCat.id)}}
+              />
+              {<label htmlFor={newsCat.id}>{capitalizeFirstLetter(newsCat.category)}</label>}
             </div>
           ))}
         </div>
