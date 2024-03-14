@@ -1,5 +1,3 @@
-import { mapFromPage, mapToPage } from "./Page";
-
 const URL = import.meta.env.VITE_URL + "/api";
 const LIMIT = import.meta.env.VITE_SIZE;
 
@@ -67,14 +65,23 @@ const getPosts = async (cat,platform,page,limit) => {
   });
 };
 
-const getPost = async (idPost) => {
-  const reqObj = {method: 'GET',credentials: 'include'};
-  // page.watchDate could be null or a string in the format YYYY-MM-DD
-  return getJson(fetch(URL + "/posts/public/" + idPost,reqObj)
-  ).then((json) => {
-    return json;
-  }).catch((err) => {
-    console.log(err);
+const getPost = (idPost) => {
+  return new Promise((resolve, reject) => {
+    fetch(URL + "/posts/public/" + idPost, {
+      method: 'GET',
+      credentials: 'include',
+    }).then((response) => {
+      if (response.ok) {
+        response.json()
+          .then((post) => resolve(post))
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      } else {
+        // analyze the cause of error
+        response.json()
+          .then((message) => { reject(message); }) // error message in the response body
+          .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+      }
+    }).catch(() => { reject({ error: "Cannot communicate with the server." }) }); // connection errors
   });
 };
 
