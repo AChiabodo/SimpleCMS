@@ -46,6 +46,8 @@ const Navbar = () => {
             <img src={Logo} alt="logo" />
           </a>
         </div>
+        <input className="side-menu" type="checkbox" id="side-menu"/>
+        <label className="hamb" htmlFor="side-menu"><span className="hamb-line"></span></label>
         <div className="links">
           <div className="dropdown-container">
             <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
@@ -71,7 +73,7 @@ const Navbar = () => {
           <button className="dropdown-button" onClick={() => navigate("/news")}><FontAwesomeIcon icon={faNewspaper} /> NEWS</button>
           </div>
         </div>
-        <div className="links">
+        <div className="user-links">
           {currentUser ? (
             <div className="dropdown-container">
               <button className="dropdown-button">
