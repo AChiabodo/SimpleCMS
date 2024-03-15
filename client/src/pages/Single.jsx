@@ -46,7 +46,7 @@ const Single = () => {
     } catch (err) {
       console.log(err);
     }
-  };  
+  };
 
   // Helper function to extract plain text from an HTML string.
   const getText = (html) => {
@@ -57,46 +57,46 @@ const Single = () => {
   // Render the blog post.
   return (
     <div className="single">
-    {post && (<div className="single-container">
-      <div className="content">
-        {/* Render the post image. */}
-        {post?.img ? <img src={`${URL}/uploads/${post?.img}`} alt="post cover" /> : null}
-        <div className="user">
-          {/* Render the user image if it exists. */}
-          {post.userImg && <img src={post.userImg} alt="user" />}
-          <div className="info">
-            {/* Render the post author and date. */}
-            {<span>{post.username}</span>}
-            <p>Posted {moment(post.date).fromNow()}</p>
-          </div>
-          {/* Render the edit and delete buttons if the current user is the author of the post. */}
-          {currentUser && currentUser.username === post.username && (
-            <div className="edit">
-              <Link to={`/write`} state={post}>
-                <img src={EditImage} alt="edit" />
-              </Link>
-              <img onClick={handleDelete} src={DeleteImage} alt="delete" />
-            </div>
-          )}
-        </div>
-        {/* Render the post title and description. */}
+      {post && (<div className="single-container">
+        <div className="content">
         <div className="title">
-        {<h1>{post.title}</h1>}
-        <div className="platforms" style={{ textAlign: 'right', color: 'red' }}>
-        {post.platforms && post.platforms.map((platform, index) => (
-          <span key={index} style={{ marginRight: '10px' }}>
-            {platform}
-          </span>
-        ))}
+            {<h1>{post.title}</h1>}
+            <div className="platforms" style={{ textAlign: 'right', color: 'red' }}>
+              {post.platforms && post.platforms.map((platform, index) => (
+                <span key={index} style={{ marginRight: '10px' }}>
+                  {platform}
+                </span>
+              ))}
+            </div>
+          </div>
+          {/* Render the post image. */}
+          {post?.img ? <img src={`${URL}/uploads/${post?.img}`} alt="post cover" /> : null}
+          <div className="user">
+            {/* Render the user image if it exists. */}
+            {post.userImg && <img src={post.userImg} alt="user" />}
+            <div className="info">
+              {/* Render the post author and date. */}
+              {<span>{post.username}</span>}
+              <p>Posted {moment(post.date).fromNow()}</p>
+            </div>
+            {/* Render the edit and delete buttons if the current user is the author of the post. */}
+            {currentUser && currentUser.username === post.username && (
+              <div className="edit">
+                <Link to={`/write`} state={post}>
+                  <img src={EditImage} alt="edit" />
+                </Link>
+                <img onClick={handleDelete} src={DeleteImage} alt="delete" />
+              </div>
+            )}
+          </div>
+          {/* Render the post title and description. */}
+          {<i>"{getText(post.desc)}"</i>}
+          {<div>{parse(String(post.text))}</div>}
+        </div>
+        <Menu cat={post.cat} id={post.id} />
+
       </div>
-      </div>
-        {<i>"{getText(post.desc)}"</i>}
-        {<div>{parse(String(post.text))}</div>}
-      </div>
-      <Menu cat={post.cat} id={post.id}/>
-      
-    </div>
-    )}
+      )}
     </div>
   );
 };
