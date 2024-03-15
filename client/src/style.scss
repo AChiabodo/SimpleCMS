@@ -51,7 +51,7 @@ $content-width: 70%;
 
         @media (max-width: 600px) {
           // Adjustments for mobile devices
-          flex-direction: column; // Stack elements vertically
+          //flex-direction: column; // Stack elements vertically
           align-items: center; // Center items horizontally
           width: 100%; // Make the container full width
         }
@@ -123,6 +123,16 @@ $content-width: 70%;
 
       .dropdown-container:hover .dropdown-content {
         display: block;
+      }
+
+      .user-links{
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1em;
+        &>* {
+          flex-basis: calc(5% - 10px); // All in one line
+        }
       }
 
       .links {
