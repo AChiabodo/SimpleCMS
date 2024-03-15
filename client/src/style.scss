@@ -49,6 +49,17 @@ $content-width: 70%;
         width: $content-width; // Assicura che il contenitore occupi tutto lo spazio disponibile
         margin: 0 auto; // Centra il contenitore orizzontalmente
 
+        @media (max-width: 900px) {
+          width: 80%; // Make the container full width
+        }
+        
+        @media (max-width: 800px) {
+          width: 85%; // Make the container full width
+        }
+        
+        @media (max-width: 700px) {
+          width: 90%; // Make the container full width
+        }
         @media (max-width: 600px) {
           // Adjustments for mobile devices
           //flex-direction: column; // Stack elements vertically
@@ -56,17 +67,8 @@ $content-width: 70%;
           width: 100%; // Make the container full width
         }
 
-        @media (max-width: 700px) {
-          width: 90%; // Make the container full width
-        }
 
-        @media (max-width: 800px) {
-          width: 85%; // Make the container full width
-        }
 
-        @media (max-width: 900px) {
-          width: 80%; // Make the container full width
-        }
 
       }
 
@@ -127,9 +129,6 @@ $content-width: 70%;
 
       .user-links{
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 1em;
         &>* {
           flex-basis: calc(5% - 10px); // All in one line
         }

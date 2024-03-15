@@ -41,10 +41,12 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="navbar-container">
+      <div className="dropdown-container">
         <div className="logo">
           <a href="/">
             <img src={Logo} alt="logo" />
           </a>
+        </div>
         </div>
         <input className="side-menu" type="checkbox" id="side-menu"/>
         <label className="hamb" htmlFor="side-menu"><span className="hamb-line"></span></label>
