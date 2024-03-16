@@ -10,6 +10,11 @@ $navbar-background: rgba(red($navbar-color), green($navbar-color), blue($navbar-
 $navbar-content: rgba(red($navbar-color), green($navbar-color), blue($navbar-color), 0);
 $content-width: 70%;
 
+// All z-index values for the app
+$z-navbar: 1;
+$z-dropdown: 2;
+$z-modal: 3;
+
 .app {
   display: flex;
   justify-content: center; // Centra orizzontalmente il contenuto
@@ -39,7 +44,7 @@ $content-width: 70%;
       position: fixed; // Rendi la navbar fissa
       top: 0; // Posiziona la navbar in cima allo schermo
       left: 0; // Posiziona la navbar a sinistra dello schermo
-      z-index: 1000; // Assicura che la navbar sia visibile sopra gli altri elementi
+      z-index: $z-navbar; // Assicura che la navbar sia visibile sopra gli altri elementi
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); // Aggiungi un'ombra più pronunciata alla navbar
 
       .navbar-container {
@@ -63,8 +68,8 @@ $content-width: 70%;
         @media (max-width: 600px) {
           // Adjustments for mobile devices
           //flex-direction: column; // Stack elements vertically
-          align-items: center; // Center items horizontally
-          width: 100%; // Make the container full width
+          //align-items: center; // Center items horizontally
+          width: 95%; // Make the container full width
         }
 
 
@@ -78,13 +83,10 @@ $content-width: 70%;
         }
       }
 
-      // style.scss
-
       .dropdown-container {
         position: relative;
         display: inline-block;
         text-align: center;
-
       }
 
       .dropdown-button {
@@ -107,7 +109,7 @@ $content-width: 70%;
         margin: 0em 1em;
         min-width: 160px;
         box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
+        z-index: $z-dropdown;
         left: 50%; // Posiziona il dropdown al centro del suo contenitore
         transform: translateX(-50%); // Sposta il dropdown indietro di metà della sua larghezza per centrarlo
       }
@@ -143,7 +145,7 @@ $content-width: 70%;
         &>* {
           flex-basis: calc(5% - 10px); // All in one line
         }
-
+        /*
         .link {
           display: flex;
           align-items: center;
@@ -157,6 +159,7 @@ $content-width: 70%;
             background-color: $light-gray; // Cambia il colore di sfondo al passaggio del mouse
           }
         }
+        */
       }
 
       // Stili per il menu a scomparsa
@@ -253,17 +256,20 @@ $content-width: 70%;
           top: 100%; // Posiziona i link sotto al menu hamburger
           left: 0%; // Allinea i link a sinistra
           width: 100%; // Fai occupare i link l'intera larghezza del menu
-          height: 100%;
+          height: auto; // Fai sì che l'altezza dei link si adatti al contenuto
           background-color: #fff; // Imposta un colore di sfondo per i link
           margin: auto; // Rimuovi il margine predefinito
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Aggiungi un'ombra per i link
-          z-index: 1001;
+          z-index: $z-navbar;
         }
         .dropdown-container{
-        padding: auto; // Rimuovi il padding predefinito
-        margin: 1em;
+          margin: 1em;
         }
-      }
+        // Aggiungi questo stile nel tuo file style.scss
+        #user {
+         margin-right: 0 !important; // Rimuove il margine a destra
+        }
+        }
     }
   }
 

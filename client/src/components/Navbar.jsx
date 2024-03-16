@@ -77,7 +77,7 @@ const Navbar = () => {
         </div>
         <div className="user-links">
           {currentUser ? (
-            <div className="dropdown-container">
+            <div className="dropdown-container"  id="user">
               <button className="dropdown-button">
                 <FontAwesomeIcon icon={faUser} /> {currentUser.username}
               </button>
