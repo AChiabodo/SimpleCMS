@@ -56,7 +56,7 @@ const Login = () => {
         <button onClick={handleSubmit}>Login</button>
         {err && <p>{err}</p>}
         <span>
-          Don't you have an account? <Link to="/register">Register</Link>
+          Don't you have an account? <Link onClick={() => navigate("/register")}>Register</Link>
         </span>
       </form>
     </div>

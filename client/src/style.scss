@@ -81,6 +81,7 @@ $z-modal: 3;
         img {
           width: 50px;
         }
+        cursor: pointer;
       }
 
       .dropdown-container {
@@ -123,6 +124,7 @@ $z-modal: 3;
 
       .dropdown-content a:hover {
         background-color: $dark-orange;
+        cursor: pointer;
       }
 
       .dropdown-container:hover .dropdown-content {

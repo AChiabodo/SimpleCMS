@@ -43,9 +43,9 @@ const Navbar = () => {
       <div className="navbar-container">
       <div className="dropdown-container">
         <div className="logo">
-          <a href="/">
+          <Link onClick={() => navigate("/")}>
             <img src={Logo} alt="logo" />
-          </a>
+          </Link>
         </div>
         </div>
         <input className="side-menu" type="checkbox" id="side-menu"/>
@@ -55,7 +55,7 @@ const Navbar = () => {
             <button className="dropdown-button"><FontAwesomeIcon icon={faGamepad} />PIATTAFORME</button>
             <div className="dropdown-content">
               {platforms.map((plat) => (
-                <a key={plat.id} href={`/?platform=${plat.id}`}>
+                <a key={plat.id} onClick={() => navigate(`/?platform=${plat.id}`)}>
                   {plat.console.toUpperCase()}
                 </a>
               ))}
@@ -65,7 +65,7 @@ const Navbar = () => {
             <button className="dropdown-button"><FontAwesomeIcon icon={faLayerGroup} />RECENSIONI</button>
             <div className="dropdown-content">
               {categories.map((cat) => (
-                <a key={cat.id} href={`/?cat=${cat.id}`}>
+                <a key={cat.id} onClick={() => navigate(`/?cat=${cat.id}`)}>
                   {cat.category.toUpperCase()}
                 </a>
               ))}

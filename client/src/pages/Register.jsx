@@ -62,7 +62,7 @@ const Register = () => {
         {/* triggering handleSubmit function on form submit */}
         {err && <p>{err}</p>} {/* displaying error message if there's any */}
         <span>
-          Do you have an account? <Link to="/login">Login</Link>{" "}
+          Do you have an account? <Link onClick={() => navigate("/login")}>Login</Link>{" "}
           {/* providing link to login page */}
         </span>
       </form>

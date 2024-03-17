@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import API from "../API";
 
 const postsPerPage = import.meta.env.VITE_SIZE;
@@ -9,7 +9,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
-
+  const navigate = useNavigate();
   // Getting the current URL query string (if any) using the useLocation hook from react-router-dom
   const queryParams = new URLSearchParams(useLocation().search);
   const cat = queryParams.get('cat');
@@ -33,6 +33,7 @@ const Home = () => {
     // Defining an asynchronous function called fetchData
     const fetchData = async () => {
       try {
+        setPosts([]);
         // Making an HTTP GET request to the server to retrieve posts data based on the cat variable
         const res = await API.getPosts(cat,platform,currentPage);
         // Updating the posts state variable with the retrieved data
@@ -62,7 +63,6 @@ const totalPages = Math.ceil(totalPosts / postsPerPage);
 
 const generatePageNumbers = () => {
   const pageNumbers = [];
-  const maxPageNumbers = 5; // Numero massimo di pulsanti di pagina da mostrare
   const startPage = Math.max(2, currentPage - 1);
   const endPage = Math.min(totalPages - 1, currentPage + 1);
  
@@ -88,18 +88,17 @@ const generatePageNumbers = () => {
         {posts.map((post) => (
           <div className="post" key={post.id}>
             <div className="post-img">
-              {/* Rendering the post image */console.log(import.meta.env.VITE_URL + `/uploads/${post.img}`)}
               <img src={import.meta.env.VITE_URL + `/uploads/${post.img}`} alt="post cover" />
             </div>
             <div className="content">
               {/* Rendering a link to the post page */}
-              <Link className="link" to={`/post/${post.id}`}>
+              <Link className="link" onClick={() => navigate(`/post/${post.id}`)}>
                 <h1>{post.title}</h1>
               </Link>
               {/* Rendering the post description */}
               <p>{getText(post.desc)}</p>
               {/* Rendering a button to read more */}
-              <Link className="link" to={`/post/${post.id}`}>
+              <Link className="link" onClick={() => navigate(`/post/${post.id}`)}>
                 <button>Read More</button>
               </Link>
             </div>
